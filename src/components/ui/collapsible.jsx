@@ -1,11 +1,13 @@
 "use client"
 
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible"
+import { cn } from "@/lib/utils"
 
 function Collapsible({
+  className,
   ...props
 }) {
-  return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />;
+  return <CollapsiblePrimitive.Root data-slot="collapsible" className={cn("t-acc", className)} {...props} />;
 }
 
 function CollapsibleTrigger({
@@ -15,9 +17,17 @@ function CollapsibleTrigger({
 }
 
 function CollapsibleContent({
+  className,
+  children,
   ...props
 }) {
-  return (<CollapsiblePrimitive.Panel data-slot="collapsible-content" {...props} />);
+  return (
+    <CollapsiblePrimitive.Panel data-slot="collapsible-content" className={cn("t-acc-panel", className)} {...props}>
+      <div className="t-acc-panel-inner">
+        {children}
+      </div>
+    </CollapsiblePrimitive.Panel>
+  );
 }
 
 export { Collapsible, CollapsibleTrigger, CollapsibleContent }

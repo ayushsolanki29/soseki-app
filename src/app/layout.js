@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="t-page-fade min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

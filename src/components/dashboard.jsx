@@ -111,6 +111,20 @@ const quickActions = [
 export function Dashboard() {
 	return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Banner Section */}
+            <div className="relative col-span-1 sm:col-span-2 lg:col-span-4 h-48 sm:h-64 rounded-xl overflow-hidden mb-2 shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10" />
+                <img 
+                    src="/banner.jpeg" 
+                    alt="Welcome to Workora" 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                />
+                <div className="absolute bottom-6 left-6 z-20 text-white">
+                    <h2 className="text-2xl font-bold font-heading">Welcome to Workora</h2>
+                    <p className="text-white/80 mt-1">Here's what's happening with your business today.</p>
+                </div>
+            </div>
+
             <DashboardStats />
             
             <RevenueOverviewChart />

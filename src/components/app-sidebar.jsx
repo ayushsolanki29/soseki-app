@@ -10,6 +10,12 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { NavGroup } from "@/components/nav-group";
 import { footerNavLinks, navGroups } from "@/components/app-shared";
 import { LatestChange } from "@/components/latest-change";
@@ -24,12 +30,23 @@ export function AppSidebar() {
             <SidebarContent>
 				<SidebarGroup>
 					<SidebarMenuItem className="flex items-center gap-2">
-						<SidebarMenuButton
-                            className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
-                            tooltip="Quick Create">
-							<PlusIcon />
-							<span>New Conversation</span>
-						</SidebarMenuButton>
+						<DropdownMenu>
+							<DropdownMenuTrigger render={
+								<SidebarMenuButton
+									className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+								/>
+							}>
+								<PlusIcon />
+								<span>New</span>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="start" className="w-56">
+								<DropdownMenuItem>New Client</DropdownMenuItem>
+								<DropdownMenuItem>New Project</DropdownMenuItem>
+								<DropdownMenuItem>New Estimate</DropdownMenuItem>
+								<DropdownMenuItem>New Invoice</DropdownMenuItem>
+								<DropdownMenuItem>Record Payment</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 						<Button
                             aria-label="Search conversations"
                             className="size-8 group-data-[collapsible=icon]:opacity-0"
