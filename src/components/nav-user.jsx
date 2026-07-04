@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserIcon, BellIcon, CommandIcon, LifeBuoyIcon, GraduationCapIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+import API from "@/lib/api";
+import { toast } from "sonner";
+
 const user = {
 	name: "Ayush Solanki",
 	email: "ayush@workora.com",
@@ -23,6 +27,18 @@ const user = {
 };
 
 export function NavUser() {
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            await API.post("/auth/logout");
+            toast.success("Logged out successfully");
+            router.push("/login");
+        } catch (error) {
+            toast.error("Failed to log out");
+        }
+    };
+
 	return (
         <DropdownMenu>
             <DropdownMenuTrigger render={<button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" />}>
@@ -57,36 +73,7 @@ export function NavUser() {
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<DropdownMenuItem>
-						<BellIcon />
-						Notifications
-					</DropdownMenuItem>
-					<DropdownMenuItem>
-						<CommandIcon />
-						Keyboard shortcuts
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem>
-						<LifeBuoyIcon />
-						Help center
-					</DropdownMenuItem>
-					<DropdownMenuItem>
-						<GraduationCapIcon />
-						Agent training
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem>
-						<CreditCardIcon />
-						Subscription
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem className="w-full cursor-pointer" variant="destructive">
+					<DropdownMenuItem className="w-full cursor-pointer" variant="destructive" onClick={handleLogout}>
 						<LogOutIcon />
 						Log out
 					</DropdownMenuItem>

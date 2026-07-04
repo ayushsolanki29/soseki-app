@@ -1,14 +1,25 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const bcrypt = require('bcryptjs');
+
+const prisma = new PrismaClient({});
 
 async function main() {
   console.log('Seeding the database...');
-  // Add your seed data here.
-  // Example:
-  // await prisma.user.create({
-  //   data: { email: 'admin@workora.com', name: 'Admin User' }
-  // });
-  console.log('Database seeded successfully!');
+
+  const passwordHash = await bcrypt.hash('password123', 10);
+
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@workora.com' },
+    update: {},
+    create: {
+      email: 'admin@workora.com',
+      passwordHash,
+      name: 'Admin User',
+    },
+  });
+
+  console.log('Database seeded successfully! Created admin:', admin.email);
 }
 
 main()

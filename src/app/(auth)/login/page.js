@@ -7,23 +7,55 @@ import { Input } from "@/components/ui/input";
 import { LogoIcon } from "@/components/logo";
 import Link from "next/link";
 import { toast } from "sonner";
+import API from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (step === "email") {
-      setStep("password");
+      setIsLoading(true);
+      try {
+        const res = await API.post("/auth/check-email", { email });
+        if (res.data.exists) {
+          setStep("password");
+        } else {
+          toast.error("Account not found", {
+            description: "No account is associated with this email.",
+          });
+        }
+      } catch (error) {
+        toast.error("Error", {
+          description: "Something went wrong. Please try again.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     } else {
-      toast.success("Successfully logged in!", {
-        description: "Welcome back to your dashboard.",
-      });
-      router.push("/");
+      setIsLoading(true);
+      try {
+        const res = await API.post("/auth/login", { email, password });
+        if (res.data.user) {
+          toast.success("Successfully logged in!", {
+            description: "Welcome back to your dashboard.",
+          });
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        toast.error("Login failed", {
+          description: error.response?.data?.error || "Invalid credentials. Please try again.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
+
   return (
     <div className="flex min-h-screen">
       {/* Left Panel - Hidden on Mobile */}
@@ -75,7 +107,7 @@ export default function LoginPage() {
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={step === "password"}
+                disabled={step === "password" || isLoading}
               />
             </div>
             
@@ -90,7 +122,16 @@ export default function LoginPage() {
                       Forgot password?
                     </Link>
                   </div>
-                  <Input id="password" type="password" className="h-10 shadow-none bg-transparent rounded-md transition-colors" required autoFocus />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    className="h-10 shadow-none bg-transparent rounded-md transition-colors" 
+                    required 
+                    autoFocus 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                  />
                 </div>
 
                 <div className="flex items-start gap-2 pt-1 animate-in fade-in duration-300">
@@ -102,15 +143,15 @@ export default function LoginPage() {
               </>
             )}
 
-            <Button type="submit" className="w-full h-10 mt-6 shadow-none font-medium rounded-md" size="default">
-              {step === "email" ? "Continue" : "Sign in"}
+            <Button type="submit" className="w-full h-10 mt-6 shadow-none font-medium rounded-md" size="default" disabled={isLoading}>
+              {step === "email" ? "Continue" : (isLoading ? "Signing in..." : "Sign in")}
             </Button>
           </form>
 
           <div className="text-[14px] text-muted-foreground pt-4">
-            Don't have an account?{" "}
+            New to Workora?{" "}
             <Link href="#" className="text-foreground font-medium hover:underline transition-colors">
-              Sign up
+              Get started
             </Link>
           </div>
         </div>
