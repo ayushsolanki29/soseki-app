@@ -1,6 +1,7 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
     >
       <body className="t-page-fade min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
   );
