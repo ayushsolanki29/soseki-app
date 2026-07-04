@@ -10,13 +10,27 @@ export default async function proxy(request) {
   // Paths that do not require authentication
   const publicPaths = ['/login', '/signup', '/api/auth/login', '/api/auth/refresh', '/api/auth/check-email'];
 
+  const token = request.cookies.get('accessToken')?.value;
+
   // Check if current path is public
-  if (pathname === '/' || publicPaths.some((path) => pathname.startsWith(path))) {
+  const isPublicPath = pathname === '/' || publicPaths.some((path) => pathname.startsWith(path));
+
+  if (isPublicPath) {
+    // If user has a token and tries to visit login/signup, redirect them to dashboard
+    if (token && (pathname === '/login' || pathname === '/signup' || pathname === '/')) {
+      try {
+        const { payload } = await jwtVerify(token, secretKey);
+        const hasOrg = payload.hasOrg === true;
+        return NextResponse.redirect(new URL(hasOrg ? '/dashboard' : '/setup-organization', request.url));
+      } catch (error) {
+        // Token invalid, let them see the public page
+        return NextResponse.next();
+      }
+    }
     return NextResponse.next();
   }
 
   // Paths that require authentication
-  const token = request.cookies.get('accessToken')?.value;
 
   if (!token) {
     // If it's an API route, return 401

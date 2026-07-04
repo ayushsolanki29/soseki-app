@@ -108,6 +108,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={step === "password" || isLoading}
+                suppressHydrationWarning
               />
             </div>
             
