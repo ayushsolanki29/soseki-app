@@ -1,6 +1,17 @@
 {
   "name": "workora",
   "version": "0.1.0",
+  "description": "All-in-one business operating platform for freelancers, consultants, and small agencies.",
+  "author": "Ayush Solanki",
+  "homepage": "https://github.com/ayushsolanki29/workora",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ayushsolanki29/workora"
+  },
+  "bugs": {
+    "url": "https://github.com/ayushsolanki29/workora/issues"
+  },
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,9 +20,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.23.0",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "recharts": "^3.8.0",
+    "shadcn": "^4.13.0",
+    "tailwind-merge": "^3.6.0",
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

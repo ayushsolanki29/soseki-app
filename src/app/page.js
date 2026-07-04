@@ -1,9 +1,10 @@
-import React from 'react'
+import { AppShell } from "@/components/app-shell";
+import { Dashboard } from "@/components/dashboard";
 
-const Home = () => {
+export default function Home() {
   return (
-    <div>Home</div>
-  )
+    <AppShell>
+      <Dashboard />
+    </AppShell>
+  );
 }
-
-export default Home
