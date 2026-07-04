@@ -33,7 +33,7 @@ export const navGroups = [
 			},
 			{
 				title: "Projects",
-				path: "#/projects",
+				path: "/dashboard/projects",
 				icon: <FolderIcon />,
 			},
 		],

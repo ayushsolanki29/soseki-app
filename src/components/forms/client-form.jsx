@@ -36,16 +36,18 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
 
     setIsLoading(true);
     try {
+      let clientData = null;
       if (initialData?.id) {
         // Handle Update (Placeholder for future PATCH)
         // await API.patch(`/clients/${initialData.id}`, formData);
         toast.success("Client updated successfully!");
       } else {
         // Handle Create
-        await API.post("/clients", formData);
+        const res = await API.post("/clients", formData);
         toast.success("Client created successfully!");
+        clientData = res?.data?.client;
       }
-      onSuccess?.();
+      onSuccess?.(clientData);
     } catch (error) {
       toast.error("Operation failed", {
         description: error.response?.data?.error || "Something went wrong.",

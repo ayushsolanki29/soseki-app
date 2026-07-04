@@ -29,6 +29,7 @@ model Organization {
   name      String
   users     User[]
   clients   Client[]
+  projects  Project[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -44,6 +45,26 @@ model Client {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
+  projects       Project[]
+
+  @@index([organizationId])
+}
+
+model Project {
+  id               String       @id @default(cuid())
+  title            String
+  description      String?
+  startDate        DateTime
+  estimatedEndDate DateTime?
+  status           String       @default("Planning") // Planning, Active, Completed, On Hold
+  clientId         String
+  client           Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([clientId])
   @@index([organizationId])
 }
 
