@@ -14,6 +14,7 @@ export default function WorkspaceSettingsPage() {
   const [address, setAddress] = useState("");
   const [invoiceFooterNote, setInvoiceFooterNote] = useState("");
   const [expenseFooterNote, setExpenseFooterNote] = useState("");
+  const [dateFormat, setDateFormat] = useState("dd-MMM-yy");
   const [masterCurrency, setMasterCurrency] = useState("USD");
   const [hasTransactions, setHasTransactions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +31,7 @@ export default function WorkspaceSettingsPage() {
         setAddress(res.data.organization.address || "");
         setInvoiceFooterNote(res.data.organization.invoiceFooterNote || "");
         setExpenseFooterNote(res.data.organization.expenseFooterNote || "");
+        setDateFormat(res.data.organization.dateFormat || "dd-MMM-yy");
         setMasterCurrency(res.data.organization.masterCurrency || "USD");
         
         const counts = res.data.organization._count;
@@ -54,6 +56,7 @@ export default function WorkspaceSettingsPage() {
       await API.patch("/organization", { 
         name: name.trim(),
         address: address.trim(),
+        dateFormat: dateFormat
       });
       toast.success("General settings updated!");
     } catch (error) {
@@ -150,6 +153,21 @@ export default function WorkspaceSettingsPage() {
                       disabled={isSavingGeneral}
                       className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
+                </div>
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Date Format</div>
+                    <Select value={dateFormat} onValueChange={setDateFormat} disabled={isSavingGeneral}>
+                      <SelectTrigger className="h-11 w-full">
+                        <SelectValue placeholder="Select date format" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dd-MMM-yy">DD-MMM-YY (e.g. 05-Jul-26)</SelectItem>
+                        <SelectItem value="MMM dd, yyyy">MMM DD, YYYY (e.g. Jul 05, 2026)</SelectItem>
+                        <SelectItem value="dd/MM/yyyy">DD/MM/YYYY (e.g. 05/07/2026)</SelectItem>
+                        <SelectItem value="MM/dd/yyyy">MM/DD/YYYY (e.g. 07/05/2026)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <div className="text-xs text-muted-foreground mt-2">Choose how dates are displayed across the application.</div>
                 </div>
               </div>
           </CardContent>

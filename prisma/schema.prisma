@@ -38,6 +38,7 @@ model Organization {
   address        String?
   invoiceFooterNote String?
   expenseFooterNote String?
+  dateFormat     String    @default("dd-MMM-yy")
 }
 
 model Client {

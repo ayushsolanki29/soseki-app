@@ -37,7 +37,7 @@ export async function PATCH(request) {
     }
 
     const body = await request.json();
-    const { name, address, invoiceFooterNote, expenseFooterNote, masterCurrency } = body;
+    const { name, address, invoiceFooterNote, expenseFooterNote, masterCurrency, dateFormat } = body;
     const updateData = {};
 
     if (name !== undefined) {
@@ -50,6 +50,7 @@ export async function PATCH(request) {
     if (address !== undefined) updateData.address = address?.trim() || null;
     if (invoiceFooterNote !== undefined) updateData.invoiceFooterNote = invoiceFooterNote?.trim() || null;
     if (expenseFooterNote !== undefined) updateData.expenseFooterNote = expenseFooterNote?.trim() || null;
+    if (dateFormat !== undefined) updateData.dateFormat = dateFormat;
     if (masterCurrency !== undefined) {
       // Prevent changing currency if transactions exist
       const orgWithCounts = await prisma.organization.findUnique({

@@ -52,14 +52,14 @@ export function NavUser() {
         <DropdownMenu>
             <DropdownMenuTrigger render={<button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" />}>
                 <Avatar className="size-8">
-                    <DynamicAvatar type="organization" seed={user.name} size={32} />
+                    <DynamicAvatar type="organization" seed={orgName} size={32} />
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-60">
 				<DropdownMenuItem className="flex items-center justify-start gap-2">
 					<DropdownMenuLabel className="flex items-center gap-3">
 						<Avatar className="size-10">
-							<DynamicAvatar type="organization" seed={user.name} size={40} />
+							<DynamicAvatar type="organization" seed={orgName} size={40} />
 						</Avatar>
 						<div className="flex flex-col">
 							<span className="font-semibold text-sm text-foreground">{orgName}</span>

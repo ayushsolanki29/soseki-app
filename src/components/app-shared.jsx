@@ -11,7 +11,8 @@ import {
     HelpCircleIcon, 
     ActivityIcon, 
     FolderIcon,
-    ReceiptIcon
+    ReceiptIcon,
+    UserCircleIcon
 } from "lucide-react";
 
 export const navGroups = [
@@ -69,10 +70,12 @@ export const navGroups = [
 				icon: <SettingsIcon />,
 				subItems: [
 					{ title: "General Settings", path: "/dashboard/workspace/settings" },
-					// { title: "Team & Roles", path: "#/workspace/team" },
-					// { title: "Integrations", path: "#/workspace/integrations" },
-					// { title: "Billing", path: "#/workspace/billing" },
 				],
+			},
+			{
+				title: "Manage Profile",
+				path: "/dashboard/profile",
+				icon: <UserCircleIcon />,
 			},
 		],
 	},
