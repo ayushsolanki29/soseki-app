@@ -28,7 +28,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, FolderIcon, EyeIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SearchIcon, PlusIcon, FolderIcon, EyeIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
 import API from "@/lib/api";
 import { ProjectForm } from "@/components/forms/project-form";
 import { toast } from "sonner";
@@ -43,6 +51,8 @@ export default function ProjectsPage() {
 
   // Sheet State
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [menuOpenId, setMenuOpenId] = useState(null);
 
   const fetchProjects = async () => {
     setIsLoading(true);
@@ -64,7 +74,26 @@ export default function ProjectsPage() {
 
   const handleFormSuccess = () => {
     setIsSheetOpen(false);
+    setEditingProject(null);
     fetchProjects();
+  };
+
+  const handleEditClick = (project) => {
+    setEditingProject(project);
+    setIsSheetOpen(true);
+    setMenuOpenId(null);
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
+    try {
+      await API.delete(`/projects/${projectId}`);
+      toast.success("Project deleted successfully");
+      fetchProjects();
+    } catch (error) {
+      toast.error("Failed to delete project");
+    }
+    setMenuOpenId(null);
   };
 
   const getStatusBadge = (status) => {
@@ -84,7 +113,7 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
           <p className="text-muted-foreground mt-2">Manage your projects and their timelines.</p>
         </div>
-        <Button onClick={() => setIsSheetOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingProject(null); setIsSheetOpen(true); }} className="gap-2">
           <PlusIcon className="size-4" />
           New Project
         </Button>
@@ -134,12 +163,19 @@ export default function ProjectsPage() {
               </TableRow>
             ) : (
               projects.map((project) => (
-                <TableRow key={project.id}>
+                <TableRow 
+                  key={project.id}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setMenuOpenId(project.id);
+                  }}
+                  className="group"
+                >
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
+                    <Link href={`/dashboard/projects/${project.id}`} className="flex items-center gap-3 transition-colors hover:text-primary group-hover:text-primary">
                         <DynamicAvatar type="project" seed={project.title} size={32} />
-                        {project.title}
-                    </div>
+                        <span className="group-hover:underline underline-offset-4">{project.title}</span>
+                    </Link>
                   </TableCell>
                   <TableCell>{project.client?.name || "-"}</TableCell>
                   <TableCell>{formatDate(project.startDate)}</TableCell>
@@ -150,9 +186,33 @@ export default function ProjectsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" render={<Link href={`/dashboard/projects/${project.id}`} />}>
-                        <EyeIcon className="size-4" />
-                    </Button>
+                    <DropdownMenu 
+                      open={menuOpenId === project.id} 
+                      onOpenChange={(isOpen) => setMenuOpenId(isOpen ? project.id : null)}
+                    >
+                      <DropdownMenuTrigger className="inline-flex shrink-0 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 w-8 outline-none">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontalIcon className="size-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/projects/${project.id}`} className="flex items-center w-full cursor-pointer">
+                            <EyeIcon className="size-4 mr-2" />
+                            View details
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditClick(project)}>
+                          <EditIcon className="size-4 mr-2" />
+                          Edit project
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleDeleteProject(project.id)} className="text-destructive focus:text-destructive">
+                          <TrashIcon className="size-4 mr-2" />
+                          Delete project
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
@@ -161,17 +221,19 @@ export default function ProjectsPage() {
         </Table>
       </div>
 
-      {/* Create Project Sheet */}
+      {/* Create / Edit Project Sheet */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-md w-full border-l flex flex-col h-full bg-background overflow-y-hidden p-0">
           <SheetHeader className="px-6 py-4 border-b">
-            <SheetTitle>Add New Project</SheetTitle>
+            <SheetTitle>{editingProject ? "Edit Project" : "Add New Project"}</SheetTitle>
             <SheetDescription>
-              Create a new project for a specific client.
+              {editingProject ? "Update project details and timeline." : "Create a new project for a specific client."}
             </SheetDescription>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-6">
             <ProjectForm 
+              initialData={editingProject}
+              key={editingProject?.id || "new"}
               onSuccess={handleFormSuccess} 
               onCancel={() => setIsSheetOpen(false)} 
             />

@@ -12,7 +12,7 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query') || '';
-    const status = searchParams.get('status') || 'All';
+    const status = searchParams.get('status') || 'ActiveOrLead';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     
@@ -21,7 +21,7 @@ export async function GET(request) {
     // Build the where clause
     const where = {
       organizationId: session.organizationId,
-      ...(status !== 'All' && { status }),
+      ...(status === 'ActiveOrLead' ? { status: { not: 'Inactive' } } : status !== 'All' ? { status } : {}),
       ...(query && {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },

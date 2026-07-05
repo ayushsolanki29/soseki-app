@@ -8,10 +8,20 @@ import { CustomSidebarTrigger } from "@/components/custom-sidebar-trigger";
 import { navLinks } from "@/components/app-shared";
 import { NavUser } from "@/components/nav-user";
 import { SendIcon, BellIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
+import API from "@/lib/api";
 
 const activeItem = navLinks.find((item) => item.isActive);
 
 export function AppHeader() {
+    const [orgName, setOrgName] = useState("");
+
+    useEffect(() => {
+        API.get("/organization")
+            .then(res => setOrgName(res.data.organization.name))
+            .catch(() => setOrgName("Workora Workspace"));
+    }, []);
 	return (
         <header
             className={cn(
@@ -25,12 +35,11 @@ export function AppHeader() {
 				<AppBreadcrumbs page={activeItem} />
 			</div>
             <div className="flex items-center gap-3">
-				<Button size="icon-sm" variant="outline">
-					<SendIcon />
-				</Button>
-				<Button aria-label="Notifications" size="icon-sm" variant="outline">
-					<BellIcon />
-				</Button>
+                {orgName && (
+                    <Badge variant="secondary" className="px-3 py-1 text-sm font-medium rounded-full hidden sm:flex bg-muted/50 text-foreground">
+                        {orgName}
+                    </Badge>
+                )}
 				<Separator
                     className="h-4 data-[orientation=vertical]:self-center"
                     orientation="vertical" />

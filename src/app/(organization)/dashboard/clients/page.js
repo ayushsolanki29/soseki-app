@@ -27,8 +27,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
 import API from "@/lib/api";
 import { ClientForm } from "@/components/forms/client-form";
 import { toast } from "sonner";
@@ -39,13 +47,14 @@ export default function ClientsPage() {
   
   // Filters & Pagination
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("ActiveOrLead");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const limit = 10;
 
   // Sheet State
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
 
   const fetchClients = async () => {
     setIsLoading(true);
@@ -77,7 +86,24 @@ export default function ClientsPage() {
 
   const handleFormSuccess = () => {
     setIsSheetOpen(false);
+    setEditingClient(null);
     fetchClients();
+  };
+
+  const handleEditClick = (client) => {
+    setEditingClient(client);
+    setIsSheetOpen(true);
+  };
+
+  const handleDeleteClient = async (clientId) => {
+    if (!window.confirm("Are you sure you want to delete this client?")) return;
+    try {
+      await API.patch(`/clients/${clientId}`, { status: "Inactive" });
+      toast.success("Client deleted successfully");
+      fetchClients();
+    } catch (error) {
+      toast.error("Failed to delete client");
+    }
   };
 
   return (
@@ -87,7 +113,7 @@ export default function ClientsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Clients</h1>
           <p className="text-muted-foreground mt-2">Manage your clients and organizations here.</p>
         </div>
-        <Button onClick={() => setIsSheetOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingClient(null); setIsSheetOpen(true); }} className="gap-2">
           <PlusIcon className="size-4" />
           New Client
         </Button>
@@ -105,14 +131,15 @@ export default function ClientsPage() {
         </div>
         <div className="w-full sm:w-auto">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px] h-9">
+            <SelectTrigger className="w-[160px] h-9">
               <SelectValue placeholder="Filter Status" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="ActiveOrLead">Active & Lead</SelectItem>
               <SelectItem value="All">All Statuses</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Lead">Lead</SelectItem>
-              <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="Active">Active Only</SelectItem>
+              <SelectItem value="Lead">Lead Only</SelectItem>
+              <SelectItem value="Inactive">Inactive Only</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -127,6 +154,7 @@ export default function ClientsPage() {
               <TableHead>Phone</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Added On</TableHead>
+              <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -138,7 +166,7 @@ export default function ClientsPage() {
               </TableRow>
             ) : clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                   No clients found.
                 </TableCell>
               </TableRow>
@@ -160,6 +188,26 @@ export default function ClientsPage() {
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground text-sm">
                     {formatDate(client.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="inline-flex shrink-0 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 w-8 outline-none">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontalIcon className="size-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => handleEditClick(client)}>
+                          <EditIcon className="size-4 mr-2" />
+                          Edit client
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleDeleteClient(client.id)} className="text-destructive focus:text-destructive">
+                          <TrashIcon className="size-4 mr-2" />
+                          Delete client
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
@@ -198,17 +246,19 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      {/* Create Client Sheet */}
+      {/* Create / Edit Client Sheet */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-md w-full border-l flex flex-col h-full bg-background overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Add New Client</SheetTitle>
+            <SheetTitle>{editingClient ? "Edit Client" : "Add New Client"}</SheetTitle>
             <SheetDescription>
-              Create a new client profile for your organization.
+              {editingClient ? "Update client details and status." : "Create a new client profile for your organization."}
             </SheetDescription>
           </SheetHeader>
           <div className="flex-1 mt-4">
             <ClientForm 
+              initialData={editingClient}
+              key={editingClient?.id || "new"}
               onSuccess={handleFormSuccess} 
               onCancel={() => setIsSheetOpen(false)} 
             />

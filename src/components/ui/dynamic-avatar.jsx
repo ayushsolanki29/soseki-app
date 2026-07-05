@@ -4,7 +4,7 @@ import {
   identicon,
   shapes,
   rings,
-  botttsNeutral,
+  icons,
   thumbs,
   glass
 } from '@dicebear/collection';
@@ -17,7 +17,7 @@ const avatarStyles = {
   invoice: identicon,      // Unique geometric patterns for invoices
   expense: rings,          // Abstract rings for expenses
   organization: glass,     // Glass style for organization
-  default: botttsNeutral   // Neutral robot avatars as a fallback
+  default: icons           // Glyphs (icons) as a fallback
 };
 
 export function DynamicAvatar({ 

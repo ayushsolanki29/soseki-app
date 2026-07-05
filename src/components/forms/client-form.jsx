@@ -38,9 +38,10 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
     try {
       let clientData = null;
       if (initialData?.id) {
-        // Handle Update (Placeholder for future PATCH)
-        // await API.patch(`/clients/${initialData.id}`, formData);
+        // Handle Update
+        const res = await API.patch(`/clients/${initialData.id}`, formData);
         toast.success("Client updated successfully!");
+        clientData = res?.data?.client;
       } else {
         // Handle Create
         const res = await API.post("/clients", formData);

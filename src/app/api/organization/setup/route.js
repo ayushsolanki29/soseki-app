@@ -11,10 +11,13 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { name } = body;
+    const { name, userName, masterCurrency } = body;
 
     if (!name || name.trim() === '') {
       return NextResponse.json({ error: 'Workspace name is required' }, { status: 400 });
+    }
+    if (!userName || userName.trim() === '') {
+      return NextResponse.json({ error: 'Your name is required' }, { status: 400 });
     }
 
     // Check if user exists and already has an organization
@@ -31,13 +34,20 @@ export async function POST(request) {
     }
 
     // Create organization and link it
+    // Create organization and update user
     const organization = await prisma.organization.create({
       data: {
         name: name.trim(),
+        masterCurrency: masterCurrency || 'USD',
         users: {
           connect: { id: user.id }
         }
       }
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { name: userName.trim() }
     });
 
     // Reissue tokens so that hasOrg is now true
