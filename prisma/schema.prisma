@@ -32,6 +32,7 @@ model Organization {
   projects  Project[]
   invoices       Invoice[]
   expenses       Expense[]
+  quickItems     QuickItem[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   masterCurrency String    @default("INR")
@@ -188,4 +189,18 @@ model Expense {
   @@index([clientId])
   @@index([projectId])
   @@index([invoiceId])
+}
+
+model QuickItem {
+  id             String       @id @default(uuid())
+  name           String       // Title or Description of the service/item
+  defaultPrice   Float        @default(0)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
 }

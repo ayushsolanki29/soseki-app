@@ -36,10 +36,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, EyeIcon } from "lucide-react";
 import API from "@/lib/api";
 import { ClientForm } from "@/components/forms/client-form";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -172,12 +173,12 @@ export default function ClientsPage() {
               </TableRow>
             ) : (
               clients.map((client) => (
-                <TableRow key={client.id}>
+                <TableRow key={client.id} className="group">
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
-                      <DynamicAvatar type="client" seed={client.name} size={32} />
-                      {client.name}
-                    </div>
+                    <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-3 transition-colors hover:text-primary group-hover:text-primary">
+                        <DynamicAvatar type="client" seed={client.name} size={32} />
+                        <span className="group-hover:underline underline-offset-4">{client.name}</span>
+                    </Link>
                   </TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.phone || "-"}</TableCell>
@@ -197,6 +198,12 @@ export default function ClientsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/clients/${client.id}`} className="flex items-center w-full cursor-pointer">
+                            <EyeIcon className="size-4 mr-2" />
+                            View details
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleEditClick(client)}>
                           <EditIcon className="size-4 mr-2" />
                           Edit client

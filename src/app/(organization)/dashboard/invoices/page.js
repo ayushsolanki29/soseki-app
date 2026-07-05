@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ import { InvoicePreviewDialog } from "@/components/invoices/invoice-preview-dial
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 export default function InvoicesPage() {
+  const router = useRouter();
   const [invoices, setInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [paymentInvoice, setPaymentInvoice] = useState(null);
@@ -235,8 +237,8 @@ export default function InvoicesPage() {
               </TableRow>
             ) : (
               invoices.map((invoice) => (
-                <TableRow key={invoice.id}>
-                  <TableCell className="font-medium">
+                <TableRow key={invoice.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/invoices/${invoice.id}`)}>
+                  <TableCell className="font-medium group-hover:text-primary transition-colors">
                     <div className="flex items-center gap-3">
                         <DynamicAvatar type="invoice" seed={invoice.invoiceNumber} size={32} />
                         {invoice.invoiceNumber}

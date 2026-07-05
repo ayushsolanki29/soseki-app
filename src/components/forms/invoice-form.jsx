@@ -18,10 +18,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { PlusIcon, TrashIcon, ZapIcon, SparklesIcon, SaveIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
 export function InvoiceForm({ initialData = null }) {
   const router = useRouter();
@@ -34,6 +40,11 @@ export function InvoiceForm({ initialData = null }) {
   const [masterCurrency, setMasterCurrency] = useState("USD");
   const [exchangeRate, setExchangeRate] = useState(initialData?.exchangeRate || 1.0);
   const [isFetchingRate, setIsFetchingRate] = useState(false);
+  const [quickItems, setQuickItems] = useState([]);
+  const [newQuickItemName, setNewQuickItemName] = useState("");
+  const [newQuickItemPrice, setNewQuickItemPrice] = useState("");
+  const [isCreatingQuickItem, setIsCreatingQuickItem] = useState(false);
+  const [isQuickOpen, setIsQuickOpen] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -58,15 +69,20 @@ export function InvoiceForm({ initialData = null }) {
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
-        const [clientsRes, projectsRes, orgRes] = await Promise.all([
+        const [clientsRes, projectsRes, orgRes, quickRes] = await Promise.all([
           API.get("/clients"),
           API.get("/projects"),
-          API.get("/organization")
+          API.get("/organization"),
+          API.get("/quick-items")
         ]);
         setClients(clientsRes.data.clients || []);
         setProjects(projectsRes.data.projects || []);
+        setQuickItems(quickRes.data.quickItems || []);
         if (orgRes.data.organization?.masterCurrency) {
             setMasterCurrency(orgRes.data.organization.masterCurrency);
+            if (!initialData?.id && !initialData?.currency) {
+                setFormData(prev => ({ ...prev, currency: orgRes.data.organization.masterCurrency }));
+            }
         }
       } catch (error) {
         toast.error("Failed to load clients and projects");
@@ -125,6 +141,49 @@ export function InvoiceForm({ initialData = null }) {
       const newItems = [...items];
       newItems.splice(index, 1);
       setItems(newItems);
+    }
+  };
+
+  const handleQuickAdd = (qItem) => {
+    const newItem = {
+      id: Date.now(),
+      description: qItem.name,
+      quantity: 1,
+      unitPrice: qItem.defaultPrice,
+      taxRate: 0,
+      total: qItem.defaultPrice * 1
+    };
+    
+    // If the only item is completely empty, replace it rather than appending
+    if (items.length === 1 && items[0].description === "" && items[0].unitPrice === 0) {
+      setItems([newItem]);
+    } else {
+      setItems([...items, newItem]);
+    }
+    setIsQuickOpen(false);
+  };
+
+  const handleCreateQuickItem = async (e) => {
+    e.preventDefault();
+    if (!newQuickItemName) return;
+    
+    setIsCreatingQuickItem(true);
+    try {
+      const res = await API.post("/quick-items", {
+        name: newQuickItemName,
+        defaultPrice: newQuickItemPrice
+      });
+      const createdItem = res.data.quickItem;
+      setQuickItems([createdItem, ...quickItems]);
+      setNewQuickItemName("");
+      setNewQuickItemPrice("");
+      toast.success("Quick item saved!");
+      // Optionally auto-add it too
+      handleQuickAdd(createdItem);
+    } catch (error) {
+      toast.error("Failed to save quick item");
+    } finally {
+      setIsCreatingQuickItem(false);
     }
   };
 
@@ -281,7 +340,7 @@ export function InvoiceForm({ initialData = null }) {
                                     />
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                    ${item.total.toFixed(2)}
+                                    {formatCurrency(item.total, formData.currency)}
                                 </TableCell>
                                 <TableCell>
                                     <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveItem(index)} disabled={items.length === 1}>
@@ -293,9 +352,69 @@ export function InvoiceForm({ initialData = null }) {
                     </TableBody>
                 </Table>
             </div>
-            <Button variant="outline" className="w-fit gap-2" onClick={handleAddItem}>
-                <PlusIcon className="size-4" /> Add Item
-            </Button>
+            <div className="flex items-center gap-3">
+                <Button variant="outline" className="w-fit gap-2" onClick={handleAddItem}>
+                    <PlusIcon className="size-4" /> Add Item
+                </Button>
+                
+                <Popover open={isQuickOpen} onOpenChange={setIsQuickOpen}>
+                    <PopoverTrigger render={<Button variant="secondary" className="w-fit gap-2 bg-primary/10 text-primary hover:bg-primary/20 border-primary/20" />}>
+                        <SparklesIcon className="size-4" /> Quick Add Services
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0" align="start">
+                        <div className="p-4 border-b bg-muted/20">
+                            <h4 className="font-medium text-sm flex items-center gap-2">
+                                <ZapIcon className="size-4 text-amber-500 fill-amber-500" />
+                                Saved Services
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-1">Add items faster! Select a saved service below or create a new one instantly.</p>
+                        </div>
+                        
+                        <div className="max-h-[200px] overflow-y-auto p-2">
+                            {quickItems.length === 0 ? (
+                                <p className="text-xs text-center text-muted-foreground py-4">No saved services yet.</p>
+                            ) : (
+                                quickItems.map(qi => (
+                                    <button 
+                                        key={qi.id} 
+                                        onClick={() => handleQuickAdd(qi)}
+                                        className="w-full text-left flex items-center justify-between p-2 text-sm hover:bg-muted rounded-md transition-colors"
+                                    >
+                                        <span className="font-medium truncate pr-2">{qi.name}</span>
+                                        <span className="text-muted-foreground shrink-0">{formatCurrency(qi.defaultPrice, masterCurrency)}</span>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="p-3 border-t bg-muted/20">
+                            <form onSubmit={handleCreateQuickItem} className="flex flex-col gap-2">
+                                <p className="text-xs font-medium mb-1">Create New</p>
+                                <Input 
+                                    size="sm" 
+                                    className="h-8 text-xs" 
+                                    placeholder="Service Name" 
+                                    value={newQuickItemName} 
+                                    onChange={e => setNewQuickItemName(e.target.value)} 
+                                />
+                                <div className="flex items-center gap-2">
+                                    <Input 
+                                        size="sm" 
+                                        type="number" 
+                                        className="h-8 text-xs" 
+                                        placeholder="Default Price" 
+                                        value={newQuickItemPrice} 
+                                        onChange={e => setNewQuickItemPrice(e.target.value)} 
+                                    />
+                                    <Button type="submit" size="sm" className="h-8 shrink-0" disabled={isCreatingQuickItem || !newQuickItemName}>
+                                        <SaveIcon className="size-3 mr-1" /> Save
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            </div>
         </div>
 
         {/* Totals Summary */}
@@ -331,7 +450,7 @@ export function InvoiceForm({ initialData = null }) {
                 <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">Subtotal</span>
-                        <span className="font-medium">${subtotal.toFixed(2)}</span>
+                        <span className="font-medium">{formatCurrency(subtotal, formData.currency)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                         <span className="text-muted-foreground">Discount</span>
@@ -343,11 +462,11 @@ export function InvoiceForm({ initialData = null }) {
                     </div>
                     <div className="pt-4 mt-4 border-t flex justify-between font-bold text-lg">
                         <span>Grand Total</span>
-                        <span>${grandTotal.toFixed(2)}</span>
+                        <span>{formatCurrency(grandTotal, formData.currency)}</span>
                     </div>
                     <div className="flex justify-between font-medium text-primary">
                         <span>Balance Due</span>
-                        <span>${grandTotal.toFixed(2)}</span>
+                        <span>{formatCurrency(grandTotal, formData.currency)}</span>
                     </div>
                 </div>
             </div>

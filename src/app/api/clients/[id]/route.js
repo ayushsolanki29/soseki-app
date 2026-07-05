@@ -2,6 +2,45 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 
+// GET /api/clients/[id] - Fetch a client and their details
+export async function GET(request, { params }) {
+  try {
+    const session = await getSession();
+    if (!session || !session.organizationId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const client = await prisma.client.findFirst({
+      where: {
+        id,
+        organizationId: session.organizationId,
+      },
+      include: {
+        projects: {
+          orderBy: { createdAt: 'desc' }
+        },
+        invoices: {
+          orderBy: { issueDate: 'desc' },
+          include: {
+            payments: true
+          }
+        }
+      }
+    });
+
+    if (!client) {
+      return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ client });
+  } catch (error) {
+    console.error('Fetch client error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 // PATCH /api/clients/[id] - Update a client
 export async function PATCH(request, { params }) {
   try {
