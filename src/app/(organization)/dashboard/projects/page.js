@@ -148,10 +148,8 @@ export default function ProjectsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/projects/${project.id}`}>
-                            <EyeIcon className="size-4" />
-                        </Link>
+                    <Button variant="ghost" size="icon" render={<Link href={`/dashboard/projects/${project.id}`} />}>
+                        <EyeIcon className="size-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

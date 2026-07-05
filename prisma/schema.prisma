@@ -13,7 +13,7 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   email         String    @unique
   passwordHash  String
   name          String?
@@ -25,17 +25,21 @@ model User {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   users     User[]
   clients   Client[]
   projects  Project[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  invoices       Invoice[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  masterCurrency String    @default("INR")
+  address        String?
+  invoiceFooterNote String?
 }
 
 model Client {
-  id             String       @id @default(cuid())
+  id             String       @id @default(uuid())
   name           String
   email          String       @unique
   phone          String?
@@ -46,12 +50,13 @@ model Client {
   updatedAt      DateTime     @updatedAt
 
   projects       Project[]
+  invoices       Invoice[]
 
   @@index([organizationId])
 }
 
 model Project {
-  id               String       @id @default(cuid())
+  id               String       @id @default(uuid())
   title            String
   description      String?
   startDate        DateTime
@@ -63,13 +68,15 @@ model Project {
   organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
+  
+  invoices         Invoice[]
 
   @@index([clientId])
   @@index([organizationId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   userId       String
   refreshToken String   @unique
   expiresAt    DateTime
@@ -77,4 +84,74 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Invoice {
+  id              String         @id @default(uuid())
+  invoiceNumber   String
+  status          String         @default("Draft") // Draft, Sent, Partially Paid, Paid, Overdue, Cancelled
+  issueDate       DateTime       @default(now())
+  dueDate         DateTime
+  currency        String         @default("USD")
+  subtotal        Float          @default(0)
+  taxAmount       Float          @default(0)
+  discountAmount  Float          @default(0)
+  totalAmount     Float          @default(0)
+  paidAmount      Float          @default(0)
+  exchangeRate    Float          @default(1.0)
+  notice          String?
+  notes           String?
+  terms           String?
+  
+  clientId        String
+  client          Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  items           InvoiceItem[]
+  payments        Payment[]
+  activities      Activity[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([clientId])
+  @@index([organizationId])
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float
+  taxRate     Float    @default(0)
+  total       Float
+  
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id          String   @id @default(uuid())
+  amount      Float
+  date        DateTime @default(now())
+  method      String   // Credit Card, Bank Transfer, Cash, Check
+  reference   String?
+  
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  type        String   // CREATED, UPDATED, SENT, PAYMENT_RECORDED, PAID, PDF_DOWNLOADED
+  description String?
+  date        DateTime @default(now())
+  
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }

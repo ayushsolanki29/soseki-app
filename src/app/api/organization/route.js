@@ -32,7 +32,7 @@ export async function PATCH(request) {
     }
 
     const body = await request.json();
-    const { name } = body;
+    const { name, address, invoiceFooterNote } = body;
 
     if (!name || name.trim().length === 0) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
@@ -40,7 +40,11 @@ export async function PATCH(request) {
 
     const organization = await prisma.organization.update({
       where: { id: session.organizationId },
-      data: { name: name.trim() }
+      data: { 
+        name: name.trim(),
+        address: address?.trim() || null,
+        invoiceFooterNote: invoiceFooterNote?.trim() || null
+      }
     });
 
     return NextResponse.json({ organization });

@@ -24,6 +24,7 @@ import { LatestChange } from "@/components/latest-change";
 import { PlusIcon, SearchIcon } from "lucide-react";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function AppSidebar() {
     const pathname = usePathname();
@@ -46,7 +47,7 @@ export function AppSidebar() {
 	return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader className="h-14 justify-center">
-				<SidebarMenuButton render={<a href="#link" />}><LogoIcon /><span className="font-medium">Workora</span></SidebarMenuButton>
+				<SidebarMenuButton render={<Link href="/dashboard" />}><LogoIcon /><span className="font-medium">Workora</span></SidebarMenuButton>
 			</SidebarHeader>
             <SidebarContent>
 				<SidebarGroup>
@@ -90,7 +91,7 @@ export function AppSidebar() {
                                 className="text-muted-foreground"
                                 isActive={item.isActive}
                                 size="sm"
-                                render={<a href={item.path} />}>{item.icon}<span>{item.title}</span></SidebarMenuButton>
+                                render={<Link href={item.path} />}>{item.icon}<span>{item.title}</span></SidebarMenuButton>
 						</SidebarMenuItem>
 					))}
 				</SidebarMenu>

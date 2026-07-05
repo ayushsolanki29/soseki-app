@@ -44,12 +44,12 @@ export const navGroups = [
 
 			{
 				title: "Invoices",
-				path: "#/invoices",
+				path: "/dashboard/invoices",
 				icon: <FileTextIcon />,
 			},
 			{
 				title: "Payments",
-				path: "#/payments",
+				path: "/dashboard/payments",
 				icon: <CreditCardIcon />,
 			},
 		],

@@ -14,6 +14,7 @@ import {
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
 
 export function NavGroup({
     label,
@@ -42,7 +43,7 @@ export function NavGroup({
                                 <SidebarMenuSub>
                                     {item.subItems?.map((subItem) => (
                                         <SidebarMenuSubItem key={subItem.title}>
-                                            <SidebarMenuSubButton isActive={subItem.isActive} render={<a href={subItem.path} />}>
+                                            <SidebarMenuSubButton isActive={subItem.isActive} render={<Link href={subItem.path} />}>
                                                 {subItem.icon}
                                                 <span>{subItem.title}</span>
                                             </SidebarMenuSubButton>
@@ -52,7 +53,7 @@ export function NavGroup({
                             </CollapsibleContent>
                         </Collapsible>
                     ) : (
-                        <SidebarMenuButton isActive={item.isActive} render={<a href={item.path} />}>
+                        <SidebarMenuButton isActive={item.isActive} render={<Link href={item.path} />}>
                             {item.icon}
                             <span>{item.title}</span>
                         </SidebarMenuButton>

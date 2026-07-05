@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function WorkspaceSettingsPage() {
   const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [invoiceFooterNote, setInvoiceFooterNote] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -17,7 +19,9 @@ export default function WorkspaceSettingsPage() {
     const fetchOrganization = async () => {
       try {
         const res = await API.get("/organization");
-        setName(res.data.organization.name);
+        setName(res.data.organization.name || "");
+        setAddress(res.data.organization.address || "");
+        setInvoiceFooterNote(res.data.organization.invoiceFooterNote || "");
       } catch (error) {
         toast.error("Failed to load organization settings");
       } finally {
@@ -33,8 +37,12 @@ export default function WorkspaceSettingsPage() {
 
     setIsSaving(true);
     try {
-      await API.patch("/organization", { name: name.trim() });
-      toast.success("Organization name updated successfully!");
+      await API.patch("/organization", { 
+        name: name.trim(),
+        address: address.trim(),
+        invoiceFooterNote: invoiceFooterNote.trim()
+      });
+      toast.success("Organization settings updated successfully!");
     } catch (error) {
       toast.error("Failed to update organization");
     } finally {
@@ -57,18 +65,46 @@ export default function WorkspaceSettingsPage() {
               This is your workspace's visible name within Workora.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-8 pt-2">
             {isLoading ? (
-              <Skeleton className="h-11 w-full max-w-md rounded-md" />
+              <div className="space-y-4">
+                <Skeleton className="h-11 w-full max-w-md rounded-md" />
+                <Skeleton className="h-24 w-full max-w-md rounded-md" />
+                <Skeleton className="h-11 w-full max-w-md rounded-md" />
+              </div>
             ) : (
-              <div className="flex flex-col gap-2 max-w-md">
-                <Input 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  placeholder="e.g. Acme Corp" 
-                  disabled={isSaving}
-                  className="h-11"
-                />
+              <div className="flex flex-col gap-6 max-w-md">
+                <div className="space-y-2">
+                    <Input 
+                      value={name} 
+                      onChange={(e) => setName(e.target.value)} 
+                      placeholder="e.g. Acme Corp" 
+                      disabled={isSaving}
+                      className="h-11"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Billing Address</div>
+                    <div className="text-xs text-muted-foreground mb-2">This address will appear on your invoices.</div>
+                    <textarea 
+                      value={address} 
+                      onChange={(e) => setAddress(e.target.value)} 
+                      placeholder="123 Business Rd.&#10;Suite 100&#10;City, ST 12345" 
+                      disabled={isSaving}
+                      className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Invoice Footer Note</div>
+                    <div className="text-xs text-muted-foreground mb-2">A default note to appear at the bottom of your invoices.</div>
+                    <Input 
+                      value={invoiceFooterNote} 
+                      onChange={(e) => setInvoiceFooterNote(e.target.value)} 
+                      placeholder="e.g. Thank you for your business!" 
+                      disabled={isSaving}
+                      className="h-11"
+                    />
+                </div>
               </div>
             )}
           </CardContent>
