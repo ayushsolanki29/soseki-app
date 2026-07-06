@@ -33,6 +33,7 @@ model Organization {
   invoices       Invoice[]
   expenses       Expense[]
   quickItems     QuickItem[]
+  questionnaires Questionnaire[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   masterCurrency String    @default("INR")
@@ -56,6 +57,8 @@ model Client {
   projects       Project[]
   invoices       Invoice[]
   expenses       Expense[]
+  questionnaires Questionnaire[]
+  questionnaireResponses QuestionnaireResponse[]
 
   @@index([organizationId])
 }
@@ -76,6 +79,7 @@ model Project {
   
   invoices         Invoice[]
   expenses         Expense[]
+  questionnaires   Questionnaire[]
 
   @@index([clientId])
   @@index([organizationId])
@@ -216,4 +220,65 @@ model WaitlistLead {
   earningsRange  String?
   previousTool   String?
   createdAt      DateTime @default(now())
+}
+
+model Questionnaire {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  slug           String       @unique
+  status         String       @default("Active") // Active, Paused, Closed
+  maxResponses   Int?
+  responseCount  Int          @default(0)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  clientId       String?
+  client         Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  projectId      String?
+  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  fields         QuestionnaireField[]
+  responses      QuestionnaireResponse[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([clientId])
+  @@index([projectId])
+}
+
+model QuestionnaireField {
+  id              String        @id @default(uuid())
+  questionnaireId String
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  type            String
+  label           String
+  description     String?
+  required        Boolean       @default(false)
+  order           Int
+  options         Json?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([questionnaireId])
+}
+
+model QuestionnaireResponse {
+  id              String        @id @default(uuid())
+  questionnaireId String
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+
+  clientId        String?
+  client          Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  answers         Json         
+
+  createdAt       DateTime      @default(now())
+
+  @@index([questionnaireId])
+  @@index([clientId])
 }

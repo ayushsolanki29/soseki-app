@@ -38,6 +38,11 @@ export const navGroups = [
 				path: "/dashboard/projects",
 				icon: <FolderIcon />,
 			},
+			{
+				title: "Questionnaires",
+				path: "/dashboard/questionnaires",
+				icon: <CheckSquareIcon />,
+			},
 		],
 	},
 	{

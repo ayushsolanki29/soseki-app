@@ -6,7 +6,8 @@ import {
   rings,
   icons,
   thumbs,
-  glass
+  glass,
+  adventurer
 } from '@dicebear/collection';
 
 // Map different entities to distinct aesthetic styles
@@ -17,6 +18,7 @@ const avatarStyles = {
   invoice: identicon,      // Unique geometric patterns for invoices
   expense: rings,          // Abstract rings for expenses
   organization: glass,     // Glass style for organization
+  questionnaire: 'disco',  // HTTP API fallback for disco style
   default: icons           // Glyphs (icons) as a fallback
 };
 
@@ -38,8 +40,22 @@ export function DynamicAvatar({
   }
 
   const selectedStyle = avatarStyles[type] || avatarStyles.default;
+  const isSquare = type === 'project' || type === 'invoice' || type === 'questionnaire';
 
-  // Generate the avatar
+  // If the style is a string, assume it's a DiceBear 10.x HTTP API endpoint
+  if (typeof selectedStyle === 'string') {
+    return (
+      <img 
+        src={`https://api.dicebear.com/10.x/${selectedStyle}/svg?seed=${encodeURIComponent(seed)}`} 
+        alt={`${type} avatar`} 
+        width={size} 
+        height={size} 
+        className={`shrink-0 ${isSquare ? 'rounded-md' : 'rounded-full'} ${className}`} 
+      />
+    );
+  }
+
+  // Generate the avatar locally
   const avatar = createAvatar(selectedStyle, {
     seed: seed,
     size: size,
@@ -56,7 +72,7 @@ export function DynamicAvatar({
       alt={`${type} avatar`} 
       width={size} 
       height={size} 
-      className={`shrink-0 ${type === 'project' || type === 'invoice' ? 'rounded-md' : 'rounded-full'} ${className}`} 
+      className={`shrink-0 ${isSquare ? 'rounded-md' : 'rounded-full'} ${className}`} 
     />
   );
 }
