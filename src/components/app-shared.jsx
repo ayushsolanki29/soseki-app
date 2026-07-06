@@ -12,7 +12,8 @@ import {
     ActivityIcon, 
     FolderIcon,
     ReceiptIcon,
-    UserCircleIcon
+    UserCircleIcon,
+    UploadCloudIcon
 } from "lucide-react";
 
 export const navGroups = [
@@ -81,6 +82,11 @@ export const navGroups = [
 				title: "Manage Profile",
 				path: "/dashboard/profile",
 				icon: <UserCircleIcon />,
+			},
+			{
+				title: "Data Migration",
+				path: "/dashboard/migration",
+				icon: <UploadCloudIcon />,
 			},
 		],
 	},
