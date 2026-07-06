@@ -5,6 +5,7 @@ import { DashboardDataTable } from "@/components/dashboard-data-table";
 import { DashboardListWidget } from "@/components/dashboard-list-widget";
 import { HoverQuickActions } from "@/components/hover-quick-actions";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { 
     ClockIcon, 
@@ -27,14 +28,43 @@ import { redirect } from "next/navigation";
 const getClientsColumns = () => [
     { header: "Company", render: (row) => <Link href={`/dashboard/clients/${row.id}`} className="font-medium hover:underline">{row.name}</Link> },
     { header: "Contact Email", accessor: "email" },
-    { header: "Status", render: (row) => <Badge variant={row.status === "Active" ? "default" : "secondary"}>{row.status}</Badge> }
+    { header: "Status", render: (row) => {
+        const isGood = row.status === "Active";
+        return (
+            <span 
+                className={cn(
+                    "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium",
+                    isGood 
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" 
+                    : "bg-muted text-muted-foreground"
+                )}
+            >
+                {row.status}
+            </span>
+        )
+    }}
 ];
 
 const getProjectsColumns = () => [
     { header: "Project Name", render: (row) => <Link href={`/dashboard/projects/${row.id}`} className="font-medium hover:underline">{row.title}</Link> },
     { header: "Client", render: (row) => <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> },
     { header: "Due Date", render: (row) => row.estimatedEndDate ? formatDate(row.estimatedEndDate) : '-' },
-    { header: "Status", render: (row) => <Badge variant="outline">{row.status}</Badge> }
+    { header: "Status", render: (row) => {
+        const isGood = row.status === "Active" || row.status === "In Progress";
+        const isWarning = row.status === "Planning" || row.status === "Review";
+        return (
+            <span 
+                className={cn(
+                    "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium",
+                    isGood ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" :
+                    isWarning ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" :
+                    "bg-muted text-muted-foreground"
+                )}
+            >
+                {row.status}
+            </span>
+        )
+    }}
 ];
 
 const getInvoicesColumns = () => [
@@ -49,7 +79,24 @@ const getInvoicesColumns = () => [
                 status = 'Overdue';
             }
         }
-        return <Badge variant={status === "Paid" ? "default" : status === "Overdue" ? "destructive" : "secondary"}>{status}</Badge>
+        
+        const isGood = status === "Paid";
+        const isBad = status === "Overdue" || status === "Cancelled";
+        const isWarning = status === "Pending";
+        
+        return (
+            <span 
+                className={cn(
+                    "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium",
+                    isGood ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" :
+                    isBad ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400" :
+                    isWarning ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" :
+                    "bg-muted text-muted-foreground"
+                )}
+            >
+                {status}
+            </span>
+        )
     }}
 ];
 
