@@ -17,7 +17,8 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
     clientId: "none",
     projectId: "none",
     invoiceId: defaultInvoiceId || "none",
-    currency: "USD"
+    currency: "USD",
+    customCategory: ""
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,11 +31,16 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
   useEffect(() => {
     if (open) {
       if (expenseToEdit) {
+        const predefinedCategories = ["Software", "Contractor", "Hardware", "Travel", "Other"];
+        const cat = expenseToEdit.category || "Software";
+        const isCustomCat = !predefinedCategories.includes(cat);
+
         setFormData({
           description: expenseToEdit.description,
           amount: expenseToEdit.amount,
           date: expenseToEdit.date ? new Date(expenseToEdit.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          category: expenseToEdit.category || "Software",
+          category: isCustomCat ? "Other" : cat,
+          customCategory: isCustomCat ? cat : "",
           clientId: expenseToEdit.clientId || "none",
           projectId: expenseToEdit.projectId || "none",
           invoiceId: expenseToEdit.invoiceId || defaultInvoiceId || "none",
@@ -49,7 +55,8 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           clientId: "none",
           projectId: "none",
           invoiceId: defaultInvoiceId || "none",
-          currency: prev.currency || "USD"
+          currency: prev.currency || "USD",
+          customCategory: ""
         }));
       }
       fetchMetadata();
@@ -117,6 +124,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
         invoiceId: formData.invoiceId === "none" ? null : formData.invoiceId,
         currency: formData.currency,
         exchangeRate: formData.currency === masterCurrency ? 1.0 : exchangeRate,
+        category: formData.category === "Other" ? (formData.customCategory || "Other") : formData.category,
       };
       
       if (expenseToEdit) {
@@ -164,7 +172,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
             <Select 
               value={formData.currency} 
               onValueChange={val => setFormData({...formData, currency: val})}
-              items={currencies.map(c => ({ value: c, label: c }))}
+              items={["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "INR"].map(c => ({ value: c, label: c }))}
             >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Currency" />
@@ -206,22 +214,32 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold">Category</label>
-            <Select 
-              value={formData.category} 
-              onValueChange={val => setFormData({...formData, category: val})}
-              items={EXPENSE_CATEGORIES.map(c => ({ value: c, label: c }))}
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="Software">Software</SelectItem>
-                    <SelectItem value="Contractor">Contractor</SelectItem>
-                    <SelectItem value="Hardware">Hardware</SelectItem>
-                    <SelectItem value="Travel">Travel</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-2">
+                <Select 
+                  value={formData.category} 
+                  onValueChange={val => setFormData({...formData, category: val})}
+                  items={["Software", "Contractor", "Hardware", "Travel", "Other"].map(c => ({ value: c, label: c }))}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Software">Software</SelectItem>
+                        <SelectItem value="Contractor">Contractor</SelectItem>
+                        <SelectItem value="Hardware">Hardware</SelectItem>
+                        <SelectItem value="Travel">Travel</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                </Select>
+                {formData.category === "Other" && (
+                    <Input 
+                        placeholder="Specify custom category..." 
+                        value={formData.customCategory} 
+                        onChange={e => setFormData({...formData, customCategory: e.target.value})}
+                        autoFocus
+                    />
+                )}
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">

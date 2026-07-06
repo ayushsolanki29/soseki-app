@@ -319,11 +319,22 @@ export function InvoiceForm({ initialData = null }) {
                 </div>
                 <Select 
                     value={formData.projectId} 
-                    onValueChange={(val) => setFormData({...formData, projectId: val})}
+                    onValueChange={(val) => {
+                        if (val === "none") {
+                            setFormData({...formData, projectId: ""});
+                            return;
+                        }
+                        const proj = projects.find(p => p.id === val);
+                        if (proj) {
+                            setFormData({...formData, projectId: val, clientId: proj.clientId});
+                        }
+                    }}
                     items={[
                         { value: "placeholder", label: "Select Project..." },
                         { value: "none", label: "None" },
-                        ...projects.filter(p => p && p.clientId === formData.clientId).map(p => ({ value: p.id, label: p.title }))
+                        ...projects
+                            .filter(p => p && (!formData.clientId || p.clientId === formData.clientId))
+                            .map(p => ({ value: p.id, label: p.title }))
                     ]}
                 >
                     <SelectTrigger className="w-full">
@@ -332,9 +343,11 @@ export function InvoiceForm({ initialData = null }) {
                     <SelectContent>
                         <SelectItem value="placeholder" disabled>Select Project...</SelectItem>
                         <SelectItem value="none">None</SelectItem>
-                        {projects.filter(p => p && p.clientId === formData.clientId).map(project => (
-                            <SelectItem key={project.id} value={project.id}>{project.title}</SelectItem>
-                        ))}
+                        {projects
+                            .filter(p => p && (!formData.clientId || p.clientId === formData.clientId))
+                            .map(project => (
+                                <SelectItem key={project.id} value={project.id}>{project.title}</SelectItem>
+                            ))}
                     </SelectContent>
                 </Select>
             </div>
