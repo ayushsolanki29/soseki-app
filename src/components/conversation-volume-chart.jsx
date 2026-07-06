@@ -27,6 +27,7 @@ const chartConfig = {
 
 export function RevenueOverviewChart({
 	className,
+	apiEndpoint = "/dashboard/charts",
 	...props
 }) {
 	const chartUid = useId().replace(/:/g, "");
@@ -38,7 +39,7 @@ export function RevenueOverviewChart({
     useEffect(() => {
         const fetchChartsData = async () => {
             try {
-                const res = await API.get("/dashboard/charts");
+                const res = await API.get(apiEndpoint);
                 setChartData(res.data.revenueOverview || []);
                 setGrowthPctNum(res.data.growthPctNum || 0);
             } catch (error) {
@@ -48,7 +49,7 @@ export function RevenueOverviewChart({
             }
         };
         fetchChartsData();
-    }, []);
+    }, [apiEndpoint]);
 
     if (isLoading) {
         return (

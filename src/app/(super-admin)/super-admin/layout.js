@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarInset, SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarMenuItem, SidebarMenu, SidebarGroup, SidebarFooter } from "@/components/ui/sidebar";
-import { AppHeader } from "@/components/app-header";
+import { SuperAdminHeader } from "@/components/super-admin-header";
 import { LogoIcon } from "@/components/logo";
 import { NavGroup } from "@/components/nav-group";
 import { LayoutDashboardIcon, UsersIcon, BuildingIcon, SearchIcon, PlusIcon, FolderIcon, UserIcon, TicketIcon, SettingsIcon } from "lucide-react";
@@ -139,7 +139,7 @@ export default function SuperAdminLayout({ children }) {
         </Sidebar>
 
         <SidebarInset className="md:peer-data-[variant=inset]:ml-0">
-          <AppHeader />
+          <SuperAdminHeader />
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto bg-muted/20">
             <div className="flex-1 p-4 md:p-6 flex flex-col gap-4">
               {children}

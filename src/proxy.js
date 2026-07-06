@@ -7,12 +7,53 @@ const secretKey = new TextEncoder().encode(JWT_SECRET);
 export default async function proxy(request) {
   const { pathname } = request.nextUrl;
 
-  // Paths that do not require authentication
+  // Paths that do not require authentication for normal users
   const publicPaths = ['/login', '/signup', '/request-access', '/status', '/api/leads', '/api/auth/login', '/api/auth/refresh', '/api/auth/check-email'];
+  
+  // Super admin paths
+  const isSuperAdminPath = pathname.startsWith('/super-admin') || pathname.startsWith('/api/super-admin');
+  const superAdminPublicPaths = ['/super-admin/login', '/api/super-admin/auth/login'];
+  
+  if (isSuperAdminPath) {
+    const superToken = request.cookies.get('superAccessToken')?.value;
+    const isSuperPublicPath = superAdminPublicPaths.includes(pathname);
+
+    if (isSuperPublicPath) {
+      if (superToken) {
+        try {
+          await jwtVerify(superToken, secretKey);
+          return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
+        } catch (err) {
+          return NextResponse.next();
+        }
+      }
+      return NextResponse.next();
+    }
+
+    if (!superToken) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      return NextResponse.redirect(new URL('/super-admin/login', request.url));
+    }
+
+    try {
+      await jwtVerify(superToken, secretKey);
+      if (pathname === '/super-admin') {
+        return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
+      }
+      return NextResponse.next();
+    } catch (error) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      return NextResponse.redirect(new URL('/super-admin/login', request.url));
+    }
+  }
+
+  // --- Normal User Flow ---
 
   const token = request.cookies.get('accessToken')?.value;
-
-  // Check if current path is public
   const isPublicPath = pathname === '/' || publicPaths.some((path) => pathname.startsWith(path));
 
   if (isPublicPath) {
@@ -31,7 +72,6 @@ export default async function proxy(request) {
   }
 
   // Paths that require authentication
-
   if (!token) {
     // If it's an API route, return 401
     if (pathname.startsWith('/api/')) {

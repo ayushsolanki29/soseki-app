@@ -22,20 +22,28 @@ export async function verifyToken(token) {
   }
 }
 
-export async function getSession() {
+export async function getSession(type = 'user') {
   const cookieStore = await cookies();
-  const token = cookieStore.get('accessToken')?.value;
+  const cookieName = type === 'superadmin' ? 'superAccessToken' : 'accessToken';
+  const token = cookieStore.get(cookieName)?.value;
 
   if (!token) return null;
   const payload = await verifyToken(token);
   if (!payload || !payload.userId) return null;
 
-  const userExists = await prisma.user.findUnique({
-    where: { id: payload.userId },
-    select: { id: true }
-  });
-
-  if (!userExists) return null;
+  if (type === 'superadmin') {
+    const userExists = await prisma.superUser.findUnique({
+      where: { id: payload.userId },
+      select: { id: true }
+    });
+    if (!userExists) return null;
+  } else {
+    const userExists = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { id: true }
+    });
+    if (!userExists) return null;
+  }
 
   return payload;
 }
@@ -62,8 +70,38 @@ export async function setCookies(accessToken, refreshToken) {
   });
 }
 
+export async function setSuperCookies(accessToken, refreshToken) {
+  const cookieStore = await cookies();
+
+  // Set Super Access Token cookie
+  cookieStore.set('superAccessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
+
+  if (refreshToken) {
+    // Set Super Refresh Token cookie
+    cookieStore.set('superRefreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+  }
+}
+
 export async function clearCookies() {
   const cookieStore = await cookies();
   cookieStore.delete('accessToken');
   cookieStore.delete('refreshToken');
+}
+
+export async function clearSuperCookies() {
+  const cookieStore = await cookies();
+  cookieStore.delete('superAccessToken');
+  cookieStore.delete('superRefreshToken');
 }

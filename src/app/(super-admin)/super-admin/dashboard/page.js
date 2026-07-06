@@ -143,9 +143,9 @@ export default function SuperAdminDashboardPage() {
             ))}
 
             {/* Charts */}
-            <RevenueOverviewChart />
+            <RevenueOverviewChart apiEndpoint="/api/super-admin/dashboard/charts" />
             <div className="flex flex-col gap-4 lg:col-span-1">
-                <InvoiceStatusChart className="flex-1" />
+                <InvoiceStatusChart apiEndpoint="/api/super-admin/dashboard/charts" className="flex-1" />
             </div>
 
             {/* Data Tables */}

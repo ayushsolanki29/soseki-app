@@ -37,6 +37,7 @@ const chartConfig = {
 
 export function InvoiceStatusChart({
     className,
+    apiEndpoint = "/dashboard/charts",
     ...props
 }) {
     const [chartData, setChartData] = useState([]);
@@ -45,7 +46,7 @@ export function InvoiceStatusChart({
     useEffect(() => {
         const fetchChartsData = async () => {
             try {
-                const res = await API.get("/dashboard/charts");
+                const res = await API.get(apiEndpoint);
                 setChartData(res.data.invoiceStatus || []);
             } catch (error) {
                 console.error("Failed to load charts data", error);
@@ -54,7 +55,7 @@ export function InvoiceStatusChart({
             }
         };
         fetchChartsData();
-    }, []);
+    }, [apiEndpoint]);
 
     if (isLoading) {
         return (
