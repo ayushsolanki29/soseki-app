@@ -1,5 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-development';
 const secretKey = new TextEncoder().encode(JWT_SECRET);
@@ -26,8 +27,17 @@ export async function getSession() {
   const token = cookieStore.get('accessToken')?.value;
 
   if (!token) return null;
+  const payload = await verifyToken(token);
+  if (!payload || !payload.userId) return null;
 
-  return await verifyToken(token);
+  const userExists = await prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: { id: true }
+  });
+
+  if (!userExists) return null;
+
+  return payload;
 }
 
 export async function setCookies(accessToken, refreshToken) {

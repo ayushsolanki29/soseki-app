@@ -10,6 +10,7 @@ function Input({
 }) {
   return (
     <InputPrimitive
+      suppressHydrationWarning
       type={type}
       data-slot="input"
       className={cn(

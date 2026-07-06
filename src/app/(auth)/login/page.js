@@ -151,7 +151,7 @@ export default function LoginPage() {
 
           <div className="text-[14px] text-muted-foreground pt-4">
             New to Workora?{" "}
-            <Link href="#" className="text-foreground font-medium hover:underline transition-colors">
+            <Link href="/request-access" className="text-foreground font-medium hover:underline transition-colors">
               Get started
             </Link>
           </div>

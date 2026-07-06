@@ -9,7 +9,10 @@ export async function POST() {
     const refreshToken = cookieStore.get('refreshToken')?.value;
 
     if (!refreshToken) {
-      return NextResponse.json({ error: 'No refresh token provided' }, { status: 401 });
+      const response = NextResponse.json({ error: 'No refresh token provided' }, { status: 401 });
+      response.cookies.delete('accessToken');
+      response.cookies.delete('refreshToken');
+      return response;
     }
 
     const session = await prisma.session.findUnique({
@@ -18,14 +21,18 @@ export async function POST() {
     });
 
     if (!session) {
-      // Invalid refresh token
-      return NextResponse.json({ error: 'Invalid refresh token' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Invalid refresh token' }, { status: 401 });
+      response.cookies.delete('accessToken');
+      response.cookies.delete('refreshToken');
+      return response;
     }
 
     if (session.expiresAt < new Date()) {
-      // Expired refresh token, delete it
       await prisma.session.delete({ where: { id: session.id } });
-      return NextResponse.json({ error: 'Refresh token expired' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Refresh token expired' }, { status: 401 });
+      response.cookies.delete('accessToken');
+      response.cookies.delete('refreshToken');
+      return response;
     }
 
     // Generate new short-lived access token

@@ -1,6 +1,6 @@
 {
   "name": "workora",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "All-in-one business operating platform for freelancers, consultants, and small agencies.",
   "author": "Ayush Solanki",
   "homepage": "https://github.com/ayushsolanki29/workora",
@@ -22,7 +22,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma db push --force-reset && prisma db seed"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -37,6 +37,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "disposable-email-detector": "^3.0.1",
     "jose": "^6.2.3",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",

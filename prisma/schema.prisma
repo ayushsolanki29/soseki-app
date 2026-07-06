@@ -206,3 +206,14 @@ model QuickItem {
 
   @@index([organizationId])
 }
+
+model WaitlistLead {
+  id             String   @id @default(uuid())
+  fullName       String
+  email          String   @unique
+  country        String?
+  profession     String?
+  earningsRange  String?
+  previousTool   String?
+  createdAt      DateTime @default(now())
+}
