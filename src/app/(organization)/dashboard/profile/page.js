@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import API from "@/lib/api";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfilePage() {
   const [name, setName] = useState("");
@@ -55,7 +56,42 @@ export default function ProfilePage() {
   };
 
   if (isLoading) {
-    return <div className="p-8">Loading profile...</div>;
+    return (
+      <div className="p-8 max-w-4xl mx-auto w-full flex flex-col gap-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Manage Profile</h1>
+          <p className="text-muted-foreground mt-2">Update your personal information and preferences.</p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48 mb-1" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="pb-8 pt-2">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="flex flex-col items-center gap-4">
+                <Skeleton className="size-24 rounded-full border-4 border-background shadow-sm" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <div className="flex flex-col gap-6 w-full max-w-md">
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="border-t px-6 py-4 bg-muted/20">
+            <Skeleton className="h-9 w-32" />
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (

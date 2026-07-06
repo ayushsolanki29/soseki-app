@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import {
 	Card,
 	CardContent,
@@ -74,7 +75,7 @@ export function DashboardDataTable({
 						<Button
 							size="sm"
 							variant="ghost"
-							render={<a href={actionPath || "#"} />}
+							render={<Link href={actionPath || "#"} />}
 							nativeButton={false}
 						>
 							{actionLabel}
