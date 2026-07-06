@@ -39,12 +39,17 @@ export default function ClientDetailsPage() {
   const [client, setClient] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [masterCurrency, setMasterCurrency] = useState("USD");
 
   const fetchClient = async () => {
     setIsLoading(true);
     try {
-      const res = await API.get(`/clients/${id}`);
+      const [res, orgRes] = await Promise.all([
+          API.get(`/clients/${id}`),
+          API.get(`/organization`)
+      ]);
       setClient(res.data.client);
+      setMasterCurrency(orgRes.data.organization.masterCurrency);
     } catch (error) {
       toast.error("Failed to load client details");
       router.push("/dashboard/clients");
@@ -224,7 +229,7 @@ export default function ClientDetailsPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <InvoicesTable invoices={client.invoices} isLoading={false} />
+                <InvoicesTable invoices={client.invoices} isLoading={false} masterCurrency={masterCurrency} />
             </CardContent>
         </Card>
 
@@ -237,7 +242,7 @@ export default function ClientDetailsPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <ExpensesTable expenses={client.expenses} isLoading={false} />
+                <ExpensesTable expenses={client.expenses} isLoading={false} masterCurrency={masterCurrency} />
             </CardContent>
         </Card>
 

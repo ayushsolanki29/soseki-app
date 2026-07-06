@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/utils";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter } from "next/navigation";
 
-export function InvoicesTable({ invoices, isLoading }) {
+export function InvoicesTable({ invoices, isLoading, masterCurrency }) {
   const router = useRouter();
 
   const getInvoiceStatusBadge = (status) => {
@@ -54,11 +54,25 @@ export function InvoicesTable({ invoices, isLoading }) {
                         </TableCell>
                         <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                         <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-                        <TableCell className="text-right font-medium">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(invoice.totalAmount)}
+                        <TableCell className="text-right">
+                            <div className="font-medium">
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(invoice.totalAmount)}
+                            </div>
+                            {masterCurrency && invoice.currency !== masterCurrency && (
+                                <div className="text-xs text-muted-foreground mt-0.5">
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(invoice.totalAmount * (invoice.exchangeRate || 1.0))}
+                                </div>
+                            )}
                         </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(totalPaid)}
+                        <TableCell className="text-right">
+                            <div className="text-muted-foreground">
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(totalPaid)}
+                            </div>
+                            {masterCurrency && invoice.currency !== masterCurrency && (
+                                <div className="text-xs text-muted-foreground/60 mt-0.5">
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(totalPaid * (invoice.exchangeRate || 1.0))}
+                                </div>
+                            )}
                         </TableCell>
                         <TableCell>
                             <Badge variant={getInvoiceStatusBadge(invoice.status)}>

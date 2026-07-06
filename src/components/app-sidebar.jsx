@@ -21,7 +21,7 @@ import {
 import { NavGroup } from "@/components/nav-group";
 import { footerNavLinks, navGroups } from "@/components/app-shared";
 import { LatestChange } from "@/components/latest-change";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, UserIcon, FolderIcon, FileTextIcon, CreditCardIcon } from "lucide-react";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -62,10 +62,22 @@ export function AppSidebar() {
 								<span>New</span>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="start" className="w-56">
-								<DropdownMenuItem>New Client</DropdownMenuItem>
-								<DropdownMenuItem>New Project</DropdownMenuItem>
-								<DropdownMenuItem>New Invoice</DropdownMenuItem>
-								<DropdownMenuItem>Record Payment</DropdownMenuItem>
+								<DropdownMenuItem>
+									<UserIcon className="mr-2 size-4" />
+									New Client
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<FolderIcon className="mr-2 size-4" />
+									New Project
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<FileTextIcon className="mr-2 size-4" />
+									New Invoice
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<CreditCardIcon className="mr-2 size-4" />
+									Record Payment
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 						<Button

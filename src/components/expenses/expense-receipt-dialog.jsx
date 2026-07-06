@@ -93,7 +93,7 @@ export function ExpenseReceiptDialog({ open, onOpenChange, expense, organization
         </div>
 
         <DialogFooter className="px-6 py-4 border-t bg-muted/10 shrink-0">
-          <DialogClose asChild><Button type="button" variant="outline">Close</Button></DialogClose>
+          <DialogClose render={<Button type="button" variant="outline" />}>Close</DialogClose>
           <Button onClick={() => alert("Email Sharing will be implemented later!")} className="gap-2">
               <DownloadIcon className="size-4" /> Share via Email
           </Button>

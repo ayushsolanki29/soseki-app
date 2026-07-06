@@ -386,7 +386,7 @@ export default function InvoiceDetailsPage() {
                                           <TableCell>{payment.method}</TableCell>
                                           <TableCell>{payment.reference || '-'}</TableCell>
                                           <TableCell className="text-right font-medium text-emerald-600">
-                                              +${payment.amount.toLocaleString()}
+                                              +{formatCurrency(payment.amount, invoice.currency)}
                                           </TableCell>
                                       </TableRow>
                                   ))}
@@ -418,7 +418,7 @@ export default function InvoiceDetailsPage() {
                                           <TableCell>{expense.description}</TableCell>
                                           <TableCell>{expense.category}</TableCell>
                                           <TableCell className="text-right font-medium text-destructive">
-                                              -${expense.amount.toLocaleString()}
+                                              -{formatCurrency(expense.amount, invoice.currency)}
                                           </TableCell>
                                       </TableRow>
                                   ))}

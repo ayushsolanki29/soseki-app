@@ -131,7 +131,7 @@ export default function ExpensesPage() {
                     ) : '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-destructive">
-                    -{formatCurrency(expense.amount, expense.invoice?.currency || "USD")}
+                    -{formatCurrency(expense.amount, expense.invoice?.currency || organization?.masterCurrency || "USD")}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

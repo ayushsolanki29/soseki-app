@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/utils";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter } from "next/navigation";
 
-export function ExpensesTable({ expenses, isLoading }) {
+export function ExpensesTable({ expenses, isLoading, masterCurrency }) {
   const router = useRouter();
 
   const getExpenseStatusBadge = (status) => {
@@ -44,8 +44,15 @@ export function ExpensesTable({ expenses, isLoading }) {
                         <TableCell>{formatDate(expense.date)}</TableCell>
                         <TableCell>{expense.category?.name || "-"}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{expense.description || "-"}</TableCell>
-                        <TableCell className="text-right font-medium">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: expense.currency || 'USD' }).format(expense.amount)}
+                        <TableCell className="text-right">
+                            <div className="font-medium">
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: expense.currency || 'USD' }).format(expense.amount)}
+                            </div>
+                            {masterCurrency && expense.currency && expense.currency !== masterCurrency && (
+                                <div className="text-xs text-muted-foreground mt-0.5">
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(expense.amount * (expense.exchangeRate || 1.0))}
+                                </div>
+                            )}
                         </TableCell>
                         <TableCell>
                             <Badge variant={getExpenseStatusBadge(expense.status)}>
