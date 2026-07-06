@@ -161,7 +161,11 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
                 Currency
                 {isFetchingRate && <span className="text-xs text-muted-foreground animate-pulse">Fetching rate...</span>}
             </label>
-            <Select value={formData.currency} onValueChange={val => setFormData({...formData, currency: val})}>
+            <Select 
+              value={formData.currency} 
+              onValueChange={val => setFormData({...formData, currency: val})}
+              items={currencies.map(c => ({ value: c, label: c }))}
+            >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Currency" />
                 </SelectTrigger>
@@ -202,7 +206,11 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold">Category</label>
-            <Select value={formData.category} onValueChange={val => setFormData({...formData, category: val})}>
+            <Select 
+              value={formData.category} 
+              onValueChange={val => setFormData({...formData, category: val})}
+              items={EXPENSE_CATEGORIES.map(c => ({ value: c, label: c }))}
+            >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
@@ -218,7 +226,14 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold">Link to Client (Optional)</label>
-            <Select value={formData.clientId} onValueChange={val => setFormData({...formData, clientId: val})}>
+            <Select 
+              value={formData.clientId} 
+              onValueChange={val => setFormData({...formData, clientId: val})}
+              items={[
+                { value: "none", label: "None" },
+                ...clients.map(c => ({ value: c.id, label: c.name }))
+              ]}
+            >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Client" />
                 </SelectTrigger>
@@ -231,7 +246,16 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold">Link to Invoice (Optional)</label>
-            <Select value={formData.invoiceId} onValueChange={val => setFormData({...formData, invoiceId: val})}>
+            <Select 
+              value={formData.invoiceId} 
+              onValueChange={val => setFormData({...formData, invoiceId: val})}
+              items={[
+                { value: "none", label: "None" },
+                ...invoices
+                  .filter(inv => inv.clientId === formData.clientId)
+                  .map(inv => ({ value: inv.id, label: inv.invoiceNumber }))
+              ]}
+            >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Invoice" />
                 </SelectTrigger>

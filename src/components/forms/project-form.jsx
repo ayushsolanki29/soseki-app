@@ -50,14 +50,17 @@ export function ProjectForm({ onSuccess, onCancel, initialData = null }) {
 
     setIsLoading(true);
     try {
+      let projectData = null;
       if (initialData?.id) {
-        await API.patch(`/projects/${initialData.id}`, formData);
+        const res = await API.patch(`/projects/${initialData.id}`, formData);
         toast.success("Project updated successfully!");
+        projectData = res?.data?.project;
       } else {
-        await API.post("/projects", formData);
+        const res = await API.post("/projects", formData);
         toast.success("Project created successfully!");
+        projectData = res?.data?.project;
       }
-      onSuccess?.();
+      onSuccess?.(projectData);
     } catch (error) {
       toast.error("Operation failed", {
         description: error.response?.data?.error || "Something went wrong.",

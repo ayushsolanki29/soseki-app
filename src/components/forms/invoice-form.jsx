@@ -23,11 +23,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { PlusIcon, TrashIcon, ZapIcon, SparklesIcon, SaveIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PlusIcon, TrashIcon, ZapIcon, SparklesIcon, SaveIcon, GripVerticalIcon, PlusCircleIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
+import { CreateClientDialog } from "./create-client-dialog";
+import { CreateProjectDialog } from "./create-project-dialog";
 
 export function InvoiceForm({ initialData = null }) {
   const router = useRouter();
@@ -228,19 +231,70 @@ export function InvoiceForm({ initialData = null }) {
     }
   };
 
-  if (isLoadingData) return <div>Loading form data...</div>;
+  if (isLoadingData) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-card p-6 rounded-xl border">
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+        <div className="bg-card p-6 rounded-xl border">
+          <Skeleton className="h-10 w-full mb-4" />
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
         {/* General Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-card p-6 rounded-xl border">
             <div className="flex flex-col gap-3">
-                <label className="text-sm font-semibold text-foreground">Client *</label>
-                <Select value={formData.clientId} onValueChange={(val) => setFormData({...formData, clientId: val})}>
+                <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-foreground">Client *</label>
+                    <CreateClientDialog 
+                        trigger={
+                            <button type="button" className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                                <PlusCircleIcon className="size-3" /> Add new
+                            </button>
+                        }
+                        onSuccess={(client) => {
+                            setClients([client, ...clients]);
+                            setFormData({...formData, clientId: client.id});
+                        }}
+                    />
+                </div>
+                <Select 
+                    value={formData.clientId} 
+                    onValueChange={(val) => setFormData({...formData, clientId: val})}
+                    items={[
+                        { value: "placeholder", label: "Select Client..." },
+                        ...clients.map(c => ({ value: c.id, label: c.name }))
+                    ]}
+                >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select Client" />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="placeholder" disabled>Select Client...</SelectItem>
                         {clients.map(client => (
                             <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
                         ))}
@@ -249,14 +303,36 @@ export function InvoiceForm({ initialData = null }) {
             </div>
             
             <div className="flex flex-col gap-3">
-                <label className="text-sm font-semibold text-foreground">Project</label>
-                <Select value={formData.projectId} onValueChange={(val) => setFormData({...formData, projectId: val})}>
+                <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-foreground">Project</label>
+                    <CreateProjectDialog 
+                        trigger={
+                            <button type="button" className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                                <PlusCircleIcon className="size-3" /> Add new
+                            </button>
+                        }
+                        onSuccess={(project) => {
+                            setProjects([project, ...projects]);
+                            setFormData({...formData, projectId: project.id});
+                        }}
+                    />
+                </div>
+                <Select 
+                    value={formData.projectId} 
+                    onValueChange={(val) => setFormData({...formData, projectId: val})}
+                    items={[
+                        { value: "placeholder", label: "Select Project..." },
+                        { value: "none", label: "None" },
+                        ...projects.filter(p => p && p.clientId === formData.clientId).map(p => ({ value: p.id, label: p.title }))
+                    ]}
+                >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select Project (Optional)" />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="placeholder" disabled>Select Project...</SelectItem>
                         <SelectItem value="none">None</SelectItem>
-                        {projects.filter(p => p.clientId === formData.clientId).map(project => (
+                        {projects.filter(p => p && p.clientId === formData.clientId).map(project => (
                             <SelectItem key={project.id} value={project.id}>{project.title}</SelectItem>
                         ))}
                     </SelectContent>
@@ -270,7 +346,19 @@ export function InvoiceForm({ initialData = null }) {
             
             <div className="flex flex-col gap-3">
                 <label className="text-sm font-semibold text-foreground">Currency</label>
-                <Select value={formData.currency} onValueChange={(val) => setFormData({...formData, currency: val})}>
+                <Select 
+                    value={formData.currency} 
+                    onValueChange={(val) => setFormData({...formData, currency: val})}
+                    items={[
+                        { value: "USD", label: "USD" },
+                        { value: "EUR", label: "EUR" },
+                        { value: "GBP", label: "GBP" },
+                        { value: "INR", label: "INR" },
+                        { value: "AUD", label: "AUD" },
+                        { value: "CAD", label: "CAD" },
+                        { value: "SGD", label: "SGD" },
+                    ]}
+                >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="USD" />
                     </SelectTrigger>
