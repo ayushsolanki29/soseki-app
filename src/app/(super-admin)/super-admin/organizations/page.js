@@ -10,6 +10,8 @@ import {
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { formatDate } from "@/lib/utils";
 
+import { AddUserModal } from "@/components/add-user-modal";
+
 export default async function SuperAdminOrganizationsPage() {
   const organizations = await prisma.organization.findMany({
     orderBy: { createdAt: "desc" },
@@ -34,11 +36,14 @@ export default async function SuperAdminOrganizationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage all registered organizations on the platform.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage all registered organizations on the platform.
+          </p>
+        </div>
+        <AddUserModal />
       </div>
 
       <div className="border rounded-lg overflow-hidden bg-card">

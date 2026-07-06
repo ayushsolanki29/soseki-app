@@ -14,6 +14,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { AddUserModal } from "@/components/add-user-modal";
 
 export default function SuperAdminLayout({ children }) {
   const pathname = usePathname();
@@ -102,10 +103,12 @@ export default function SuperAdminLayout({ children }) {
                                 <BuildingIcon className="mr-2 size-4" />
                                 Add Organization
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <UserIcon className="mr-2 size-4" />
-                                Add User
-                            </DropdownMenuItem>
+                            <AddUserModal trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <UserIcon className="mr-2 size-4" />
+                                    Add User
+                                </DropdownMenuItem>
+                            } />
                             <DropdownMenuItem>
                                 <TicketIcon className="mr-2 size-4" />
                                 Create Ticket
