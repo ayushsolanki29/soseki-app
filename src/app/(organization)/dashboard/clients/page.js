@@ -41,6 +41,7 @@ import API from "@/lib/api";
 import { ClientForm } from "@/components/forms/client-form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -160,11 +161,7 @@ export default function ClientsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
-                  Loading clients...
-                </TableCell>
-              </TableRow>
+              <SkeletonHelper type="table" rows={5} columns={6} />
             ) : clients.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">

@@ -39,6 +39,7 @@ import {
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
 import { InvoicePreviewDialog } from "@/components/invoices/invoice-preview-dialog";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function InvoicesPage() {
   const router = useRouter();
@@ -217,11 +218,7 @@ export default function InvoicesPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                  Loading invoices...
-                </TableCell>
-              </TableRow>
+              <SkeletonHelper type="table" columns={7} rows={5} />
             ) : invoices.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center h-[300px] text-muted-foreground">

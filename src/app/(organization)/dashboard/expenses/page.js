@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { RecordExpenseDialog } from "@/components/expenses/record-expense-dialog";
 import { ExpenseReceiptDialog } from "@/components/expenses/expense-receipt-dialog";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState([]);
@@ -90,9 +91,7 @@ export default function ExpensesPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">Loading expenses...</TableCell>
-              </TableRow>
+              <SkeletonHelper type="table" columns={7} rows={5} />
             ) : expenses.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">

@@ -10,6 +10,9 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { ProjectsTable } from "@/components/shared/projects-table";
+import { InvoicesTable } from "@/components/shared/invoices-table";
+import { ExpensesTable } from "@/components/shared/expenses-table";
 import {
   Table,
   TableBody,
@@ -27,6 +30,8 @@ import {
 } from "@/components/ui/sheet";
 import { ClientForm } from "@/components/forms/client-form";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function ClientDetailsPage() {
   const { id } = useParams();
@@ -66,46 +71,89 @@ export default function ClientDetailsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-8">Loading client details...</div>;
+    return (
+      <div className="p-8 flex flex-col gap-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-9 rounded-md" />
+          <div className="flex-1">
+            <div className="flex items-center gap-4">
+              <Skeleton className="size-14 rounded-full" />
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <div className="flex items-center gap-4 mt-1">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+             <Skeleton className="h-9 w-28 rounded-md" />
+             <Skeleton className="h-9 w-28 rounded-md" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-md overflow-hidden bg-card">
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead>Project Title</TableHead>
+                      <TableHead>Start Date</TableHead>
+                      <TableHead>Est. End Date</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                     <SkeletonHelper type="table" columns={4} rows={3} />
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-md overflow-hidden bg-card">
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead>Invoice #</TableHead>
+                      <TableHead>Issue Date</TableHead>
+                      <TableHead>Due Date</TableHead>
+                      <TableHead className="text-right">Total Amount</TableHead>
+                      <TableHead className="text-right">Paid Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                     <SkeletonHelper type="table" columns={6} rows={3} />
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   if (!client) {
     return null;
   }
 
-  const getStatusBadge = (status) => {
-    switch(status) {
-        case 'Active': return 'default';
-        case 'Lead': return 'secondary';
-        case 'Inactive': return 'destructive';
-        default: return 'outline';
-    }
-  }
 
-  const getInvoiceStatusBadge = (status) => {
-    switch(status) {
-        case 'Paid': return 'default';
-        case 'Draft': return 'outline';
-        case 'Sent': return 'secondary';
-        case 'Overdue': return 'destructive';
-        case 'Partially Paid': return 'outline';
-        default: return 'outline';
-    }
-  }
-
-  const getProjectStatusBadge = (status) => {
-    switch(status) {
-        case 'Planning': return 'outline';
-        case 'Active': return 'default';
-        case 'Completed': return 'secondary';
-        case 'On Hold': return 'destructive';
-        default: return 'outline';
-    }
-  }
-
-  const calculateTotalPaid = (payments) => {
-    return payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
-  };
 
   return (
     <div className="p-8 flex flex-col gap-6">
@@ -119,7 +167,7 @@ export default function ClientDetailsPage() {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold tracking-tight">{client.name}</h1>
-                <Badge variant={getStatusBadge(client.status)} className="text-sm">
+                <Badge variant={client.status === 'Active' ? 'default' : client.status === 'Lead' ? 'secondary' : client.status === 'Inactive' ? 'destructive' : 'outline'} className="text-sm">
                   {client.status}
                 </Badge>
               </div>
@@ -163,42 +211,7 @@ export default function ClientDetailsPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="border rounded-md overflow-hidden bg-card">
-                    <Table>
-                        <TableHeader className="bg-muted/50">
-                            <TableRow>
-                                <TableHead>Project Title</TableHead>
-                                <TableHead>Start Date</TableHead>
-                                <TableHead>Est. End Date</TableHead>
-                                <TableHead>Status</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {client.projects?.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
-                                        No projects found for this client.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                client.projects?.map((project) => (
-                                    <TableRow key={project.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/projects/${project.id}`)}>
-                                        <TableCell className="font-medium group-hover:text-primary transition-colors">
-                                            {project.title}
-                                        </TableCell>
-                                        <TableCell>{formatDate(project.startDate)}</TableCell>
-                                        <TableCell>{project.estimatedEndDate ? formatDate(project.estimatedEndDate) : "-"}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={getProjectStatusBadge(project.status)}>
-                                                {project.status}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
+                <ProjectsTable projects={client.projects} isLoading={false} />
             </CardContent>
         </Card>
 
@@ -211,52 +224,20 @@ export default function ClientDetailsPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="border rounded-md overflow-hidden bg-card">
-                    <Table>
-                        <TableHeader className="bg-muted/50">
-                            <TableRow>
-                                <TableHead>Invoice #</TableHead>
-                                <TableHead>Issue Date</TableHead>
-                                <TableHead>Due Date</TableHead>
-                                <TableHead className="text-right">Total Amount</TableHead>
-                                <TableHead className="text-right">Paid Amount</TableHead>
-                                <TableHead>Status</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {client.invoices?.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
-                                        No invoices found for this client.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                client.invoices?.map((invoice) => {
-                                    const totalPaid = calculateTotalPaid(invoice.payments);
-                                    return (
-                                    <TableRow key={invoice.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/invoices/${invoice.id}`)}>
-                                        <TableCell className="font-medium group-hover:text-primary transition-colors">
-                                            {invoice.invoiceNumber}
-                                        </TableCell>
-                                        <TableCell>{formatDate(invoice.issueDate)}</TableCell>
-                                        <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-                                        <TableCell className="text-right font-medium">
-                                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency }).format(invoice.totalAmount)}
-                                        </TableCell>
-                                        <TableCell className="text-right text-muted-foreground">
-                                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency }).format(totalPaid)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant={getInvoiceStatusBadge(invoice.status)}>
-                                                {invoice.status}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                )})
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
+                <InvoicesTable invoices={client.invoices} isLoading={false} />
+            </CardContent>
+        </Card>
+
+        {/* Expenses Section */}
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                    <DollarSignIcon className="size-5 text-primary" />
+                    Expenses
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ExpensesTable expenses={client.expenses} isLoading={false} />
             </CardContent>
         </Card>
 

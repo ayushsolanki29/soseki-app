@@ -17,6 +17,7 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { GlobalRecordPaymentDialog } from "@/components/invoices/global-record-payment-dialog";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState([]);
@@ -68,9 +69,7 @@ export default function PaymentsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">Loading payments...</TableCell>
-              </TableRow>
+              <SkeletonHelper type="table" columns={6} rows={5} />
             ) : payments.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
@@ -85,7 +84,7 @@ export default function PaymentsPage() {
                     {formatDate(payment.date)}
                   </TableCell>
                   <TableCell>
-                    <Link href={`/dashboard/invoices/${payment.invoiceId}`} className="flex items-center gap-3 hover:underline">
+                    <Link href={`/dashboard/invoices/${payment.invoiceId}?tab=payments`} className="flex items-center gap-3 hover:underline">
                       <DynamicAvatar type="invoice" seed={payment.invoice.invoiceNumber} size={28} />
                       {payment.invoice.invoiceNumber}
                     </Link>

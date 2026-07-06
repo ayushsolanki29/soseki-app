@@ -41,6 +41,7 @@ import API from "@/lib/api";
 import { ProjectForm } from "@/components/forms/project-form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -150,11 +151,7 @@ export default function ProjectsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
-                  Loading projects...
-                </TableCell>
-              </TableRow>
+              <SkeletonHelper type="table" columns={6} rows={5} />
             ) : projects.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">

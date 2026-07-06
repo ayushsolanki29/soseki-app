@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
@@ -18,6 +18,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ProjectForm } from "@/components/forms/project-form";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import { InvoicesTable } from "@/components/shared/invoices-table";
+import { ExpensesTable } from "@/components/shared/expenses-table";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -57,7 +61,82 @@ export default function ProjectDetailsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-8">Loading project details...</div>;
+    return (
+      <div className="p-8 flex flex-col gap-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-9 rounded-md" />
+          <div className="flex-1">
+            <div className="flex items-center gap-4">
+              <Skeleton className="size-14 rounded-full" />
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-40" />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+             <Skeleton className="h-9 w-28 rounded-md" />
+             <Skeleton className="h-9 w-28 rounded-md" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-[95%]" />
+                <Skeleton className="h-4 w-[90%]" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <Skeleton className="h-5 w-32" />
+              </CardHeader>
+              <CardContent className="flex items-center gap-3">
+                <Skeleton className="size-9 rounded-full" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-40" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <Skeleton className="h-5 w-24" />
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-5 rounded-sm" />
+                  <div className="space-y-1.5 flex-1">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-5 rounded-sm" />
+                  <div className="space-y-1.5 flex-1 bg-muted/50 p-3 rounded-md">
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!project) {
@@ -123,14 +202,16 @@ export default function ProjectDetailsPage() {
                 <CardHeader className="pb-3">
                     <CardTitle className="text-base">Client Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex items-center gap-3 text-sm">
-                    <div className="bg-primary/10 p-2 rounded-full text-primary">
-                        <UserIcon className="size-5" />
-                    </div>
-                    <div>
-                        <p className="font-medium">{project.client?.name}</p>
-                        <p className="text-muted-foreground">{project.client?.email}</p>
-                    </div>
+                <CardContent className="p-0">
+                    <Link href={`/dashboard/clients/${project.clientId}`} className="flex items-center gap-3 text-sm p-6 hover:bg-muted/50 transition-colors cursor-pointer rounded-b-xl">
+                        <div className="bg-primary/10 p-2 rounded-full text-primary">
+                            <UserIcon className="size-5" />
+                        </div>
+                        <div>
+                            <p className="font-medium group-hover:text-primary transition-colors">{project.client?.name}</p>
+                            <p className="text-muted-foreground">{project.client?.email}</p>
+                        </div>
+                    </Link>
                 </CardContent>
             </Card>
 
@@ -158,6 +239,32 @@ export default function ProjectDetailsPage() {
                 </CardContent>
             </Card>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                    <FileTextIcon className="size-5 text-primary" />
+                    Invoices & Payments
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <InvoicesTable invoices={project.invoices} isLoading={false} />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                    <DollarSignIcon className="size-5 text-primary" />
+                    Expenses
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ExpensesTable expenses={project.expenses} isLoading={false} />
+            </CardContent>
+        </Card>
       </div>
 
       {/* Edit Project Sheet */}

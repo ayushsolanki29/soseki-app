@@ -101,16 +101,37 @@ export default function WorkspaceSettingsPage() {
 
   if (isLoading) {
     return (
-        <div className="p-8 max-w-4xl h-full flex flex-col gap-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">General Settings</h1>
-                <p className="text-muted-foreground mt-2">Manage your workspace's basic information.</p>
-            </div>
-            <div className="space-y-4">
-                <Skeleton className="h-64 w-full rounded-xl" />
-                <Skeleton className="h-64 w-full rounded-xl" />
-            </div>
+      <div className="p-8 max-w-4xl flex flex-col gap-8 pb-20">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Workspace Settings</h1>
+          <p className="text-muted-foreground mt-2">Manage your organization's general, financial, and currency settings.</p>
         </div>
+
+        {[...Array(3)].map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-6 w-48 mb-1" />
+              <Skeleton className="h-4 w-72" />
+            </CardHeader>
+            <CardContent className="pb-8 pt-2">
+                <div className="flex flex-col gap-6 max-w-md">
+                  <div className="space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-11 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-4 w-64 mb-2" />
+                      <Skeleton className="h-[100px] w-full" />
+                  </div>
+                </div>
+            </CardContent>
+            <CardFooter className="border-t px-6 py-4 bg-muted/20">
+              <Skeleton className="h-9 w-32" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     );
   }
 

@@ -26,22 +26,44 @@ import {
 import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation";
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
 import { InvoicePreviewDialog } from "@/components/invoices/invoice-preview-dialog";
 import { formatCurrency } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
-import { useRouter } from "next/navigation";
 
 export default function InvoiceDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  
   const [invoice, setInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("overview");
+  
+  const activeTab = searchParams.get('tab') || 'overview';
+  const isPreviewDialogOpen = searchParams.get('preview') === 'true';
+
+  const setActiveTab = (tab) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', tab);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const setIsPreviewDialogOpen = (isOpen) => {
+    const params = new URLSearchParams(searchParams);
+    if (isOpen) {
+      params.set('preview', 'true');
+    } else {
+      params.delete('preview');
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [isPreviewDialogOpen, setIsPreviewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [masterCurrency, setMasterCurrency] = useState("INR");
@@ -100,7 +122,67 @@ export default function InvoiceDetailsPage() {
   }
 
   if (isLoading) {
-    return <div className="p-8">Loading invoice...</div>;
+    return (
+      <div className="p-8 w-full h-full flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <Skeleton className="size-9 rounded-md" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                  <Skeleton className="size-14 rounded-full" />
+                  <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                          <Skeleton className="h-8 w-40" />
+                          <Skeleton className="h-6 w-20 rounded-full" />
+                      </div>
+                  </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-9 w-36 rounded-md" />
+                  <Skeleton className="h-9 w-24 rounded-md" />
+              </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+          {[...Array(4)].map((_, i) => (
+              <div key={i} className="border rounded-xl p-4 bg-card space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-6 w-32" />
+              </div>
+          ))}
+        </div>
+
+        <div className="flex gap-4 border-b pb-2 mt-4">
+            <Skeleton className="h-9 w-24 rounded-md" />
+            <Skeleton className="h-9 w-28 rounded-md" />
+            <Skeleton className="h-9 w-24 rounded-md" />
+        </div>
+
+        <div className="flex-1">
+            <div className="bg-card border rounded-xl overflow-hidden">
+                <div className="p-6 border-b bg-muted/20">
+                    <Skeleton className="h-6 w-32" />
+                </div>
+                <Table>
+                    <TableHeader className="bg-muted/50">
+                        <TableRow>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="text-right">Qty</TableHead>
+                            <TableHead className="text-right">Price</TableHead>
+                            <TableHead className="text-right">Tax</TableHead>
+                            <TableHead className="text-right">Total</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <SkeletonHelper type="table" columns={5} rows={3} />
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+      </div>
+    );
   }
 
   if (!invoice) {

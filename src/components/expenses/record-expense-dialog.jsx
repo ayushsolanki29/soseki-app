@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -96,16 +96,16 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{expenseToEdit ? "Edit Expense" : "Record Expense"}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="sm:max-w-md w-full border-l flex flex-col h-full bg-background overflow-y-hidden p-0">
+        <SheetHeader className="px-6 py-4 border-b">
+          <SheetTitle>{expenseToEdit ? "Edit Expense" : "Record Expense"}</SheetTitle>
+          <SheetDescription>
             {expenseToEdit ? "Update this outgoing expense." : "Record a new outgoing expense."}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold">Description</label>
             <Input 
@@ -180,14 +180,14 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
             </Select>
           </div>
 
-          <DialogFooter className="mt-4">
-            <DialogClose render={<Button type="button" variant="outline" disabled={isSubmitting}>Cancel</Button>} />
+          <SheetFooter className="mt-4 pt-4 border-t px-0 mx-0 pb-2">
+            <SheetClose render={<Button type="button" variant="outline" disabled={isSubmitting}>Cancel</Button>} />
             <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Saving..." : (expenseToEdit ? "Update Expense" : "Record Expense")}
             </Button>
-          </DialogFooter>
+          </SheetFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
