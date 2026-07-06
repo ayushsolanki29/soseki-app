@@ -20,8 +20,11 @@ import Link from "next/link";
 import { RecordExpenseDialog } from "@/components/expenses/record-expense-dialog";
 import { ExpenseReceiptDialog } from "@/components/expenses/expense-receipt-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ExpensesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecordExpenseOpen, setIsRecordExpenseOpen] = useState(false);
@@ -60,6 +63,17 @@ export default function ExpensesPage() {
   useEffect(() => {
     fetchExpenses();
   }, []);
+
+  useEffect(() => {
+    const receiptId = searchParams.get('receipt');
+    if (receiptId && expenses.length > 0) {
+      const expense = expenses.find(e => e.id === receiptId);
+      if (expense) {
+        setExpenseToPreview(expense);
+        setIsReceiptOpen(true);
+      }
+    }
+  }, [searchParams, expenses]);
 
   return (
     <div className="p-8 w-full h-full flex flex-col gap-6">
@@ -131,7 +145,7 @@ export default function ExpensesPage() {
                     ) : '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-destructive">
-                    -{formatCurrency(expense.amount, expense.invoice?.currency || organization?.masterCurrency || "USD")}
+                    -{formatCurrency(expense.amount, expense.currency || expense.invoice?.currency || organization?.masterCurrency || "USD")}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
@@ -162,7 +176,12 @@ export default function ExpensesPage() {
       
       <ExpenseReceiptDialog
         open={isReceiptOpen}
-        onOpenChange={setIsReceiptOpen}
+        onOpenChange={(open) => {
+            setIsReceiptOpen(open);
+            if (!open && searchParams.get('receipt')) {
+                router.replace('/dashboard/expenses');
+            }
+        }}
         expense={expenseToPreview}
         organization={organization}
       />

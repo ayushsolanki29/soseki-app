@@ -30,7 +30,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { description, amount, date, category, clientId, projectId, invoiceId } = body;
+    const { description, amount, date, category, clientId, projectId, invoiceId, currency, exchangeRate } = body;
 
     const expenseAmount = parseFloat(amount);
     if (!expenseAmount || expenseAmount <= 0) {
@@ -46,7 +46,9 @@ export async function POST(request) {
         organizationId: session.organizationId,
         clientId: clientId || null,
         projectId: projectId || null,
-        invoiceId: invoiceId || null
+        invoiceId: invoiceId || null,
+        currency: currency || null,
+        exchangeRate: exchangeRate || null
       },
       include: { client: true, project: true, invoice: true }
     });

@@ -16,12 +16,16 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
     category: "Software",
     clientId: "none",
     projectId: "none",
-    invoiceId: defaultInvoiceId || "none"
+    invoiceId: defaultInvoiceId || "none",
+    currency: "USD"
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [masterCurrency, setMasterCurrency] = useState("USD");
+  const [exchangeRate, setExchangeRate] = useState(1.0);
+  const [isFetchingRate, setIsFetchingRate] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -33,18 +37,20 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           category: expenseToEdit.category || "Software",
           clientId: expenseToEdit.clientId || "none",
           projectId: expenseToEdit.projectId || "none",
-          invoiceId: expenseToEdit.invoiceId || defaultInvoiceId || "none"
+          invoiceId: expenseToEdit.invoiceId || defaultInvoiceId || "none",
+          currency: expenseToEdit.currency || "USD"
         });
       } else {
-        setFormData({
+        setFormData(prev => ({
           description: "",
           amount: 0,
           date: new Date().toISOString().split('T')[0],
           category: "Software",
           clientId: "none",
           projectId: "none",
-          invoiceId: defaultInvoiceId || "none"
-        });
+          invoiceId: defaultInvoiceId || "none",
+          currency: prev.currency || "USD"
+        }));
       }
       fetchMetadata();
     }
@@ -52,16 +58,48 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
   const fetchMetadata = async () => {
     try {
-      const [cRes, iRes] = await Promise.all([
+      const [cRes, iRes, orgRes] = await Promise.all([
         API.get("/clients"),
-        API.get("/invoices")
+        API.get("/invoices"),
+        API.get("/organization")
       ]);
       setClients(cRes.data.clients || []);
       setInvoices(iRes.data.invoices || []);
+      if (orgRes.data.organization?.masterCurrency) {
+          setMasterCurrency(orgRes.data.organization.masterCurrency);
+          if (!expenseToEdit) {
+              setFormData(prev => ({ ...prev, currency: orgRes.data.organization.masterCurrency }));
+          }
+      }
     } catch (error) {
       console.error("Failed to load metadata", error);
     }
   };
+
+  useEffect(() => {
+      if (!open) return;
+      if (expenseToEdit && formData.currency === expenseToEdit.currency) return;
+
+      const fetchRate = async () => {
+          if (formData.currency === masterCurrency) {
+              setExchangeRate(1.0);
+              return;
+          }
+          setIsFetchingRate(true);
+          try {
+              const res = await fetch(`https://open.er-api.com/v6/latest/${formData.currency}`);
+              const data = await res.json();
+              if (data && data.rates && data.rates[masterCurrency]) {
+                  setExchangeRate(data.rates[masterCurrency]);
+              }
+          } catch (e) {
+              console.error("Failed to fetch exchange rate", e);
+          } finally {
+              setIsFetchingRate(false);
+          }
+      };
+      fetchRate();
+  }, [formData.currency, masterCurrency, open, expenseToEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,6 +115,8 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
         clientId: formData.clientId === "none" ? null : formData.clientId,
         projectId: formData.projectId === "none" ? null : formData.projectId,
         invoiceId: formData.invoiceId === "none" ? null : formData.invoiceId,
+        currency: formData.currency,
+        exchangeRate: formData.currency === masterCurrency ? 1.0 : exchangeRate,
       };
       
       if (expenseToEdit) {
@@ -114,6 +154,28 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
                 onChange={e => setFormData({...formData, description: e.target.value})}
                 required
             />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold flex justify-between">
+                Currency
+                {isFetchingRate && <span className="text-xs text-muted-foreground animate-pulse">Fetching rate...</span>}
+            </label>
+            <Select value={formData.currency} onValueChange={val => setFormData({...formData, currency: val})}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                    {["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "INR"].map(cur => (
+                        <SelectItem key={cur} value={cur}>{cur}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            {formData.currency !== masterCurrency && !isFetchingRate && (
+                <div className="text-xs text-muted-foreground">
+                    Exchange Rate: 1 {formData.currency} = {exchangeRate} {masterCurrency}
+                </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-3">

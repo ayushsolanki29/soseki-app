@@ -26,6 +26,9 @@ export async function GET(request, { params }) {
           include: {
             payments: true
           }
+        },
+        expenses: {
+          orderBy: { date: 'desc' }
         }
       }
     });

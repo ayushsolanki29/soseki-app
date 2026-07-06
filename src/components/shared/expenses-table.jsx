@@ -40,7 +40,7 @@ export function ExpensesTable({ expenses, isLoading, masterCurrency }) {
                 </TableRow>
             ) : (
                 expenses?.map((expense) => (
-                    <TableRow key={expense.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/expenses/${expense.id}`)}>
+                    <TableRow key={expense.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/expenses?receipt=${expense.id}`)}>
                         <TableCell>{formatDate(expense.date)}</TableCell>
                         <TableCell>{expense.category?.name || "-"}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{expense.description || "-"}</TableCell>
