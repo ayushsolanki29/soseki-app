@@ -117,6 +117,7 @@ export function QuestionnaireBuilder({ initialData }) {
       if (initialData?.id) {
         await API.patch(`/questionnaires/${initialData.id}`, payload);
         toast.success("Questionnaire updated!");
+        router.push(`/dashboard/questionnaires/${initialData.id}/responses`);
       } else {
         await API.post("/questionnaires", payload);
         toast.success("Questionnaire created!");
@@ -140,7 +141,7 @@ export function QuestionnaireBuilder({ initialData }) {
             <Label>Form Title *</Label>
             <Input 
               placeholder="e.g. Client Onboarding Form" 
-              value={title} 
+              value={title || ""} 
               onChange={(e) => setTitle(e.target.value)} 
               className="text-lg font-medium"
             />
@@ -149,7 +150,7 @@ export function QuestionnaireBuilder({ initialData }) {
             <Label>Description</Label>
             <Textarea 
               placeholder="Provide some context for your clients..." 
-              value={description} 
+              value={description || ""} 
               onChange={(e) => setDescription(e.target.value)} 
             />
           </div>
@@ -158,7 +159,7 @@ export function QuestionnaireBuilder({ initialData }) {
             <Input 
               type="number" 
               placeholder="Leave empty for unlimited" 
-              value={maxResponses} 
+              value={maxResponses || ""} 
               onChange={(e) => setMaxResponses(e.target.value)} 
               className="max-w-[200px]"
             />
@@ -196,13 +197,13 @@ export function QuestionnaireBuilder({ initialData }) {
                     <div className="flex-1 space-y-4">
                       <Input 
                         placeholder="Question or Label..." 
-                        value={field.label} 
+                        value={field.label || ""} 
                         onChange={(e) => updateField(index, "label", e.target.value)} 
                         className="font-medium bg-muted/30"
                       />
                       <Input 
                         placeholder="Help text (optional)..." 
-                        value={field.description} 
+                        value={field.description || ""} 
                         onChange={(e) => updateField(index, "description", e.target.value)} 
                         className="text-sm"
                       />
@@ -230,7 +231,7 @@ export function QuestionnaireBuilder({ initialData }) {
                         <div key={optIndex} className="flex items-center gap-2">
                           <div className="w-4 h-4 rounded-full border bg-muted/50 flex-shrink-0" />
                           <Input 
-                            value={opt} 
+                            value={opt || ""} 
                             onChange={(e) => updateOption(index, optIndex, e.target.value)} 
                             className="h-8 text-sm max-w-[300px]"
                           />

@@ -14,10 +14,10 @@ export function AppShell({
             <OrganizationProvider>
                 <SidebarProvider className="relative h-svh">
                     <AppSidebar />
-                    <SidebarInset className="md:peer-data-[variant=inset]:ml-0">
+                    <SidebarInset className="md:peer-data-[variant=inset]:ml-0 min-w-0">
                         <AppHeader />
-                        <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
-                            <div className="flex-1 p-4 md:p-6 flex flex-col gap-4">
+                        <div className="flex flex-1 flex-col gap-4 overflow-y-auto min-w-0">
+                            <div className="flex-1 p-4 md:p-6 flex flex-col gap-4 min-w-0">
                                 {children}
                             </div>
                             

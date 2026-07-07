@@ -149,6 +149,7 @@ function DropdownMenuCheckboxItem({
   children,
   checked,
   inset,
+  closeOnClick = false,
   ...props
 }) {
   return (
@@ -160,6 +161,7 @@ function DropdownMenuCheckboxItem({
         className
       )}
       checked={checked}
+      closeOnClick={closeOnClick}
       {...props}>
       <span
         className="pointer-events-none absolute right-2 flex items-center justify-center"
