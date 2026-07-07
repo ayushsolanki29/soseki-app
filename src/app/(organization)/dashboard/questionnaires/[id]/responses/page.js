@@ -11,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
@@ -112,10 +119,48 @@ export default function QuestionnaireResponsesPage({ params }) {
             <p className="text-muted-foreground mt-1">Viewing all submitted responses.</p>
           </div>
         </div>
-        <Button onClick={exportCSV} variant="secondary" className="gap-2" disabled={responses.length === 0}>
-          <DownloadIcon className="size-4" />
-          Export CSV
-        </Button>
+        
+        {questionnaire && (
+          <div className="flex items-center gap-3">
+            <Select 
+              value={questionnaire.status} 
+              onValueChange={async (newStatus) => {
+                const oldStatus = data.questionnaire.status;
+                setData(prev => ({
+                  ...prev,
+                  questionnaire: { ...prev.questionnaire, status: newStatus }
+                }));
+                try {
+                  await API.patch(`/questionnaires/${questionnaire.id}`, { status: newStatus });
+                  toast.success(`Status updated to ${newStatus}`);
+                } catch (err) {
+                  setData(prev => ({
+                    ...prev,
+                    questionnaire: { ...prev.questionnaire, status: oldStatus }
+                  }));
+                  toast.error("Failed to update status");
+                }
+              }}
+            >
+              <SelectTrigger className={`w-[140px] font-medium ${
+                questionnaire.status === 'Active' ? 'text-green-600 border-green-200 bg-green-50' : 
+                questionnaire.status === 'Paused' ? 'text-yellow-600 border-yellow-200 bg-yellow-50' : 
+                'text-red-600 border-red-200 bg-red-50'
+              }`}>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Active" className="text-green-600">Active</SelectItem>
+                <SelectItem value="Paused" className="text-yellow-600">Paused</SelectItem>
+                <SelectItem value="Closed" className="text-red-600">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={exportCSV} variant="secondary" className="gap-2" disabled={responses.length === 0}>
+              <DownloadIcon className="size-4" />
+              Export CSV
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="border rounded-md overflow-x-auto bg-card flex-1">

@@ -1,3 +1,4 @@
+import { UniversalLoader } from "@/components/ui/universal-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,10 @@ export function SkeletonHelper({
   className,
   ...props
 }) {
+  if (type === "dashboard" || type === "page") {
+    return <UniversalLoader className={className} {...props} />;
+  }
+
   if (type === "table") {
     // For tables, this should be rendered inside <TableBody>
     return (

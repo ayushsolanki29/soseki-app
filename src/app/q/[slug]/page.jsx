@@ -10,8 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { CheckCircle2Icon, Loader2Icon } from "lucide-react";
+import { CheckCircle2Icon, Loader2Icon, LockIcon } from "lucide-react";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { LogoIcon } from "@/components/logo";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import Link from "next/link";
 
 export default function PublicQuestionnairePage({ params }) {
   const unwrappedParams = use(params);
@@ -107,15 +110,30 @@ export default function PublicQuestionnairePage({ params }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-muted/20 py-12 px-4 sm:px-6 flex items-center justify-center">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle className="text-destructive">Form Unavailable</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{error}</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-destructive/5 via-background to-background pointer-events-none" />
+        
+        <Card className="max-w-md w-full border-border/40 shadow-2xl shadow-black/5 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-md relative z-10 text-center py-8">
+          <CardContent className="space-y-6 pt-6">
+            <div className="mx-auto size-16 bg-destructive/10 rounded-full flex items-center justify-center">
+              <LockIcon className="size-8 text-destructive/80" />
+            </div>
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Form Unavailable</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed px-4">
+                {error}
+              </p>
+            </div>
           </CardContent>
         </Card>
+        
+        <div className="mt-12 relative z-10">
+          <Link href="/" className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+            <span className="text-sm text-muted-foreground">Powered by</span>
+            <LogoIcon className="size-5 grayscale" />
+            <span className="font-bold text-foreground tracking-tight">Soseki</span>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -139,41 +157,50 @@ export default function PublicQuestionnairePage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-muted/10 py-12 px-4 sm:px-6 t-page-fade">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-primary">{data.organization?.name}</p>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">{data.title}</h1>
+    <div className="min-h-screen bg-background py-16 px-4 sm:px-6 t-page-fade flex flex-col relative overflow-hidden">
+      {/* Subtle background decoration */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none" />
+      
+      <div className="max-w-3xl mx-auto space-y-12 flex-1 w-full relative z-10">
+        <div className="text-center flex flex-col items-center pt-8">
+          <div className="flex flex-col items-center gap-4 mb-8">
+            {data.organization?.name && (
+              <DynamicAvatar type="organization" seed={data.organization.name} size={72} className="shadow-lg border-2 border-background" />
+            )}
+            <p className="text-xs font-bold tracking-widest text-primary uppercase">{data.organization?.name}</p>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">{data.title}</h1>
           {data.description && (
-            <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto whitespace-pre-wrap">
+            <p className="text-lg text-muted-foreground mt-6 max-w-2xl mx-auto leading-relaxed whitespace-pre-wrap">
               {data.description}
             </p>
           )}
         </div>
 
-        <Card className="border-border shadow-sm">
+        <Card className="border-border/40 shadow-2xl shadow-black/5 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
           <form onSubmit={handleSubmit}>
-            <CardContent className="p-8 space-y-10">
+            <CardContent className="p-8 sm:p-12 space-y-12">
               {data.fields.map((field, index) => (
-                <div key={field.id} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-base font-semibold text-foreground flex gap-1">
-                      {index + 1}. {field.label}
-                      {field.required && <span className="text-destructive">*</span>}
+                <div key={field.id} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label className="text-lg font-semibold text-foreground flex gap-1 items-baseline">
+                      <span className="text-muted-foreground/50 font-normal text-sm mr-2">{index + 1}.</span> 
+                      {field.label}
+                      {field.required && <span className="text-destructive text-sm ml-1">*</span>}
                     </Label>
                     {field.description && (
-                      <p className="text-sm text-muted-foreground">{field.description}</p>
+                      <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
                     )}
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 ml-6">
                     {field.type === 'TEXT' && (
                       <Input 
                         placeholder="Your answer" 
                         required={field.required}
                         value={answers[field.id] || ""}
                         onChange={(e) => handleAnswerChange(field.id, e.target.value)}
-                        className="max-w-md"
+                        className="max-w-md bg-background/50 border-border/50 focus-visible:ring-primary/20 h-12 text-base"
                       />
                     )}
 
@@ -183,7 +210,7 @@ export default function PublicQuestionnairePage({ params }) {
                         required={field.required}
                         value={answers[field.id] || ""}
                         onChange={(e) => handleAnswerChange(field.id, e.target.value)}
-                        className="min-h-[120px]"
+                        className="min-h-[120px] bg-background/50 border-border/50 focus-visible:ring-primary/20 text-base resize-y"
                       />
                     )}
 
@@ -194,12 +221,12 @@ export default function PublicQuestionnairePage({ params }) {
                           value={answers[field.id] || ""}
                           onValueChange={(val) => handleAnswerChange(field.id, val)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="h-12 bg-background/50 border-border/50 text-base">
                             <SelectValue placeholder="Select an option" />
                           </SelectTrigger>
                           <SelectContent>
                             {field.options?.map((opt, i) => (
-                              <SelectItem key={i} value={opt}>{opt}</SelectItem>
+                              <SelectItem key={i} value={opt} className="text-base py-3">{opt}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -211,11 +238,11 @@ export default function PublicQuestionnairePage({ params }) {
                         required={field.required}
                         value={answers[field.id] || ""}
                         onValueChange={(val) => handleAnswerChange(field.id, val)}
-                        className="space-y-3"
+                        className="space-y-4"
                       >
                         {field.options?.map((opt, i) => (
-                          <div key={i} className="flex items-center space-x-3">
-                            <RadioGroupItem value={opt} id={`${field.id}-${i}`} />
+                          <div key={i} className="flex items-center space-x-4">
+                            <RadioGroupItem value={opt} id={`${field.id}-${i}`} className="size-5" />
                             <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-none text-base">{opt}</Label>
                           </div>
                         ))}
@@ -223,13 +250,14 @@ export default function PublicQuestionnairePage({ params }) {
                     )}
 
                     {field.type === 'CHECKBOX' && (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {field.options?.map((opt, i) => (
-                          <div key={i} className="flex items-start space-x-3">
+                          <div key={i} className="flex items-start space-x-4">
                             <Checkbox 
                               id={`${field.id}-${i}`} 
                               checked={answers[field.id]?.includes(opt)}
                               onCheckedChange={(checked) => handleCheckboxChange(field.id, opt, checked)}
+                              className="size-5 mt-0.5"
                             />
                             <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-tight text-base pt-0.5">{opt}</Label>
                           </div>
@@ -240,15 +268,31 @@ export default function PublicQuestionnairePage({ params }) {
                 </div>
               ))}
             </CardContent>
-            <CardFooter className="bg-muted/30 p-8 border-t flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">Fields marked with <span className="text-destructive">*</span> are required.</p>
-              <Button type="submit" size="lg" disabled={isSubmitting} className="px-8">
-                {isSubmitting && <Loader2Icon className="size-4 mr-2 animate-spin" />}
-                {isSubmitting ? "Submitting..." : "Submit Form"}
+            <CardFooter className="bg-muted/10 p-8 sm:px-12 sm:py-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-muted-foreground w-full sm:w-auto text-center sm:text-left">Fields marked with <span className="text-destructive">*</span> are required.</p>
+              <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto px-10 h-12 text-base rounded-full shadow-md hover:shadow-lg transition-all">
+                {isSubmitting && <Loader2Icon className="size-5 mr-2 animate-spin" />}
+                {isSubmitting ? "Submitting..." : "Submit Response"}
               </Button>
             </CardFooter>
           </form>
         </Card>
+      </div>
+
+      <div className="mt-16 pb-12 flex flex-col items-center justify-center relative z-10 space-y-6">
+        <Link href="/" className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+          <span className="text-sm text-muted-foreground">Powered by</span>
+          <LogoIcon className="size-5 grayscale" />
+          <span className="font-bold text-foreground tracking-tight">Soseki</span>
+        </Link>
+        
+        <div className="flex items-center gap-4 text-xs text-muted-foreground/60">
+          <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+          <span>&middot;</span>
+          <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+          <span>&middot;</span>
+          <a href="#" className="hover:text-foreground transition-colors">Report Abuse</a>
+        </div>
       </div>
     </div>
   );
