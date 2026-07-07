@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, LinkIcon, CopyIcon, Loader2Icon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, LinkIcon, CopyIcon, Loader2Icon, SparklesIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -104,10 +104,16 @@ export default function QuestionnairesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Questionnaires</h1>
           <p className="text-muted-foreground mt-2">Manage your forms, surveys, and question banks.</p>
         </div>
-        <Button onClick={() => router.push("/dashboard/questionnaires/new")} className="gap-2">
-          <PlusIcon className="size-4" />
-          Create New
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => router.push("/dashboard/questionnaires/import")} className="gap-2 bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary">
+            <SparklesIcon className="size-4" />
+            Import with AI
+          </Button>
+          <Button onClick={() => router.push("/dashboard/questionnaires/new")} className="gap-2">
+            <PlusIcon className="size-4" />
+            Create New
+          </Button>
+        </div>
       </div>
       
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
