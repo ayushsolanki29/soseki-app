@@ -1,164 +1,63 @@
-const prisma = require("../../database/prisma");
+const supportTicketsService = require("./support-tickets.service");
 
-const getTickets = async (req, res) => {
-  try {
-    const { organizationId } = req.user;
-    if (!organizationId) {
-      return res.status(401).json({ success: false, message: "Unauthorized: No organization found" });
+class SupportTicketsController {
+  async getTickets(req, res, next) {
+    try {
+      const globalMode = req.query.global === "true";
+      const tickets = await supportTicketsService.getTickets(req.user.organizationId, globalMode);
+      return res.status(200).json({ success: true, tickets });
+    } catch (error) {
+      if (error.status === 401) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
     }
-
-    const { global } = req.query;
-    const globalMode = global === "true";
-
-    // In a real app, verify the user has Super Admin role for global mode
-    const where = globalMode ? {} : { organizationId };
-
-    const tickets = await prisma.supportTicket.findMany({
-      where,
-      include: {
-        user: { select: { name: true, email: true } },
-        organization: { select: { name: true } },
-        _count: { select: { messages: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return res.status(200).json({ success: true, tickets });
-  } catch (error) {
-    console.error("Fetch support tickets error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-};
 
-const createTicket = async (req, res) => {
-  try {
-    const { id: userId, organizationId } = req.user;
-    if (!organizationId) {
-      return res.status(401).json({ success: false, message: "Unauthorized: No organization found" });
+  async createTicket(req, res, next) {
+    try {
+      const ticket = await supportTicketsService.createTicket(req.user.id, req.user.organizationId, req.body);
+      return res.status(201).json({ success: true, ticket });
+    } catch (error) {
+      if (error.status === 401 || error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
     }
-
-    const { title, description, priority } = req.body;
-
-    if (!title || !description) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
-    }
-
-    const ticket = await prisma.supportTicket.create({
-      data: {
-        title,
-        description,
-        priority: priority || "Medium",
-        userId,
-        organizationId,
-      },
-    });
-
-    return res.status(201).json({ success: true, ticket });
-  } catch (error) {
-    console.error("Create support ticket error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-};
 
-const getTicketById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const ticket = await prisma.supportTicket.findUnique({
-      where: { id },
-      include: {
-        user: { select: { name: true, email: true } },
-        organization: { select: { name: true } },
-        messages: {
-          include: {
-            sender: { select: { name: true, email: true } },
-          },
-          orderBy: { createdAt: "asc" },
-        },
-      },
-    });
-
-    if (!ticket) {
-      return res.status(404).json({ success: false, message: "Ticket not found" });
+  async getTicketById(req, res, next) {
+    try {
+      const ticket = await supportTicketsService.getTicketById(req.params.id);
+      return res.status(200).json({ success: true, ticket });
+    } catch (error) {
+      if (error.status === 404) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
     }
-
-    return res.status(200).json({ success: true, ticket });
-  } catch (error) {
-    console.error("Fetch ticket details error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-};
 
-const updateTicket = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status, priority } = req.body;
-
-    const updateData = {};
-    if (status) updateData.status = status;
-    if (priority) updateData.priority = priority;
-
-    const ticket = await prisma.supportTicket.update({
-      where: { id },
-      data: updateData,
-      include: {
-        user: { select: { name: true, email: true } },
-        organization: { select: { name: true } },
-      },
-    });
-
-    return res.status(200).json({ success: true, ticket });
-  } catch (error) {
-    console.error("Update ticket error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
-
-const addMessage = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { id: userId } = req.user;
-    const { content } = req.body;
-
-    if (!content) {
-      return res.status(400).json({ success: false, message: "Message content is required" });
+  async updateTicket(req, res, next) {
+    try {
+      const ticket = await supportTicketsService.updateTicket(req.params.id, req.body);
+      return res.status(200).json({ success: true, ticket });
+    } catch (error) {
+      next(error);
     }
-
-    const ticket = await prisma.supportTicket.findUnique({
-      where: { id },
-    });
-
-    if (!ticket) {
-      return res.status(404).json({ success: false, message: "Ticket not found" });
-    }
-
-    const message = await prisma.supportTicketMessage.create({
-      data: {
-        ticketId: id,
-        senderId: userId,
-        content,
-      },
-      include: {
-        sender: { select: { name: true, email: true } },
-      },
-    });
-
-    await prisma.supportTicket.update({
-      where: { id },
-      data: { updatedAt: new Date() },
-    });
-
-    return res.status(201).json({ success: true, message });
-  } catch (error) {
-    console.error("Add message error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-};
 
-module.exports = {
-  getTickets,
-  createTicket,
-  getTicketById,
-  updateTicket,
-  addMessage,
-};
+  async addMessage(req, res, next) {
+    try {
+      const message = await supportTicketsService.addMessage(req.params.id, req.user.id, req.body);
+      return res.status(201).json({ success: true, message });
+    } catch (error) {
+      if (error.status === 404 || error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+}
+
+module.exports = new SupportTicketsController();

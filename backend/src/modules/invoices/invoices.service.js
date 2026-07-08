@@ -1,0 +1,217 @@
+// src/modules/invoices/invoices.service.js
+const prisma = require("../../database/prisma");
+
+class InvoicesService {
+  async getInvoices(organizationId, clientId, projectId, status) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const where = { organizationId };
+    if (clientId && clientId !== "All") where.clientId = clientId;
+    if (projectId && projectId !== "All") where.projectId = projectId;
+    if (status && status !== "All") where.status = status;
+
+    const invoices = await prisma.invoice.findMany({
+      where,
+      include: { client: true, project: true },
+      orderBy: { issueDate: "desc" },
+    });
+
+    return invoices;
+  }
+
+  async createInvoice(organizationId, data) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const {
+      clientId,
+      projectId,
+      invoiceNumber,
+      status,
+      issueDate,
+      dueDate,
+      currency,
+      subtotal,
+      taxAmount,
+      discountAmount,
+      totalAmount,
+      exchangeRate,
+      notice,
+      notes,
+      terms,
+      items,
+    } = data;
+
+    const invoice = await prisma.invoice.create({
+      data: {
+        organizationId,
+        clientId,
+        projectId: projectId || null,
+        invoiceNumber,
+        status: status || "Draft",
+        issueDate: issueDate ? new Date(issueDate) : new Date(),
+        dueDate: new Date(dueDate),
+        currency: currency || "USD",
+        subtotal: parseFloat(subtotal) || 0,
+        taxAmount: parseFloat(taxAmount) || 0,
+        discountAmount: parseFloat(discountAmount) || 0,
+        totalAmount: parseFloat(totalAmount) || 0,
+        exchangeRate: parseFloat(exchangeRate) || 1.0,
+        notice,
+        notes,
+        terms,
+        items: {
+          create: items?.map((item) => ({
+            description: item.description,
+            quantity: parseInt(item.quantity) || 1,
+            unitPrice: parseFloat(item.unitPrice) || 0,
+            taxRate: parseFloat(item.taxRate) || 0,
+            total: parseFloat(item.total) || 0,
+          })) || [],
+        },
+        activities: {
+          create: [{ type: "CREATED", description: "Invoice created" }],
+        },
+      },
+      include: {
+        items: true,
+        activities: true,
+      },
+    });
+
+    return invoice;
+  }
+
+  async getInvoiceById(organizationId, id) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id, organizationId },
+      include: {
+        client: true,
+        project: true,
+        items: true,
+        payments: { orderBy: { date: "desc" } },
+        activities: { orderBy: { date: "desc" } },
+        expenses: { orderBy: { date: "desc" } },
+      },
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    return invoice;
+  }
+
+  async updateInvoice(organizationId, id, data) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    // Check if it's just a status update
+    if (Object.keys(data).length === 1 && data.status) {
+      const invoice = await prisma.invoice.update({
+        where: { id, organizationId },
+        data: {
+          status: data.status,
+          activities: {
+            create: [{ type: "UPDATED", description: `Status changed to ${data.status}` }],
+          },
+        },
+      });
+      return invoice;
+    }
+
+    const {
+      clientId,
+      projectId,
+      invoiceNumber,
+      status,
+      issueDate,
+      dueDate,
+      currency,
+      subtotal,
+      taxAmount,
+      discountAmount,
+      totalAmount,
+      exchangeRate,
+      notice,
+      notes,
+      terms,
+      items,
+    } = data;
+
+    const invoice = await prisma.invoice.update({
+      where: { id, organizationId },
+      data: {
+        clientId,
+        projectId: projectId || null,
+        invoiceNumber,
+        status: status || "Draft",
+        issueDate: issueDate ? new Date(issueDate) : undefined,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        currency: currency || "USD",
+        subtotal: parseFloat(subtotal) || 0,
+        taxAmount: parseFloat(taxAmount) || 0,
+        discountAmount: parseFloat(discountAmount) || 0,
+        totalAmount: parseFloat(totalAmount) || 0,
+        exchangeRate: parseFloat(exchangeRate) || 1.0,
+        notice,
+        notes,
+        terms,
+        items: {
+          deleteMany: {},
+          create: items?.map((item) => ({
+            description: item.description,
+            quantity: parseInt(item.quantity) || 1,
+            unitPrice: parseFloat(item.unitPrice) || 0,
+            taxRate: parseFloat(item.taxRate) || 0,
+            total: parseFloat(item.total) || 0,
+          })) || [],
+        },
+        activities: {
+          create: [{ type: "UPDATED", description: "Invoice updated" }],
+        },
+      },
+      include: {
+        items: true,
+        client: true,
+        project: true,
+      },
+    });
+
+    return invoice;
+  }
+
+  async deleteInvoice(organizationId, id) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    await prisma.invoice.delete({
+      where: { id, organizationId },
+    });
+
+    return { success: true };
+  }
+}
+
+module.exports = new InvoicesService();

@@ -1,35 +1,17 @@
-const prisma = require("../../database/prisma");
+const paymentsService = require("./payments.service");
 
-const getPayments = async (req, res) => {
-  try {
-    const { organizationId } = req.user;
-    if (!organizationId) {
-      return res.status(401).json({ success: false, message: "Unauthorized: No organization found" });
+class PaymentsController {
+  async getPayments(req, res, next) {
+    try {
+      const payments = await paymentsService.getPayments(req.user.organizationId);
+      return res.status(200).json({ success: true, payments });
+    } catch (error) {
+      if (error.status === 401) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
     }
-
-    const payments = await prisma.payment.findMany({
-      where: {
-        invoice: {
-          organizationId,
-        },
-      },
-      include: {
-        invoice: {
-          include: {
-            client: true,
-          },
-        },
-      },
-      orderBy: { date: "desc" },
-    });
-
-    return res.status(200).json({ success: true, payments });
-  } catch (error) {
-    console.error("Fetch payments error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-};
+}
 
-module.exports = {
-  getPayments,
-};
+module.exports = new PaymentsController();
