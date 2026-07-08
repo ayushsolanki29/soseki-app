@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { ProjectsTable } from "@/components/shared/projects-table";
 import { InvoicesTable } from "@/components/shared/invoices-table";
@@ -16,7 +15,6 @@ import { ExpensesTable } from "@/components/shared/expenses-table";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -29,7 +27,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ClientForm } from "@/components/forms/client-form";
-import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 

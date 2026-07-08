@@ -6,8 +6,7 @@ import {
   rings,
   icons,
   thumbs,
-  glass,
-  adventurer
+  glass
 } from '@dicebear/collection';
 
 // Map different entities to distinct aesthetic styles

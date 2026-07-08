@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { formatDate, cn } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -27,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +34,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SearchIcon, PlusIcon, FolderIcon, EyeIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, EyeIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
 import API from "@/lib/api";
 import { ProjectForm } from "@/components/forms/project-form";
 import { toast } from "sonner";

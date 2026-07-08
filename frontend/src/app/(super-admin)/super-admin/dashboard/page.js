@@ -6,9 +6,8 @@ import { RevenueOverviewChart } from "@/components/conversation-volume-chart";
 import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Delta, DeltaIcon, DeltaValue } from "@/components/delta";
-import { formatCurrency, formatDate, cn } from "@/lib/utils";
-import Link from "next/link";
-import { BuildingIcon, UserIcon, TicketIcon, AlertCircleIcon, CalendarIcon, ActivityIcon, CheckCircle2Icon } from "lucide-react";
+import { formatCurrency, cn } from "@/lib/utils";
+import { BuildingIcon, UserIcon, AlertCircleIcon, CalendarIcon, ActivityIcon, CheckCircle2Icon } from "lucide-react";
 
 const getOrganizationsColumns = () => [
     { header: "Organization", render: (row) => <span className="font-medium hover:underline cursor-pointer">{row.name}</span> },

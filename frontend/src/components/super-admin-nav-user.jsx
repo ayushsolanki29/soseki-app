@@ -13,7 +13,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserIcon, LogOutIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 import { useRouter } from "next/navigation";

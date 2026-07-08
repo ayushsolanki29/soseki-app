@@ -21,10 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, FileTextIcon, MoreHorizontal, EyeIcon, CopyIcon, DownloadIcon, TrashIcon, CheckCircleIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, FileTextIcon, MoreHorizontal, EyeIcon, DownloadIcon, TrashIcon, CheckCircleIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";

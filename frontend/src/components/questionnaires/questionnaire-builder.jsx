@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { PlusIcon, TrashIcon, GripVerticalIcon, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { PlusIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import API from "@/lib/api";

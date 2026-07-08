@@ -15,10 +15,8 @@ import {
 } from "@/components/ui/table";
 import { 
     ArrowLeftIcon, 
-    FileTextIcon, 
     DownloadIcon, 
-    CreditCardIcon, 
-    CopyIcon,
+    CreditCardIcon,
     EditIcon,
     BuildingIcon,
     TrashIcon

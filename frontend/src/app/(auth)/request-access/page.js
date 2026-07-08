@@ -25,8 +25,7 @@ import {
   LayersIcon,
   MousePointerClickIcon,
   FileSpreadsheetIcon,
-  StarIcon,
-  CheckCircle2Icon
+  StarIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

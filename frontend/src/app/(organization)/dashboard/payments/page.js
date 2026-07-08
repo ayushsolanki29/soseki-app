@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
-import { CreditCardIcon, FileTextIcon, UserIcon, PlusIcon } from "lucide-react";
+import { CreditCardIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import API from "@/lib/api";
 import { toast } from "sonner";

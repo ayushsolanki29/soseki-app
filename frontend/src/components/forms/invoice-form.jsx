@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusIcon, TrashIcon, ZapIcon, SparklesIcon, SaveIcon, GripVerticalIcon, PlusCircleIcon } from "lucide-react";
+import { PlusIcon, TrashIcon, ZapIcon, SparklesIcon, SaveIcon, PlusCircleIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

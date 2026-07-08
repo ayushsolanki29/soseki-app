@@ -1,10 +1,10 @@
 "use client";
 
-import { SidebarInset, SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarMenuItem, SidebarMenu, SidebarGroup, SidebarFooter } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarFooter } from "@/components/ui/sidebar";
 import { SuperAdminHeader } from "@/components/super-admin-header";
 import { LogoIcon } from "@/components/logo";
 import { NavGroup } from "@/components/nav-group";
-import { LayoutDashboardIcon, UsersIcon, BuildingIcon, SearchIcon, PlusIcon, FolderIcon, UserIcon, TicketIcon, SettingsIcon } from "lucide-react";
+import { LayoutDashboardIcon, UsersIcon, BuildingIcon, SearchIcon, PlusIcon, UserIcon, TicketIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";

@@ -1,12 +1,9 @@
 import { 
     LayoutGridIcon, 
     UsersIcon, 
-    BriefcaseIcon, 
     FileTextIcon, 
     CreditCardIcon, 
     CheckSquareIcon, 
-    ClockIcon, 
-    PieChartIcon, 
     SettingsIcon, 
     HelpCircleIcon, 
     ActivityIcon, 

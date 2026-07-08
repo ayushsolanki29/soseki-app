@@ -4,20 +4,14 @@ import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
 import { DashboardDataTable } from "@/components/dashboard-data-table";
 import { DashboardListWidget } from "@/components/dashboard-list-widget";
 import { HoverQuickActions } from "@/components/hover-quick-actions";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { 
-    ClockIcon, 
     CheckCircle2Icon, 
     FileTextIcon, 
-    UserPlusIcon, 
     BriefcaseIcon,
     AlertCircleIcon,
     CalendarIcon,
-    PlusIcon,
-    CreditCardIcon,
-    PieChartIcon,
     ClipboardListIcon
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";

@@ -10,9 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { ReceiptIcon, FileTextIcon, UserIcon, PlusIcon, MoreHorizontal, Edit, Trash2, EyeIcon } from "lucide-react";
+import { ReceiptIcon, PlusIcon, Edit, Trash2, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import API from "@/lib/api";
 import { toast } from "sonner";

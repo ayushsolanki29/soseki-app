@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 
 import {
 	Avatar,
-	AvatarFallback,
-	AvatarImage,
 } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -15,7 +13,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserIcon, BellIcon, CommandIcon, LifeBuoyIcon, GraduationCapIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
+import { UserIcon, LogOutIcon } from "lucide-react";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 import { useRouter } from "next/navigation";

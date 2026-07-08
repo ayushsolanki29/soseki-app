@@ -55,6 +55,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "prisma": "^5.22.0",
     "tailwindcss": "^4"
   }
