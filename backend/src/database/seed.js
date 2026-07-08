@@ -1,31 +1,53 @@
-// src/database/seed.js
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('./prisma');
 const bcrypt = require('bcryptjs');
 
-const prisma = new PrismaClient();
-
 async function main() {
-  console.log('Starting seed...');
+  console.log('Seeding the database...');
 
-  // Create a sample user
-  const hashedPassword = await bcrypt.hash('password123', 12);
-  
-  const user = await prisma.user.upsert({
-    where: { email: 'demo@foreversecurity.com' },
-    update: {},
-    create: {
-      email: 'demo@foreversecurity.com',
-      name: 'Demo User',
-    },
+  const passwordHash = await bcrypt.hash('password123', 10);
+
+  // 1. Create Super Admin
+  const existingSuperAdmin = await prisma.superUser.findUnique({
+    where: { email: 'super@soseki.com' },
   });
 
-  console.log('Created user:', user);
-  console.log('Seed completed!');
+  if (!existingSuperAdmin) {
+    const superAdmin = await prisma.superUser.create({
+      data: {
+        email: 'super@soseki.com',
+        passwordHash,
+        name: 'Super Admin',
+      },
+    });
+    console.log('Created Super Admin:', superAdmin.email);
+  } else {
+    console.log('Super Admin user already exists, skipping creation.');
+  }
+
+  // 2. Create Demo User
+  const existingUser = await prisma.user.findUnique({
+    where: { email: 'demo@soseki.com' },
+  });
+
+  if (!existingUser) {
+    const demoUser = await prisma.user.create({
+      data: {
+        email: 'demo@soseki.com',
+        passwordHash,
+        name: 'Demo Owner',
+      },
+    });
+    console.log('Created Demo User:', demoUser.email);
+  } else {
+    console.log('Demo User already exists, skipping creation.');
+  }
+
+  console.log('Database seeded successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('Seed error:', e);
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

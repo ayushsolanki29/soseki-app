@@ -15,6 +15,7 @@ import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { LogoIcon } from "@/components/logo";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import Link from "next/link";
+import API from "@/lib/api";
 
 export default function PublicQuestionnairePage({ params }) {
   const unwrappedParams = use(params);
@@ -29,26 +30,21 @@ export default function PublicQuestionnairePage({ params }) {
   useEffect(() => {
     const fetchForm = async () => {
       try {
-        const res = await fetch(`/api/public/questionnaires/${unwrappedParams.slug}`);
-        const result = await res.json();
+        const res = await API.get(`/questionnaires/public/${unwrappedParams.slug}`);
         
-        if (!res.ok) {
-          setError(result.error || "Failed to load form");
-        } else {
-          setData(result.questionnaire);
-          // Initialize answers state with default values
-          const initialAnswers = {};
-          result.questionnaire.fields.forEach(field => {
-            if (field.type === 'CHECKBOX') {
-              initialAnswers[field.id] = []; // array for multiple checkboxes
-            } else {
-              initialAnswers[field.id] = ""; // empty string for others
-            }
-          });
-          setAnswers(initialAnswers);
-        }
+        setData(res.data.questionnaire);
+        // Initialize answers state with default values
+        const initialAnswers = {};
+        res.data.questionnaire.fields.forEach(field => {
+          if (field.type === 'CHECKBOX') {
+            initialAnswers[field.id] = []; // array for multiple checkboxes
+          } else {
+            initialAnswers[field.id] = ""; // empty string for others
+          }
+        });
+        setAnswers(initialAnswers);
       } catch (err) {
-        setError("Failed to load form. Please try again.");
+        setError(err.response?.data?.error || err.response?.data?.message || "Failed to load form. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -78,21 +74,15 @@ export default function PublicQuestionnairePage({ params }) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/public/questionnaires/${unwrappedParams.slug}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers })
-      });
+      const res = await API.post(`/questionnaires/public/${unwrappedParams.slug}`, { answers });
       
-      const result = await res.json();
-      
-      if (!res.ok) {
-        toast.error(result.error || "Failed to submit form");
-      } else {
+      if (res.data.success) {
         setIsSubmitted(true);
+      } else {
+        toast.error(res.data.error || res.data.message || "Failed to submit form");
       }
     } catch (err) {
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error(err.response?.data?.error || err.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

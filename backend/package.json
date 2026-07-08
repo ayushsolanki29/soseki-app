@@ -1,5 +1,5 @@
 {
-  "name": "forever-security-software-backend",
+  "name": "soseki-app-backend",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
@@ -16,30 +16,36 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gipldevelopers/forever-security-software-backend.git"
+    "url": "git+https://github.com/ayushsolanki29/soseki-app.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/gipldevelopers/forever-security-software-backend/issues"
+    "url": "https://github.com/ayushsolanki29/soseki-app/issues"
   },
-  "homepage": "https://github.com/gipldevelopers/forever-security-software-backend#readme",
+  "homepage": "https://github.com/ayushsolanki29/soseki-app#readme",
   "dependencies": {
-    "@prisma/client": "^6.18.0",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "@prisma/config": "^7.3.0",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "disposable-email-detector": "^3.0.1",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "pg": "^8.18.0",
+    "smart-passphrase": "^2.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
-    "prisma": "^6.18.0"
+    "prisma": "^7.3.0"
   }
 }

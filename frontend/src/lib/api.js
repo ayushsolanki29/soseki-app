@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 // Create an Axios instance
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+
 const API = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   withCredentials: true, // Important: This ensures cookies are sent with requests
   headers: {
     'Content-Type': 'application/json',
@@ -38,7 +40,7 @@ API.interceptors.response.use(
         }
         
         // Attempt to refresh the token for normal users
-        await axios.post('/api/auth/refresh', {}, { withCredentials: true });
+        await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
 
         // If successful, the new cookies are set. Retry the original request.
         return API(originalRequest);

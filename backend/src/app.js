@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -23,21 +24,22 @@ app.use(
 // Logging
 app.use(morgan("dev"));
 
-// Body Parser
+// Body & Cookie Parser
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Static Uploads
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Routes
-app.use("/api/demo", require("./modules/demo/demo.routes"));
+app.use("/api", require("./modules"));
 
 // Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    message: "Forever Security Software API Running ✅",
+    message: "Project API Running ✅",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });

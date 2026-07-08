@@ -11,7 +11,7 @@ const server = http.createServer(app);
 // Start Server
 server.listen(PORT, () => {
   console.log("\n========================================");
-  console.log("Forever Security Software Backend Online");
+  console.log("Soseki Backend Online");
   console.log("Server running on:", SERVER_URL);
   console.log("Client URL allowed:", CLIENT_URL);
   console.log("Health check:", `${SERVER_URL}/health`);
