@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { DownloadIcon, CopyIcon, UploadCloudIcon, CheckCircleIcon, ArrowRightIcon } from "lucide-react";
-import { MIGRATION_TEMPLATE, AI_PROMPT } from "@/lib/migration-templates";
+import { DownloadIcon, CopyIcon, UploadCloudIcon, CheckCircleIcon, ArrowRightIcon, Loader2 } from "lucide-react";
 import API from "@/lib/api";
 
 export default function MigrationPage() {
@@ -12,9 +11,28 @@ export default function MigrationPage() {
   const [parsedData, setParsedData] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [importStatus, setImportStatus] = useState({ clients: 0, projects: 0, invoices: 0, payments: 0 });
+  
+  const [promptData, setPromptData] = useState({ prompt: "", template: null });
+  const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
+
+  useEffect(() => {
+    fetchPrompt();
+  }, []);
+
+  const fetchPrompt = async () => {
+    try {
+      const res = await API.get("/migration/prompt");
+      setPromptData({ prompt: res.data.prompt, template: res.data.template });
+    } catch (error) {
+      toast.error("Failed to load AI Prompt from server.");
+    } finally {
+      setIsLoadingPrompt(false);
+    }
+  };
 
   const handleDownloadTemplate = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(MIGRATION_TEMPLATE, null, 2));
+    if (!promptData.template) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(promptData.template, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "soseki_migration_template.json");
@@ -24,7 +42,8 @@ export default function MigrationPage() {
   };
 
   const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(AI_PROMPT);
+    if (!promptData.prompt) return;
+    navigator.clipboard.writeText(promptData.prompt);
     toast.success("AI Prompt copied to clipboard!");
   };
 
@@ -97,19 +116,28 @@ export default function MigrationPage() {
           <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">2</span> 
           Prepare AI Instructions
         </h2>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button variant="outline" className="gap-2 h-12" onClick={handleDownloadTemplate}>
-            <DownloadIcon className="size-4" />
-            1. Download JSON Template
-          </Button>
-          <Button variant="outline" className="gap-2 h-12" onClick={handleCopyPrompt}>
-            <CopyIcon className="size-4" />
-            2. Copy AI Prompt
-          </Button>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Go to ChatGPT or Claude. Paste the copied prompt, attach the downloaded JSON template, and upload your messy data (PDFs, Excel, etc). The AI will generate a strict JSON file.
-        </p>
+        {isLoadingPrompt ? (
+          <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed rounded-lg bg-accent/20">
+             <Loader2 className="size-6 text-primary animate-spin mb-2" />
+             <p className="text-sm font-medium text-muted-foreground">We are cooking, just a moment...</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="outline" className="gap-2 h-12" onClick={handleDownloadTemplate}>
+                <DownloadIcon className="size-4" />
+                1. Download JSON Template
+              </Button>
+              <Button variant="outline" className="gap-2 h-12" onClick={handleCopyPrompt}>
+                <CopyIcon className="size-4" />
+                2. Copy AI Prompt
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Go to ChatGPT or Claude. Paste the copied prompt, attach the downloaded JSON template, and upload your messy data (PDFs, Excel, etc). The AI will generate a strict JSON file.
+            </p>
+          </>
+        )}
       </section>
 
       {/* Step 3: Upload */}

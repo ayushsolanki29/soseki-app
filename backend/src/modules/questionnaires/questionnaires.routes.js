@@ -12,6 +12,7 @@ router.post("/public/:slug", validate(questionnairesValidation.submitQuestionnai
 // Protected routes
 router.use(authMiddleware);
 
+router.get("/prompt", questionnairesController.getPrompt);
 router.get("/", questionnairesController.getQuestionnaires);
 router.post("/", validate(questionnairesValidation.createQuestionnaireValidation), questionnairesController.createQuestionnaire);
 router.get("/:id", questionnairesController.getQuestionnaireById);

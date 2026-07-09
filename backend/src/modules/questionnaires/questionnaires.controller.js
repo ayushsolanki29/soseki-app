@@ -14,6 +14,15 @@ class QuestionnairesController {
     }
   }
 
+  async getPrompt(req, res, next) {
+    try {
+      const { QUESTIONNAIRE_PROMPT } = require("./questionnaires.constants");
+      return res.status(200).json({ success: true, prompt: QUESTIONNAIRE_PROMPT });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createQuestionnaire(req, res, next) {
     try {
       const questionnaire = await questionnairesService.createQuestionnaire(req.user.organizationId, req.body);

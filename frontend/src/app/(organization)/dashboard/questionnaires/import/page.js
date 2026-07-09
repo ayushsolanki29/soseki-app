@@ -1,41 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ChevronLeftIcon, CopyIcon, SparklesIcon } from "lucide-react";
+import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import API from "@/lib/api";
-
-const PROMPT_TEMPLATE = `I want to create a questionnaire form for my SaaS application. I will provide you with some raw data, documents, or a description of what I need.
-Please extract the required questions and generate a single JSON object matching this exact schema:
-
-{
-  "title": "A short, descriptive title for the form",
-  "description": "A brief explanation of the questionnaire (optional)",
-  "fields": [
-    {
-      "type": "TEXT" | "TEXTAREA" | "SELECT" | "RADIO" | "CHECKBOX",
-      "label": "The question text",
-      "description": "Help text (optional)",
-      "required": true | false,
-      "options": ["Option 1", "Option 2"] // ONLY include this array if type is SELECT, RADIO, or CHECKBOX
-    }
-  ]
-}
-
-Ensure the fields are logical and use the best field "type" for the question.
-Return ONLY the raw JSON output without any markdown formatting, backticks, or explanations.`;
 
 export default function ImportQuestionnairePage() {
   const router = useRouter();
   const [jsonInput, setJsonInput] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  
+  const [promptTemplate, setPromptTemplate] = useState("");
+  const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
+
+  useEffect(() => {
+    fetchPrompt();
+  }, []);
+
+  const fetchPrompt = async () => {
+    try {
+      const res = await API.get("/questionnaires/prompt");
+      setPromptTemplate(res.data.prompt);
+    } catch (error) {
+      toast.error("Failed to load AI Prompt from server.");
+    } finally {
+      setIsLoadingPrompt(false);
+    }
+  };
 
   const copyPrompt = () => {
-    navigator.clipboard.writeText(PROMPT_TEMPLATE);
+    if (!promptTemplate) return;
+    navigator.clipboard.writeText(promptTemplate);
     toast.success("Prompt copied to clipboard!");
   };
 
@@ -96,11 +95,18 @@ export default function ImportQuestionnairePage() {
           </CardHeader>
           <CardContent className="flex-1">
             <div className="relative h-full min-h-[300px]">
-              <Textarea 
-                readOnly 
-                value={PROMPT_TEMPLATE} 
-                className="h-full resize-none font-mono text-xs bg-muted/30"
-              />
+              {isLoadingPrompt ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/30 rounded-md">
+                   <Loader2 className="size-6 text-primary animate-spin mb-2" />
+                   <p className="text-sm font-medium text-muted-foreground">We are cooking, just a moment...</p>
+                </div>
+              ) : (
+                <Textarea 
+                  readOnly 
+                  value={promptTemplate} 
+                  className="h-full resize-none font-mono text-xs bg-muted/30"
+                />
+              )}
             </div>
           </CardContent>
           <CardFooter className="pt-4 border-t">

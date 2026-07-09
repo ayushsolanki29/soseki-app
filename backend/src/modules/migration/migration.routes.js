@@ -8,5 +8,6 @@ const { authMiddleware } = require("../../middlewares/auth.middleware");
 router.use(authMiddleware);
 
 router.post("/import", validate(migrationValidation.importDataValidation), migrationController.importData);
+router.get("/prompt", migrationController.getPrompt);
 
 module.exports = router;

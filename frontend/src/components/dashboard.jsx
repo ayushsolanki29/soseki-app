@@ -4,6 +4,7 @@ import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
 import { DashboardDataTable } from "@/components/dashboard-data-table";
 import { DashboardListWidget } from "@/components/dashboard-list-widget";
 import { HoverQuickActions } from "@/components/hover-quick-actions";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { 
@@ -21,7 +22,12 @@ import { redirect } from "next/navigation";
 
 // Define the columns directly mapping to Prisma models
 const getClientsColumns = () => [
-    { header: "Company", render: (row) => <Link href={`/dashboard/clients/${row.id}`} className="font-medium hover:underline">{row.name}</Link> },
+    { header: "Company", render: (row) => (
+        <div className="flex items-center gap-3">
+            <DynamicAvatar type="client" seed={row.name} size={32} />
+            <Link href={`/dashboard/clients/${row.id}`} className="font-medium hover:underline">{row.name}</Link>
+        </div>
+    ) },
     { header: "Contact Email", accessor: "email" },
     { header: "Status", render: (row) => {
         const isGood = row.status === "Active";
@@ -41,7 +47,12 @@ const getClientsColumns = () => [
 ];
 
 const getProjectsColumns = () => [
-    { header: "Project Name", render: (row) => <Link href={`/dashboard/projects/${row.id}`} className="font-medium hover:underline">{row.title}</Link> },
+    { header: "Project Name", render: (row) => (
+        <div className="flex items-center gap-3">
+            <DynamicAvatar type="project" seed={row.title} size={32} />
+            <Link href={`/dashboard/projects/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+        </div>
+    ) },
     { header: "Client", render: (row) => <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> },
     { header: "Due Date", render: (row) => row.estimatedEndDate ? formatDate(row.estimatedEndDate) : '-' },
     { header: "Status", render: (row) => {
@@ -73,7 +84,12 @@ const getProjectsColumns = () => [
 ];
 
 const getInvoicesColumns = () => [
-    { header: "Invoice", render: (row) => <Link href={`/dashboard/invoices/${row.id}`} className="font-medium hover:underline">{row.invoiceNumber}</Link> },
+    { header: "Invoice", render: (row) => (
+        <div className="flex items-center gap-3">
+            <DynamicAvatar type="invoice" seed={row.invoiceNumber} size={32} />
+            <Link href={`/dashboard/invoices/${row.id}`} className="font-medium hover:underline">{row.invoiceNumber}</Link>
+        </div>
+    ) },
     { header: "Client", render: (row) => <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> },
     { header: "Amount", render: (row) => formatCurrency(row.totalAmount, row.currency) },
     { header: "Due Date", render: (row) => formatDate(row.dueDate) },
@@ -106,7 +122,12 @@ const getInvoicesColumns = () => [
 ];
 
 const getPaymentsColumns = () => [
-    { header: "Client", render: (row) => <Link href={`/dashboard/clients/${row.invoice?.clientId}`} className="font-medium hover:underline">{row.invoice?.client?.name}</Link> },
+    { header: "Client", render: (row) => (
+        <div className="flex items-center gap-3">
+            <DynamicAvatar type="client" seed={row.invoice?.client?.name || "Client"} size={32} />
+            <Link href={`/dashboard/clients/${row.invoice?.clientId}`} className="font-medium hover:underline">{row.invoice?.client?.name}</Link>
+        </div>
+    ) },
     { header: "Invoice", render: (row) => <Link href={`/dashboard/invoices/${row.invoiceId}?tab=payments`} className="hover:underline">{row.invoice?.invoiceNumber}</Link> },
     { header: "Amount", render: (row) => formatCurrency(row.amount, row.invoice?.currency || "USD") },
     { header: "Method", accessor: "method" },
@@ -114,7 +135,12 @@ const getPaymentsColumns = () => [
 ];
 
 const getQuestionnairesColumns = () => [
-    { header: "Title", render: (row) => <Link href={`/dashboard/questionnaires/${row.id}`} className="font-medium hover:underline">{row.title}</Link> },
+    { header: "Title", render: (row) => (
+        <div className="flex items-center gap-3">
+            <DynamicAvatar type="questionnaire" seed={row.title} size={32} />
+            <Link href={`/dashboard/questionnaires/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+        </div>
+    ) },
     { header: "Client", render: (row) => row.clientId ? <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> : "-" },
     { header: "Responses", render: (row) => <span className="font-medium">{row.responseCount} {row.maxResponses ? `/ ${row.maxResponses}` : ""}</span> },
     { header: "Created", render: (row) => formatDate(row.createdAt) },
@@ -172,7 +198,7 @@ export async function Dashboard() {
             title: `Invoice generated for ${inv.client?.name}`,
             subtitle: `${inv.invoiceNumber} for ${formatCurrency(inv.totalAmount, inv.currency)}`,
             meta: formatDate(inv.createdAt),
-            icon: <FileTextIcon />
+            icon: <DynamicAvatar type="invoice" seed={inv.invoiceNumber} size={36} />
         })),
         ...recentProjects.map(proj => ({
             id: `proj-${proj.id}`,
@@ -180,7 +206,7 @@ export async function Dashboard() {
             title: "Project created",
             subtitle: proj.title,
             meta: formatDate(proj.createdAt),
-            icon: <BriefcaseIcon />
+            icon: <DynamicAvatar type="project" seed={proj.title} size={36} />
         })),
         ...recentPayments.map(pay => ({
             id: `pay-${pay.id}`,
@@ -188,7 +214,7 @@ export async function Dashboard() {
             title: `Payment received from ${pay.invoice?.client?.name}`,
             subtitle: `${pay.invoice?.invoiceNumber} for ${formatCurrency(pay.amount, pay.invoice?.currency || "USD")}`,
             meta: formatDate(pay.date),
-            icon: <CheckCircle2Icon className="text-emerald-500" />
+            icon: <DynamicAvatar type="client" seed={pay.invoice?.client?.name || "Client"} size={36} />
         })),
         ...recentQuestionnaires.map(q => ({
             id: `q-${q.id}`,
@@ -196,7 +222,7 @@ export async function Dashboard() {
             title: "Questionnaire created",
             subtitle: q.title,
             meta: formatDate(q.createdAt),
-            icon: <ClipboardListIcon className="text-blue-500" />
+            icon: <DynamicAvatar type="questionnaire" seed={q.title} size={36} />
         }))
     ];
     
@@ -207,13 +233,19 @@ export async function Dashboard() {
 
     // 2. Generate Upcoming Deadlines
 
+    const formatOverdueDays = (days) => {
+        if (days >= 365) return `${Math.floor(days / 365)}y`;
+        if (days >= 30) return `${Math.floor(days / 30)}mo`;
+        return `${days}d`;
+    };
+
     const deadlineItems = [
         ...upcomingProjects.map(proj => {
             const isOverdue = proj.estimatedEndDate && new Date(proj.estimatedEndDate) < new Date();
             let metaLabel = formatDate(proj.estimatedEndDate);
             if (isOverdue) {
                 const days = Math.floor((new Date() - new Date(proj.estimatedEndDate)) / (1000 * 60 * 60 * 24));
-                metaLabel = <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">Overdue ({days}d)</span>;
+                metaLabel = <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">Overdue ({formatOverdueDays(days)})</span>;
             }
             return {
                 id: `dl-proj-${proj.id}`,
@@ -229,7 +261,7 @@ export async function Dashboard() {
             let metaLabel = formatDate(inv.dueDate);
             if (isOverdue) {
                 const days = Math.floor((new Date() - new Date(inv.dueDate)) / (1000 * 60 * 60 * 24));
-                metaLabel = <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">Overdue ({days}d)</span>;
+                metaLabel = <span className="bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">Overdue ({formatOverdueDays(days)})</span>;
             }
             return {
                 id: `dl-inv-${inv.id}`,
