@@ -80,8 +80,17 @@ class SuperAdminService {
       throw error;
     }
 
-    // Generate a secure random password
-    const password = crypto.randomBytes(8).toString("hex");
+    // Generate a secure random password with mixed characters
+    const generatePassword = (length = 16) => {
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*-_=+";
+      let pwd = "";
+      const randomBytes = crypto.randomBytes(length);
+      for (let i = 0; i < length; i++) {
+        pwd += charset[randomBytes[i] % charset.length];
+      }
+      return pwd;
+    };
+    const password = generatePassword();
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({

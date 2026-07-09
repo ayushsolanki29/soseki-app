@@ -18,6 +18,15 @@ class UsersController {
       next(error);
     }
   }
+  async updatePassword(req, res, next) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      await usersService.updatePassword(req.user.id, currentPassword, newPassword);
+      return res.status(200).json({ success: true, message: "Password updated successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UsersController();

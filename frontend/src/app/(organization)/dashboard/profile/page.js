@@ -8,12 +8,23 @@ import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export default function ProfilePage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     // In a real app, you'd fetch the current user's profile.
@@ -38,8 +49,14 @@ export default function ProfilePage() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
-      return toast.error("Name and Email are required");
+    setErrors({});
+    let newErrors = {};
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!email.trim()) newErrors.email = "Email is required";
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
     setIsSaving(true);
@@ -53,6 +70,48 @@ export default function ProfilePage() {
       toast.error("Failed to update profile");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    let newErrors = {};
+    if (!currentPassword) newErrors.currentPassword = "Current password is required";
+    if (!newPassword) newErrors.newPassword = "New password is required";
+    if (!confirmPassword) newErrors.confirmPassword = "Confirm password is required";
+    
+    if (newPassword && newPassword.length < 8) {
+      newErrors.newPassword = "New password must be at least 8 characters long";
+    }
+    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "New passwords do not match";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await API.patch("/users/profile/password", {
+        currentPassword,
+        newPassword
+      });
+      toast.success("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || "Failed to change password";
+      if (errorMsg.toLowerCase().includes("current password")) {
+        setErrors({ currentPassword: errorMsg });
+      } else {
+        toast.error(errorMsg);
+      }
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -123,20 +182,24 @@ export default function ProfilePage() {
                     <div className="font-semibold text-sm">Full Name</div>
                     <Input 
                       value={name} 
-                      onChange={(e) => setName(e.target.value)} 
+                      onChange={(e) => { setName(e.target.value); setErrors(prev => ({...prev, name: undefined})); }} 
                       placeholder="e.g. John Doe" 
                       disabled={isSaving}
+                      className={errors.name ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
+                    {errors.name && <p className="text-xs text-destructive font-medium">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
                     <div className="font-semibold text-sm">Email Address</div>
                     <Input 
                       type="email"
                       value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
+                      onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({...prev, email: undefined})); }} 
                       placeholder="john@example.com" 
                       disabled={isSaving}
+                      className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
+                    {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
                 </div>
               </div>
             </div>
@@ -144,6 +207,89 @@ export default function ProfilePage() {
           <CardFooter className="border-t px-6 py-4 bg-muted/20">
             <Button type="submit" disabled={isSaving}>
               {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+
+      <Card>
+        <form onSubmit={handlePasswordChange}>
+          <CardHeader>
+            <CardTitle>Change Password</CardTitle>
+            <CardDescription>
+              Ensure your account is using a long, random password to stay secure.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-8 pt-2">
+            <div className="flex flex-col gap-6 w-full max-w-md">
+              <div className="space-y-2">
+                  <div className="font-semibold text-sm">Current Password</div>
+                  <div className="relative">
+                    <Input 
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={currentPassword} 
+                      onChange={(e) => { setCurrentPassword(e.target.value); setErrors(prev => ({...prev, currentPassword: undefined})); }} 
+                      placeholder="Enter current password" 
+                      disabled={isChangingPassword}
+                      className={errors.currentPassword ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground outline-none"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    >
+                      {showCurrentPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                    </button>
+                  </div>
+                  {errors.currentPassword && <p className="text-xs text-destructive font-medium">{errors.currentPassword}</p>}
+              </div>
+              <div className="space-y-2">
+                  <div className="font-semibold text-sm">New Password</div>
+                  <div className="relative">
+                    <Input 
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword} 
+                      onChange={(e) => { setNewPassword(e.target.value); setErrors(prev => ({...prev, newPassword: undefined})); }} 
+                      placeholder="Minimum 8 characters" 
+                      disabled={isChangingPassword}
+                      className={errors.newPassword ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground outline-none"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                    </button>
+                  </div>
+                  {errors.newPassword && <p className="text-xs text-destructive font-medium">{errors.newPassword}</p>}
+              </div>
+              <div className="space-y-2">
+                  <div className="font-semibold text-sm">Confirm New Password</div>
+                  <div className="relative">
+                    <Input 
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword} 
+                      onChange={(e) => { setConfirmPassword(e.target.value); setErrors(prev => ({...prev, confirmPassword: undefined})); }} 
+                      placeholder="Confirm new password" 
+                      disabled={isChangingPassword}
+                      className={errors.confirmPassword ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground outline-none"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && <p className="text-xs text-destructive font-medium">{errors.confirmPassword}</p>}
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="border-t px-6 py-4 bg-muted/20">
+            <Button type="submit" disabled={isChangingPassword}>
+              {isChangingPassword ? "Updating..." : "Update Password"}
             </Button>
           </CardFooter>
         </form>
