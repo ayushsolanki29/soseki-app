@@ -7,6 +7,8 @@
     "frontend"
   ],
   "scripts": {
+    "setup": "npm install && npm run setup:db",
+    "setup:db": "npm --workspace backend run db:dev && npm --workspace backend run db:seed",
     "dev": "npm-run-all --parallel dev:backend dev:frontend",
     "dev:backend": "npm --workspace backend run dev",
     "dev:frontend": "npm --workspace frontend run dev",

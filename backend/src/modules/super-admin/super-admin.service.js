@@ -62,6 +62,25 @@ class SuperAdminService {
     });
     return organizations;
   }
+
+  async getAllTickets() {
+    const tickets = await prisma.supportTicket.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { name: true, email: true } },
+        organization: { select: { name: true } },
+        _count: { select: { messages: true } }
+      }
+    });
+    return tickets;
+  }
+
+  async getAccessRequests() {
+    const requests = await prisma.waitlistLead.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+    return requests;
+  }
 }
 
 module.exports = new SuperAdminService();

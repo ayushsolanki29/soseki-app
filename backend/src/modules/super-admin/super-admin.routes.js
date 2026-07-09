@@ -11,5 +11,7 @@ const validate = require("../../middleware/validate");
 router.get("/dashboard/charts", superAdminController.getCharts);
 router.post("/users", validate(superAdminValidation.createUserValidation), superAdminController.createUser);
 router.get("/organizations", superAdminController.getOrganizations);
+router.get("/tickets", superAdminController.getAllTickets);
+router.get("/access-requests", superAdminController.getAccessRequests);
 
 module.exports = router;
