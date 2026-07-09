@@ -3,8 +3,11 @@ const router = express.Router();
 const dashboardController = require("./dashboard.controller");
 const { authMiddleware } = require("../../middlewares/auth.middleware");
 
+const searchRoutes = require("../search/search.routes");
+
 router.use(authMiddleware);
 
+router.use("/search", searchRoutes);
 router.get("/stats", dashboardController.getStats);
 router.get("/charts", dashboardController.getCharts);
 router.get("/data", dashboardController.getDashboardData);

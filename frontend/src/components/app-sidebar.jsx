@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { LogoIcon } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,13 +22,28 @@ import {
 import { NavGroup } from "@/components/nav-group";
 import { footerNavLinks, navGroups } from "@/components/app-shared";
 import { LatestChange } from "@/components/latest-change";
-import { PlusIcon, SearchIcon, UserIcon, FolderIcon, FileTextIcon, CreditCardIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, UserIcon, FolderIcon, FileTextIcon, CreditCardIcon, CheckSquareIcon, HelpCircleIcon } from "lucide-react";
+import { GlobalSearch } from "@/components/global-search";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export function AppSidebar() {
     const pathname = usePathname();
+    const [searchOpen, setSearchOpen] = useState(false);
+
+    useEffect(() => {
+        const down = (e) => {
+            if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                setSearchOpen((open) => !open);
+            }
+        };
+        document.addEventListener("keydown", down);
+        return () => document.removeEventListener("keydown", down);
+    }, []);
 
     const activeNavGroups = navGroups.map(group => ({
         ...group,
@@ -78,16 +94,37 @@ export function AppSidebar() {
 									<CreditCardIcon className="mr-2 size-4" />
 									Record Payment
 								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<CheckSquareIcon className="mr-2 size-4" />
+									New Questionnaire
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<HelpCircleIcon className="mr-2 size-4" />
+									New Support Ticket
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
-						<Button
-                            aria-label="Search conversations"
-                            className="size-8 group-data-[collapsible=icon]:opacity-0"
-                            size="icon"
-                            variant="outline">
-							<SearchIcon />
-							<span className="sr-only">Search conversations</span>
-						</Button>
+						<Tooltip>
+							<TooltipTrigger delay={500} render={
+								<Button
+									aria-label="Search"
+									className="size-8 group-data-[collapsible=icon]:opacity-0"
+									size="icon"
+									variant="outline"
+									onClick={() => setSearchOpen(true)}
+								/>
+							}>
+								<SearchIcon />
+								<span className="sr-only">Search</span>
+							</TooltipTrigger>
+							<TooltipContent className="px-2 py-1" side="right">
+								Search{" "}
+								<KbdGroup>
+									<Kbd>⌘</Kbd>
+									<Kbd>k</Kbd>
+								</KbdGroup>
+							</TooltipContent>
+						</Tooltip>
 					</SidebarMenuItem>
 				</SidebarGroup>
 				{activeNavGroups.map((group, index) => (
@@ -111,6 +148,7 @@ export function AppSidebar() {
 					© 2026 Soseki. All rights reserved.
 				</div>
 			</SidebarFooter>
+            <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
         </Sidebar>
     );
 }

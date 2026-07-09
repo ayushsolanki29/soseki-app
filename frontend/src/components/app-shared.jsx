@@ -10,7 +10,8 @@ import {
     FolderIcon,
     ReceiptIcon,
     UserCircleIcon,
-    UploadCloudIcon
+    UploadCloudIcon,
+    SparklesIcon
 } from "lucide-react";
 
 export const navGroups = [
@@ -97,13 +98,13 @@ export const navGroups = [
 export const footerNavLinks = [
 	{
 		title: "Help Center",
-		path: "#/help",
+		path: "/dashboard/support",
 		icon: <HelpCircleIcon />,
 	},
 	{
-		title: "System status",
-		path: "#/status",
-		icon: <ActivityIcon />,
+		title: "What's new",
+		path: "#/whats-new",
+		icon: <SparklesIcon />,
 	},
 ];
 
