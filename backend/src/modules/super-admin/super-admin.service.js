@@ -101,6 +101,21 @@ class SuperAdminService {
       },
     });
 
+    // Send the generated credentials to the new user via email
+    const emailService = require("../emails/email.service");
+    emailService.queueEmail({
+      to: email,
+      subject: "Your new Soseki App Account",
+      template: "new_account",
+      context: { 
+        name, 
+        email, 
+        password,
+        loginUrl: `${process.env.CLIENT_URL || 'http://localhost:3000'}/login`
+      },
+      category: "Transactional"
+    }).catch(err => console.error("Failed to queue new account email:", err));
+
     return { user, password };
   }
 

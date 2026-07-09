@@ -23,8 +23,10 @@ const createLeadValidation = Joi.object({
   }),
   country: Joi.string().trim().max(50).allow("").optional(),
   profession: Joi.string().trim().max(50).allow("").optional(),
+  customProfession: Joi.string().trim().max(50).allow("").optional(),
   earningsRange: Joi.string().trim().max(50).allow("").optional(),
   previousTool: Joi.string().trim().max(50).allow("").optional(),
+  customPreviousTool: Joi.string().trim().max(50).allow("").optional(),
 });
 
 module.exports = {

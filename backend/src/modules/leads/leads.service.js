@@ -1,13 +1,18 @@
 // src/modules/leads/leads.service.js
 const prisma = require("../../database/prisma");
-const disposableEmailDetector = require("disposable-email-detector");
+const disposableEmailDetector = require("disposable-email-detector").default || require("disposable-email-detector");
+const emailService = require("../emails/email.service");
 
 class LeadsService {
   async createLead(data) {
-    const { fullName, email, country, profession, earningsRange, previousTool } = data;
+    const { fullName, email, country, profession, customProfession, earningsRange, previousTool, customPreviousTool } = data;
 
     const cleanFullName = fullName.trim();
     const cleanEmail = email.trim().toLowerCase();
+    
+    // Resolve custom "Other" fields
+    const finalProfession = profession === "Other" && customProfession ? customProfession.trim() : (profession || null);
+    const finalPreviousTool = previousTool === "Other" && customPreviousTool ? customPreviousTool.trim() : (previousTool || null);
 
     // Disposable Email Check
     try {
@@ -40,11 +45,38 @@ class LeadsService {
         fullName: cleanFullName,
         email: cleanEmail,
         country: country || null,
-        profession: profession || null,
+        profession: finalProfession,
         earningsRange: earningsRange || null,
-        previousTool: previousTool || null,
+        previousTool: finalPreviousTool,
       },
     });
+
+    // 1. Send email to the user
+    emailService.queueEmail({
+      to: cleanEmail,
+      subject: "Thank you for requesting access to Soseki!",
+      template: "access_request_user",
+      context: { fullName: cleanFullName },
+      category: "Transactional"
+    }).catch(err => console.error("Failed to queue user email", err));
+
+    // 2. Send email to the admin
+    if (process.env.ADMIN_EMAIL) {
+      emailService.queueEmail({
+        to: process.env.ADMIN_EMAIL,
+        subject: `New Access Request: ${cleanFullName}`,
+        template: "access_request_admin",
+        context: { 
+          fullName: cleanFullName, 
+          email: cleanEmail,
+          country,
+          profession: finalProfession,
+          earningsRange,
+          previousTool: finalPreviousTool
+        },
+        category: "SystemAlerts"
+      }).catch(err => console.error("Failed to queue admin email", err));
+    }
 
     return lead;
   }
