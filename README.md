@@ -4,6 +4,14 @@ Soseki is an open-source business operating platform for freelancers, consultant
 
 It replaces spreadsheets and scattered tools with one workspace for clients, projects, invoices, payments, expenses, questionnaires, support tickets, and reporting.
 
+## Quick Links
+
+- [Full product documentation](./docs/index.md)
+- [Setup guide](./SETUP.md)
+- [Frontend README](./frontend/README.md)
+- [Backend README](./backend/README.md)
+- [License](./LICENSE)
+
 ## Who It’s For
 
 - Freelancers managing multiple clients and projects
@@ -39,13 +47,6 @@ Self-hostable, open-source, and designed so your data stays in your own PostgreS
 - Support tickets
 - Workspace settings and onboarding
 
-## Documentation
-
-- [Full product documentation](./docs/index.md)
-- [Setup guide](./SETUP.md)
-- [Frontend README](./frontend/README.md)
-- [Backend README](./backend/README.md)
-
 ## Project Structure
 
 - `frontend/` - Next.js frontend
@@ -68,4 +69,4 @@ Contributions are welcome. Please keep product-level details in `docs/` and fold
 
 ## License
 
-MIT
+Released under the [MIT License](./LICENSE).
