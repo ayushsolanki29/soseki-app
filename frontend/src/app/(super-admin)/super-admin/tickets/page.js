@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -35,6 +35,7 @@ export default async function SuperAdminTicketsPage() {
           <TableHeader className="bg-muted/50">
             <TableRow>
               <TableHead>Organization</TableHead>
+              <TableHead>Ticket ID</TableHead>
               <TableHead>User</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Priority</TableHead>
@@ -55,6 +56,9 @@ export default async function SuperAdminTicketsPage() {
                 <TableRow key={ticket.id}>
                   <TableCell className="font-medium">
                     {ticket.organization.name}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground font-mono">
+                    {formatId(ticket.id, "SPT")}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 py-1">

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import {
   Sheet,
@@ -167,6 +167,9 @@ export default function ProjectDetailsPage() {
                 <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
                 <Badge variant={getStatusBadge(project.status)} className="text-sm">
                   {project.status}
+                </Badge>
+                <Badge variant="outline" className="text-sm font-mono text-muted-foreground border-dashed">
+                  {formatId(project.id, "PRJ")}
                 </Badge>
               </div>
               <p className="text-muted-foreground mt-1">Project Details and Timeline</p>

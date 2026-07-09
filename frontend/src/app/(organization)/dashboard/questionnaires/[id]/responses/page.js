@@ -2,7 +2,8 @@
 
 import { useEffect, useState, use } from "react";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, ColumnsIcon, EyeIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, ColumnsIcon, EyeIcon, CopyIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
@@ -117,7 +118,12 @@ export default function QuestionnaireResponsesPage({ params }) {
             <DynamicAvatar type="questionnaire" seed={questionnaire.title} size={48} className="shadow-sm bg-accent/50" />
           )}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{questionnaire?.title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold tracking-tight">{questionnaire?.title}</h1>
+              <Badge variant="outline" className="text-sm font-mono text-muted-foreground border-dashed">
+                {formatId(questionnaire?.id, "QST")}
+              </Badge>
+            </div>
             <p className="text-muted-foreground mt-1">Viewing all submitted responses.</p>
           </div>
         </div>
@@ -184,6 +190,18 @@ export default function QuestionnaireResponsesPage({ params }) {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => {
+                const url = `${window.location.origin}/q/${questionnaire.id}`;
+                navigator.clipboard.writeText(url);
+                toast.success("Link copied to clipboard!");
+              }}
+            >
+              <CopyIcon className="size-4" />
+              Copy Link
+            </Button>
             <Button onClick={exportCSV} variant="secondary" className="gap-2" disabled={responses.length === 0}>
               <DownloadIcon className="size-4" />
               Export CSV

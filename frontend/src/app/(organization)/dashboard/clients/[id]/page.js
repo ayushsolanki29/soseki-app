@@ -9,6 +9,7 @@ import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIco
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { formatId } from "@/lib/utils";
 import { ProjectsTable } from "@/components/shared/projects-table";
 import { InvoicesTable } from "@/components/shared/invoices-table";
 import { ExpensesTable } from "@/components/shared/expenses-table";
@@ -171,6 +172,9 @@ export default function ClientDetailsPage() {
                 <h1 className="text-3xl font-bold tracking-tight">{client.name}</h1>
                 <Badge variant={client.status === 'Active' ? 'default' : client.status === 'Lead' ? 'secondary' : client.status === 'Inactive' ? 'destructive' : 'outline'} className="text-sm">
                   {client.status}
+                </Badge>
+                <Badge variant="outline" className="text-sm font-mono text-muted-foreground border-dashed">
+                  {formatId(client.id, "CLI")}
                 </Badge>
               </div>
               <div className="flex items-center gap-4 mt-1 text-muted-foreground text-sm">

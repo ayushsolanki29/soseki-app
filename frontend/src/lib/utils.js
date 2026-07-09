@@ -26,3 +26,9 @@ export function formatDate(date, formatString) {
     return new Date(date).toLocaleDateString();
   }
 }
+
+export function formatId(uuid, prefix = "") {
+  if (!uuid) return "-";
+  const firstBlock = uuid.split("-")[0];
+  return prefix ? `${prefix}-${firstBlock}` : firstBlock;
+}

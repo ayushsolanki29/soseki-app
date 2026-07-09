@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
 import { getSession } from "@/lib/auth";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatId } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 // Define the columns directly mapping to Prisma models
@@ -25,7 +25,10 @@ const getClientsColumns = () => [
     { header: "Company", render: (row) => (
         <div className="flex items-center gap-3">
             <DynamicAvatar type="client" seed={row.name} size={32} />
-            <Link href={`/dashboard/clients/${row.id}`} className="font-medium hover:underline">{row.name}</Link>
+            <div className="flex flex-col">
+                <Link href={`/dashboard/clients/${row.id}`} className="font-medium hover:underline">{row.name}</Link>
+                <span className="text-[10px] text-muted-foreground font-mono">{formatId(row.id, "CLI")}</span>
+            </div>
         </div>
     ) },
     { header: "Contact Email", accessor: "email" },
@@ -50,7 +53,10 @@ const getProjectsColumns = () => [
     { header: "Project Name", render: (row) => (
         <div className="flex items-center gap-3">
             <DynamicAvatar type="project" seed={row.title} size={32} />
-            <Link href={`/dashboard/projects/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+            <div className="flex flex-col">
+                <Link href={`/dashboard/projects/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+                <span className="text-[10px] text-muted-foreground font-mono">{formatId(row.id, "PRJ")}</span>
+            </div>
         </div>
     ) },
     { header: "Client", render: (row) => <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> },
@@ -138,7 +144,10 @@ const getQuestionnairesColumns = () => [
     { header: "Title", render: (row) => (
         <div className="flex items-center gap-3">
             <DynamicAvatar type="questionnaire" seed={row.title} size={32} />
-            <Link href={`/dashboard/questionnaires/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+            <div className="flex flex-col">
+                <Link href={`/dashboard/questionnaires/${row.id}`} className="font-medium hover:underline">{row.title}</Link>
+                <span className="text-[10px] text-muted-foreground font-mono">{formatId(row.id, "QST")}</span>
+            </div>
         </div>
     ) },
     { header: "Client", render: (row) => row.clientId ? <Link href={`/dashboard/clients/${row.clientId}`} className="hover:underline">{row.client?.name}</Link> : "-" },

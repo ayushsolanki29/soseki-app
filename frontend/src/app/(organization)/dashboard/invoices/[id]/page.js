@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
@@ -202,6 +202,9 @@ export default function InvoiceDetailsPage() {
                         <h1 className="text-3xl font-bold tracking-tight">{invoice.invoiceNumber}</h1>
                         <Badge variant={getStatusBadge(invoice.status)} className="text-sm px-3 py-1">
                             {invoice.status}
+                        </Badge>
+                        <Badge variant="outline" className="text-sm font-mono text-muted-foreground border-dashed">
+                            {formatId(invoice.id, "INV")}
                         </Badge>
                     </div>
                 </div>

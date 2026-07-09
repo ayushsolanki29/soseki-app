@@ -10,7 +10,7 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import { ChevronLeftIcon, SendIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SupportTicketDetailPage({ params }) {
@@ -94,7 +94,7 @@ export default function SupportTicketDetailPage({ params }) {
         <div className="flex items-start justify-between mt-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{ticket.title}</h1>
-            <p className="text-sm text-muted-foreground mt-1">Ticket ID: {ticket.id}</p>
+            <p className="text-sm text-muted-foreground mt-1">Ticket ID: {formatId(ticket.id, "SPT")}</p>
           </div>
           <div className="flex gap-2">
             <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${

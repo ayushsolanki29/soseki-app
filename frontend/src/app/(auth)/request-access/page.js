@@ -103,17 +103,6 @@ export default function RequestAccessPage() {
       const cleanEmail = formData.email.trim().toLowerCase();
       if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
         currentErrors.email = "Please enter a valid email address.";
-      } else {
-        // Check for disposable domains on the frontend using our list
-        try {
-          const domain = cleanEmail.split('@')[1];
-          const disposableDomains = require("../../../lib/disposable-domains.json");
-          if (disposableDomains.includes(domain)) {
-            currentErrors.email = "Disposable email addresses are not allowed. Please use your primary email.";
-          }
-        } catch (err) {
-          console.error("Failed to load disposable domains", err);
-        }
       }
 
       if (Object.keys(currentErrors).length > 0) {

@@ -10,7 +10,7 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import { ChevronLeftIcon, SendIcon, CheckCircleIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatId } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SuperAdminTicketDetailPage({ params }) {
@@ -185,7 +185,7 @@ export default function SuperAdminTicketDetailPage({ params }) {
           </Link>
           <div className="mt-4">
             <h1 className="text-2xl font-bold tracking-tight">{ticket.title}</h1>
-            <p className="text-sm text-muted-foreground mt-1">Ticket ID: {ticket.id}</p>
+            <p className="text-sm text-muted-foreground mt-1">Ticket ID: {formatId(ticket.id, "SPT")}</p>
           </div>
         </div>
         <div className="flex gap-2 items-center mt-8">
