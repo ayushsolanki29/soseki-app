@@ -153,7 +153,7 @@ export default function SuperAdminTicketDetailPage({ params }) {
 
             {/* Replies */}
             {ticket.messages.map((msg) => {
-              const isSuperAdmin = msg.sender.email === 'admin@soseki.com';
+              const isSuperAdmin = msg.sender.email === 'admin@soseki.com' || msg.sender.email === 'super@soseki.com';
               return (
                 <div key={msg.id} className={`flex gap-3 ${isSuperAdmin ? 'flex-row-reverse' : ''}`}>
                   <DynamicAvatar 

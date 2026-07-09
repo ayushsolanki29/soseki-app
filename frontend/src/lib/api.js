@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'sonner';
 
 // Create an Axios instance
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -27,6 +28,18 @@ API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Handle Rate Limiting (429 Too Many Requests)
+    if (error.response?.status === 429) {
+      if (typeof window !== 'undefined') {
+        const message = error.response?.data?.message || "Too many requests. Please try again later.";
+        toast.error("Rate Limit Exceeded", {
+          description: message,
+          duration: 5000,
+        });
+      }
+      return Promise.reject(error);
+    }
 
     // Check if the error is 401 Unauthorized and we haven't already retried
     if (error.response?.status === 401 && !originalRequest._retry) {

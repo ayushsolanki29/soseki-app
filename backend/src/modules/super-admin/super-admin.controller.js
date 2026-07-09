@@ -1,6 +1,32 @@
 const superAdminService = require("./super-admin.service");
 
 class SuperAdminController {
+  async login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      const result = await superAdminService.login(email, password);
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("superAccessToken", result.accessToken, cookieOptions);
+
+      return res.status(200).json({
+        success: true,
+        user: result.user,
+      });
+    } catch (error) {
+      if (error.status === 401) {
+        return res.status(401).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
   async getCharts(req, res, next) {
     try {
       const charts = await superAdminService.getCharts();

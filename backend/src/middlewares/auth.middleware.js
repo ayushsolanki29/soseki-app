@@ -5,7 +5,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.accessToken;
+    let token = req.cookies.accessToken;
+    let isSuperAdmin = false;
+
+    if (!token && req.cookies.superAccessToken) {
+      token = req.cookies.superAccessToken;
+      isSuperAdmin = true;
+    }
 
     if (!token) {
       return res.status(401).json({ success: false, message: "Authentication required" });
@@ -15,6 +21,32 @@ const authMiddleware = async (req, res, next) => {
 
     if (!payload || !payload.userId) {
       return res.status(401).json({ success: false, message: "Invalid token payload" });
+    }
+
+    if (isSuperAdmin) {
+      const admin = await prisma.superUser.findUnique({
+        where: { id: payload.userId },
+        select: { id: true, email: true, name: true },
+      });
+
+      if (!admin) {
+        return res.status(401).json({ success: false, message: "Admin not found" });
+      }
+
+      // Ensure a shadow user exists so the admin can post messages (foreign key constraint)
+      let user = await prisma.user.findUnique({ where: { email: admin.email } });
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: admin.email,
+            name: admin.name || "Super Admin",
+            passwordHash: "SUPER_ADMIN_MOCKED",
+          }
+        });
+      }
+
+      req.user = user;
+      return next();
     }
 
     const user = await prisma.user.findUnique({

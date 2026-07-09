@@ -5,6 +5,8 @@ const morgan = require("morgan");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 
+const rateLimit = require("express-rate-limit");
+
 const app = express();
 
 const CLIENT_URL = process.env.CLIENT_URL || "*";
@@ -21,6 +23,20 @@ app.use(
   })
 );
 
+// Global API Rate Limiter (Production Grade)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // Limit each IP to 500 requests per 15 minutes
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res, next, options) => {
+    res.status(options.statusCode).json({
+      success: false,
+      message: "Too many requests from this IP address. To ensure system stability, we have temporarily paused your access. Please try again after 15 minutes.",
+    });
+  },
+});
+
 // Logging
 app.use(morgan("dev"));
 
@@ -33,6 +49,10 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Routes
+if (process.env.NODE_ENV === "production") {
+  // Apply the rate limiter strictly to API routes only in production
+  app.use("/api", apiLimiter);
+}
 app.use("/api", require("./modules"));
 
 // Health Check

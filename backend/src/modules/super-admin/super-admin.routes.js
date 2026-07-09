@@ -8,6 +8,7 @@ const validate = require("../../middleware/validate");
 // For this migration, we are keeping it as is from the original implementation
 // which just checked session and some basic things.
 
+router.post("/auth/login", superAdminController.login);
 router.get("/dashboard/charts", superAdminController.getCharts);
 router.post("/users", validate(superAdminValidation.createUserValidation), superAdminController.createUser);
 router.get("/organizations", superAdminController.getOrganizations);

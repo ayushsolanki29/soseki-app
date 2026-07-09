@@ -2,8 +2,48 @@
 const prisma = require("../../database/prisma");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
 
 class SuperAdminService {
+  async login(email, password) {
+    const user = await prisma.superUser.findUnique({
+      where: { email },
+    });
+
+    if (!user || !user.passwordHash) {
+      const error = new Error("Invalid email or password");
+      error.status = 401;
+      throw error;
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+
+    if (!passwordMatch) {
+      const error = new Error("Invalid email or password");
+      error.status = 401;
+      throw error;
+    }
+
+    // Generate accessToken
+    const payload = {
+      userId: user.id,
+      type: "superadmin",
+    };
+    
+    const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    };
+  }
+
   async getCharts() {
     // Return mock data for super admin dashboard charts
     return {
