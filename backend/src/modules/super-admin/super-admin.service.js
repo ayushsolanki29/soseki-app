@@ -4,8 +4,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
-
+const { auth: authConfig, server: serverConfig } = require("../../config/app.config");
 class SuperAdminService {
   async login(email, password) {
     const user = await prisma.superUser.findUnique({
@@ -32,7 +31,7 @@ class SuperAdminService {
       type: "superadmin",
     };
     
-    const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
 
     return {
       accessToken,
@@ -91,7 +90,7 @@ class SuperAdminService {
       return pwd;
     };
     const password = generatePassword();
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, authConfig.bcryptSaltRounds);
 
     const user = await prisma.user.create({
       data: {
@@ -111,7 +110,7 @@ class SuperAdminService {
         name, 
         email, 
         password,
-        loginUrl: `${process.env.CLIENT_URL || 'http://localhost:3000'}/login`
+        loginUrl: `${serverConfig.clientUrl}/login`
       },
       category: "Transactional"
     }).catch(err => console.error("Failed to queue new account email:", err));

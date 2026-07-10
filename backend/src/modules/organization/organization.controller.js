@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const organizationService = require("./organization.service");
+const { auth: authConfig, server: serverConfig } = require("../../config/app.config");
 
 class OrganizationController {
   async getOrganization(req, res, next) {
@@ -31,18 +32,18 @@ class OrganizationController {
       const { organization, user } = await organizationService.setupOrganization(req.user.id, req.user.organizationId, req.body);
 
       // Reissue token with organizationId
-      const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
+
       const payload = {
         userId: user.id,
         hasOrg: true,
         organizationId: organization.id,
       };
       
-      const newAccessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+      const newAccessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
 
       const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: serverConfig.env === "production",
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       };

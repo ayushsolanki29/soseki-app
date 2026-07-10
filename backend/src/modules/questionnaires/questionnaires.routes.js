@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const questionnairesController = require("./questionnaires.controller");
 const questionnairesValidation = require("./questionnaires.validation");
-const validate = require("../../middleware/validate");
-const { authMiddleware } = require("../../middlewares/auth.middleware");
+const validate = require("../../middleware/validate.middleware");
+const { authMiddleware } = require("../../middleware/auth.middleware");
 
 // Public routes (no auth required)
 router.get("/public/:slug", questionnairesController.getPublicQuestionnaire);

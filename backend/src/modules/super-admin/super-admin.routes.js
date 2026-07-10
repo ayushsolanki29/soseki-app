@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const superAdminController = require("./super-admin.controller");
 const superAdminValidation = require("./super-admin.validation");
-const validate = require("../../middleware/validate");
+const validate = require("../../middleware/validate.middleware");
 
 // In a real application, you would have a specific authMiddleware for super-admins here
 // For this migration, we are keeping it as is from the original implementation

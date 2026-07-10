@@ -4,29 +4,36 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-
 const rateLimit = require("express-rate-limit");
+const compression = require("compression");
+const hpp = require("hpp");
+const { rateLimit: rateLimitConfig, server: serverConfig } = require("./config/app.config");
 
 const app = express();
 
-const CLIENT_URL = process.env.CLIENT_URL || "*";
+// Use CLIENT_URL from config but support comma separated array
+const CLIENT_URL = serverConfig.clientUrl.includes(",") 
+  ? serverConfig.clientUrl.split(",").map((url) => url.trim())
+  : serverConfig.clientUrl;
 
-// Trust proxy (for load balancers / HTTPS behind proxy)
+// 1. Trust proxy (needed for load balancers / HTTPS behind proxy in production)
 app.set("trust proxy", 1);
 
-// Security Middleware
-app.use(helmet());
+// 2. Security Middleware
+app.use(helmet()); // Set standard security HTTP headers
 app.use(
   cors({
     origin: CLIENT_URL,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 
-// Global API Rate Limiter (Production Grade)
+// 3. Global API Rate Limiter
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // Limit each IP to 500 requests per 15 minutes
+  windowMs: rateLimitConfig.windowMs,
+  max: rateLimitConfig.maxRequests,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req, res, next, options) => {
@@ -37,49 +44,74 @@ const apiLimiter = rateLimit({
   },
 });
 
-// Logging
-app.use(morgan("dev"));
+// 4. Logging
+if (serverConfig.env === "development") {
+  app.use(morgan("dev")); // Verbose logging for dev
+} else {
+  app.use(morgan("combined")); // Standard Apache combined log output for prod
+}
 
-// Body & Cookie Parser
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+// 5. Body & Cookie Parsers
+app.use(express.json({ limit: "10mb" })); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true, limit: "10mb" })); // Parse URL-encoded bodies
+app.use(cookieParser()); // Parse cookies
 
-// Static Uploads
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// 6. Data Sanitization & Security
+app.use(hpp()); // Prevent HTTP Parameter Pollution attacks
 
-// Routes
-if (process.env.NODE_ENV === "production") {
+// 7. Compression Middleware
+app.use(compression()); // Compress all responses to optimize bandwidth
+
+// 8. Static Uploads Directory
+app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
+  maxAge: "1d" // Cache static assets
+}));
+
+// 9. Routes
+if (serverConfig.env === "production") {
   // Apply the rate limiter strictly to API routes only in production
   app.use("/api", apiLimiter);
 }
 app.use("/api", require("./modules"));
 
-// Health Check
+// 10. Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    message: "Project API Running ✅",
+    message: "Project API Running",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    env: serverConfig.env,
   });
 });
 
-// 404 for all not-matched routes (Express v5 safe)
-app.use((req, res) => {
+// 11. 404 Route Handler
+app.use((req, res, next) => {
   res.status(404).json({
     success: false,
-    message: "Route not found",
+    message: `Can't find ${req.originalUrl} on this server!`,
   });
 });
 
-// Central Error Handler
+// 12. Central Error Handler
 app.use((error, req, res, next) => {
-  console.error("🔥 Error:", error);
-  res.status(error.status || 500).json({
-    success: false,
-    message: error.message || "Internal server error",
-  });
+  const statusCode = error.status || error.statusCode || 500;
+
+  if (serverConfig.env === "development") {
+    console.error("[ERROR]:", error);
+    res.status(statusCode).json({
+      success: false,
+      message: error.message || "Internal server error",
+      stack: error.stack,
+      error,
+    });
+  } else {
+    // Production Error Response (Don't leak stack trace)
+    res.status(statusCode).json({
+      success: false,
+      message: error.isOperational ? error.message : "Internal server error",
+    });
+  }
 });
 
 module.exports = app;

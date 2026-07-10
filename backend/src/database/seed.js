@@ -1,10 +1,10 @@
 const prisma = require('./prisma');
 const bcrypt = require('bcryptjs');
-
+const { auth: authConfig } = require('../config/app.config');
 async function main() {
   console.log('Seeding the database...');
 
-  const passwordHash = await bcrypt.hash('password123', 10);
+  const passwordHash = await bcrypt.hash('password123', authConfig.bcryptSaltRounds);
 
   // 1. Create Super Admin
   const existingSuperAdmin = await prisma.superUser.findUnique({

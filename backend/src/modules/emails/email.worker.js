@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 const prisma = require("../../database/prisma");
 const transporter = require("../../utils/mailer");
+const { mail: mailConfig } = require("../../config/app.config");
 
 let isRunning = false;
 
@@ -37,7 +38,7 @@ const processQueue = async () => {
     for (const email of emails) {
       try {
         const mailOptions = {
-          from: `"${process.env.MAIL_FROM_NAME || "Soseki App"}" <${process.env.SMTP_USER}>`,
+          from: `"${mailConfig.fromName}" <${mailConfig.user}>`,
           to: email.to,
           subject: email.subject,
           html: email.htmlBody,

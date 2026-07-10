@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const prisma = require("../database/prisma");
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
-
+const { auth: authConfig } = require("../config/app.config");
 const authMiddleware = async (req, res, next) => {
   try {
     let token = req.cookies.accessToken;
@@ -17,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
 
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, authConfig.jwtSecret);
 
     if (!payload || !payload.userId) {
       return res.status(401).json({ success: false, message: "Invalid token payload" });
@@ -76,7 +75,7 @@ const superAdminAuthMiddleware = async (req, res, next) => {
       return res.status(401).json({ success: false, message: "SuperAdmin authentication required" });
     }
 
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, authConfig.jwtSecret);
 
     if (!payload || !payload.userId) {
       return res.status(401).json({ success: false, message: "Invalid token payload" });

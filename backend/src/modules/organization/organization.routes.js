@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const organizationController = require("./organization.controller");
 const organizationValidation = require("./organization.validation");
-const validate = require("../../middleware/validate");
-const { authMiddleware } = require("../../middlewares/auth.middleware");
+const validate = require("../../middleware/validate.middleware");
+const { authMiddleware } = require("../../middleware/auth.middleware");
 
 router.get("/", authMiddleware, organizationController.getOrganization);
 router.patch("/", authMiddleware, validate(organizationValidation.updateOrganizationValidation), organizationController.updateOrganization);

@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { mail: mailConfig } = require("../config/app.config");
 
 // Optimized for heavy usage with a generic SMTP or Gmail App Password
 // - pool: true enables connection pooling
@@ -6,12 +7,12 @@ const nodemailer = require("nodemailer");
 // - maxMessages: max emails per connection before it's refreshed
 const transporter = nodemailer.createTransport({
   pool: true,
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT) || 465,
-  secure: process.env.SMTP_SECURE === "false" ? false : true, 
+  host: mailConfig.host,
+  port: mailConfig.port,
+  secure: mailConfig.secure, 
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: mailConfig.user,
+    pass: mailConfig.pass,
   },
   maxConnections: 5, 
   maxMessages: 100, 

@@ -4,8 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const prisma = require("../../database/prisma");
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-development";
-
+const { auth: authConfig } = require("../../config/app.config");
 class AuthService {
   async login(email, password) {
     const user = await prisma.user.findUnique({
@@ -33,7 +32,7 @@ class AuthService {
       organizationId: user.organizationId || null,
     };
     
-    const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
 
     // Generate refreshToken
     const refreshToken = crypto.randomBytes(40).toString("hex");

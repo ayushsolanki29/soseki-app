@@ -2,6 +2,7 @@
 const prisma = require("../../database/prisma");
 const disposableEmailDetector = require("disposable-email-detector").default || require("disposable-email-detector");
 const emailService = require("../emails/email.service");
+const { admin: adminConfig } = require("../../config/app.config");
 
 class LeadsService {
   async createLead(data) {
@@ -61,9 +62,9 @@ class LeadsService {
     }).catch(err => console.error("Failed to queue user email", err));
 
     // 2. Send email to the admin
-    if (process.env.ADMIN_EMAIL) {
+    if (adminConfig.email) {
       emailService.queueEmail({
-        to: process.env.ADMIN_EMAIL,
+        to: adminConfig.email,
         subject: `New Access Request: ${cleanFullName}`,
         template: "access_request_admin",
         context: { 

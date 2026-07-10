@@ -1,5 +1,6 @@
 const prisma = require("../../database/prisma");
 const { renderTemplate } = require("./email.template");
+const { server: serverConfig } = require("../../config/app.config");
 
 /**
  * Checks if a user has opted out of a specific email category.
@@ -49,7 +50,7 @@ const queueEmail = async ({ to, subject, template = "default", context = {}, cat
   context.subject = subject;
   if (!context.unsubscribeUrl && userId) {
     // Generate an unsubscribe link if needed (mocked for now, can be updated later)
-    context.unsubscribeUrl = `${process.env.CLIENT_URL}/dashboard/profile?tab=preferences`;
+    context.unsubscribeUrl = `${serverConfig.clientUrl}/dashboard/profile?tab=preferences`;
     context.showUnsubscribe = category !== "Transactional" && category !== "Security";
   }
 

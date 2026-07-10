@@ -1,7 +1,7 @@
 // src/modules/users/users.service.js
 const prisma = require("../../database/prisma");
 const bcrypt = require("bcryptjs");
-
+const { auth: authConfig } = require("../../config/app.config");
 class UsersService {
   async getProfile(userId) {
     const user = await prisma.user.findUnique({
@@ -32,7 +32,7 @@ class UsersService {
     if (email) updateData.email = email;
     
     if (password) {
-      const salt = await bcrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(authConfig.bcryptSaltRounds);
       updateData.passwordHash = await bcrypt.hash(password, salt);
     }
 
@@ -66,7 +66,7 @@ class UsersService {
       throw error;
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(authConfig.bcryptSaltRounds);
     const passwordHash = await bcrypt.hash(newPassword, salt);
 
     await prisma.user.update({
