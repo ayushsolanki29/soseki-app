@@ -8,5 +8,7 @@ const { authMiddleware } = require("../../middleware/auth.middleware");
 router.get("/", authMiddleware, organizationController.getOrganization);
 router.patch("/", authMiddleware, validate(organizationValidation.updateOrganizationValidation), organizationController.updateOrganization);
 router.post("/setup", authMiddleware, validate(organizationValidation.setupOrganizationValidation), organizationController.setupOrganization);
+router.post("/template-requests", authMiddleware, validate(organizationValidation.createTemplateRequestValidation), organizationController.createTemplateRequest);
+router.get("/template-requests", authMiddleware, organizationController.getTemplateRequests);
 
 module.exports = router;

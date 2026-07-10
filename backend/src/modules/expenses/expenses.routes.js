@@ -8,6 +8,7 @@ const { authMiddleware } = require("../../middleware/auth.middleware");
 router.use(authMiddleware);
 
 router.get("/", expensesController.getExpenses);
+router.get("/:id", expensesController.getExpenseById);
 router.post("/", validate(expensesValidation.createExpenseValidation), expensesController.createExpense);
 router.patch("/:id", validate(expensesValidation.updateExpenseValidation), expensesController.updateExpense);
 router.delete("/:id", expensesController.deleteExpense);

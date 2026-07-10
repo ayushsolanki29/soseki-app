@@ -1,3 +1,5 @@
+"use client";
+
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -5,10 +7,24 @@ import { OrganizationProvider } from "@/components/providers/organization-provid
 import { StarIcon } from "lucide-react";
 import Link from "next/link";
 import { APP_NAME, APP_VERSION, APP_AUTHOR, APP_AUTHOR_URL, APP_GITHUB_URL } from "@/lib/constants";
+import { usePathname } from "next/navigation";
 
 export function AppShell({
     children
 }) {
+    const pathname = usePathname();
+    const isPreview = pathname?.endsWith("/preview");
+
+    if (isPreview) {
+        return (
+            <div className="overflow-hidden bg-white min-h-screen">
+                <OrganizationProvider>
+                    {children}
+                </OrganizationProvider>
+            </div>
+        );
+    }
+
 	return (
         <div className="overflow-hidden">
             <OrganizationProvider>

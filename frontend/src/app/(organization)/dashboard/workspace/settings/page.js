@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UploadCloudIcon } from "lucide-react";
 
 export default function WorkspaceSettingsPage() {
   const [name, setName] = useState("");
@@ -17,11 +21,21 @@ export default function WorkspaceSettingsPage() {
   const [dateFormat, setDateFormat] = useState("dd-MMM-yy");
   const [masterCurrency, setMasterCurrency] = useState("USD");
   const [hasTransactions, setHasTransactions] = useState(false);
+  const [invoiceTemplate, setInvoiceTemplate] = useState("soseki-modern");
+  const [expenseTemplate, setExpenseTemplate] = useState("soseki-modern");
   const [isLoading, setIsLoading] = useState(true);
   
   const [isSavingGeneral, setIsSavingGeneral] = useState(false);
   const [isSavingFinancial, setIsSavingFinancial] = useState(false);
   const [isSavingCurrency, setIsSavingCurrency] = useState(false);
+  const [isSavingTemplates, setIsSavingTemplates] = useState(false);
+
+  // Custom Template Request State
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [requestType, setRequestType] = useState("invoice");
+  const [requestDescription, setRequestDescription] = useState("");
+  const [requestFile, setRequestFile] = useState(null);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   useEffect(() => {
     const fetchOrganization = async () => {
@@ -29,10 +43,12 @@ export default function WorkspaceSettingsPage() {
         const res = await API.get("/organization");
         setName(res.data.organization.name || "");
         setAddress(res.data.organization.address || "");
-        setInvoiceFooterNote(res.data.organization.invoiceFooterNote || "");
-        setExpenseFooterNote(res.data.organization.expenseFooterNote || "");
+        setInvoiceFooterNote(res.data.organization.profile?.invoiceFooterNote || "");
+        setExpenseFooterNote(res.data.organization.profile?.expenseFooterNote || "");
         setDateFormat(res.data.organization.dateFormat || "dd-MMM-yy");
         setMasterCurrency(res.data.organization.masterCurrency || "USD");
+        setInvoiceTemplate(res.data.organization.profile?.invoiceTemplate || "soseki-modern");
+        setExpenseTemplate(res.data.organization.profile?.expenseTemplate || "soseki-modern");
         
         const counts = res.data.organization._count;
         if (counts && (counts.invoices > 0 || counts.expenses > 0)) {
@@ -96,6 +112,55 @@ export default function WorkspaceSettingsPage() {
       toast.error("Failed to update master currency");
     } finally {
       setIsSavingCurrency(false);
+    }
+  };
+
+  const handleSaveTemplates = async (e) => {
+    e.preventDefault();
+    setIsSavingTemplates(true);
+    try {
+      await API.patch("/organization", { 
+        invoiceTemplate,
+        expenseTemplate
+      });
+      toast.success("Template settings updated!");
+    } catch (error) {
+      toast.error("Failed to update templates");
+    } finally {
+      setIsSavingTemplates(false);
+    }
+  };
+
+  const handleRequestTemplate = async (e) => {
+    e.preventDefault();
+    if (!requestDescription.trim()) return toast.error("Please provide a description");
+
+    setIsSubmittingRequest(true);
+    try {
+      let attachmentUrl = null;
+      if (requestFile) {
+        const formData = new FormData();
+        formData.append("file", requestFile);
+        const uploadRes = await API.post("/upload/image", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        attachmentUrl = uploadRes.data.url;
+      }
+
+      await API.post("/organization/template-requests", {
+        type: requestType,
+        description: requestDescription.trim(),
+        attachmentUrl
+      });
+
+      toast.success("Template request submitted! We will contact you soon.");
+      setIsRequestDialogOpen(false);
+      setRequestDescription("");
+      setRequestFile(null);
+    } catch (error) {
+      toast.error("Failed to submit request");
+    } finally {
+      setIsSubmittingRequest(false);
     }
   };
 
@@ -276,6 +341,110 @@ export default function WorkspaceSettingsPage() {
           <CardFooter className="border-t px-6 py-4 bg-muted/20">
             <Button type="submit" disabled={isSavingCurrency || hasTransactions}>
               {isSavingCurrency ? "Saving..." : "Save Changes"}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+
+      <Card id="templates" className="scroll-mt-6">
+        <form onSubmit={handleSaveTemplates}>
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>Template Settings</CardTitle>
+                <CardDescription>Choose the layout designs for your documents.</CardDescription>
+              </div>
+              <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+                <DialogTrigger render={<Button variant="outline" size="sm" />}>
+                  Request Custom Template
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRequestTemplate}>
+                    <DialogHeader>
+                      <DialogTitle>Request Custom Template</DialogTitle>
+                      <DialogDescription>
+                        Need a specific layout? Upload an example or describe what you need, and our team will build a custom template for your organization. (Paid service)
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Template Type</Label>
+                        <Select value={requestType} onValueChange={setRequestType}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="invoice">Invoice</SelectItem>
+                            <SelectItem value="expense">Expense Receipt</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Description & Requirements</Label>
+                        <Textarea 
+                          value={requestDescription}
+                          onChange={e => setRequestDescription(e.target.value)}
+                          placeholder="Describe your desired layout, specific fields needed, colors, etc."
+                          className="min-h-[100px]"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Example/Reference Image (Optional)</Label>
+                        <div className="flex items-center gap-4">
+                          <Input 
+                            type="file" 
+                            accept="image/*,.pdf" 
+                            onChange={(e) => setRequestFile(e.target.files?.[0])}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button type="button" variant="ghost" onClick={() => setIsRequestDialogOpen(false)}>Cancel</Button>
+                      <Button type="submit" disabled={isSubmittingRequest}>
+                        {isSubmittingRequest ? "Submitting..." : "Submit Request"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent className="pb-8 pt-2">
+              <div className="flex flex-col gap-6 max-w-md">
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Invoice Template</div>
+                    <Select value={invoiceTemplate} onValueChange={setInvoiceTemplate} disabled={isSavingTemplates}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="soseki-modern">Soseki Modern</SelectItem>
+                            <SelectItem value="tax-invoice">Tax Invoice</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Expense Template</div>
+                    <Select value={expenseTemplate} onValueChange={setExpenseTemplate} disabled={isSavingTemplates}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="soseki-modern">Soseki Modern (A4)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+              </div>
+          </CardContent>
+          <CardFooter className="border-t px-6 py-4 bg-muted/20">
+            <Button type="submit" disabled={isSavingTemplates}>
+              {isSavingTemplates ? "Saving..." : "Save Template Preferences"}
             </Button>
           </CardFooter>
         </form>

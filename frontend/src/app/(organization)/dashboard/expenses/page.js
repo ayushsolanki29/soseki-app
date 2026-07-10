@@ -17,7 +17,6 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { RecordExpenseDialog } from "@/components/expenses/record-expense-dialog";
-import { ExpenseReceiptDialog } from "@/components/expenses/expense-receipt-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -29,8 +28,6 @@ export default function ExpensesPage() {
   const [isRecordExpenseOpen, setIsRecordExpenseOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
   const [organization, setOrganization] = useState(null);
-  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
-  const [expenseToPreview, setExpenseToPreview] = useState(null);
 
   const fetchExpenses = async () => {
     setIsLoading(true);
@@ -63,16 +60,18 @@ export default function ExpensesPage() {
     fetchExpenses();
   }, []);
 
-  useEffect(() => {
-    const receiptId = searchParams.get('receipt');
-    if (receiptId && expenses.length > 0) {
-      const expense = expenses.find(e => e.id === receiptId);
-      if (expense) {
-        setExpenseToPreview(expense);
-        setIsReceiptOpen(true);
-      }
-    }
-  }, [searchParams, expenses]);
+  const handleOpenPreview = (expenseId) => {
+    const width = 800;
+    const height = 1000;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    
+    window.open(
+        `/dashboard/expenses/${expenseId}/preview`, 
+        'ExpensePreview', 
+        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+    );
+  };
 
   return (
     <div className="p-8 w-full h-full flex flex-col gap-6">
@@ -148,7 +147,7 @@ export default function ExpensesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => { setExpenseToPreview(expense); setIsReceiptOpen(true); }} className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                      <Button variant="ghost" size="icon" onClick={() => handleOpenPreview(expense.id)} className="h-8 w-8 text-muted-foreground hover:text-foreground">
                         <EyeIcon className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={() => { setExpenseToEdit(expense); setIsRecordExpenseOpen(true); }} className="h-8 w-8 text-muted-foreground hover:text-foreground">
@@ -171,18 +170,6 @@ export default function ExpensesPage() {
         onOpenChange={setIsRecordExpenseOpen} 
         onSuccess={fetchExpenses} 
         expenseToEdit={expenseToEdit}
-      />
-      
-      <ExpenseReceiptDialog
-        open={isReceiptOpen}
-        onOpenChange={(open) => {
-            setIsReceiptOpen(open);
-            if (!open && searchParams.get('receipt')) {
-                router.replace('/dashboard/expenses');
-            }
-        }}
-        expense={expenseToPreview}
-        organization={organization}
       />
     </div>
   );

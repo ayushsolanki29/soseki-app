@@ -25,12 +25,13 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
-import { InvoicePreviewDialog } from "@/components/invoices/invoice-preview-dialog";
 import { formatCurrency } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
 
 
 export default function InvoiceDetailsPage() {
@@ -43,21 +44,10 @@ export default function InvoiceDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   
   const activeTab = searchParams.get('tab') || 'overview';
-  const isPreviewDialogOpen = searchParams.get('preview') === 'true';
 
   const setActiveTab = (tab) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', tab);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  const setIsPreviewDialogOpen = (isOpen) => {
-    const params = new URLSearchParams(searchParams);
-    if (isOpen) {
-      params.set('preview', 'true');
-    } else {
-      params.delete('preview');
-    }
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -101,6 +91,19 @@ export default function InvoiceDetailsPage() {
         default: return 'outline';
     }
   };
+
+  const handleOpenPreview = () => {
+      const width = 800;
+      const height = 1000;
+      const left = (window.innerWidth - width) / 2;
+      const top = (window.innerHeight - height) / 2;
+      
+      window.open(
+          `/dashboard/invoices/${invoice.id}/preview`, 
+          'InvoicePreview', 
+          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+      );
+  }
 
   const handleRecordPayment = () => {
       setIsPaymentDialogOpen(true);
@@ -215,10 +218,18 @@ export default function InvoiceDetailsPage() {
                     Edit
                 </Button>
 
-                <Button variant="outline" onClick={() => setIsPreviewDialogOpen(true)} className="gap-2">
-                    <DownloadIcon className="size-4" />
-                    PDF
-                </Button>
+                <div className="flex gap-1">
+                    <Button variant="outline" onClick={handleOpenPreview} className="gap-2 px-3">
+                        <DownloadIcon className="size-4" />
+                        Preview
+                    </Button>
+                    <DocumentSettingsDialog 
+                        organization={organization}
+                        onOrganizationUpdate={setOrganization}
+                        documentType="invoice"
+                        masterCurrency={masterCurrency}
+                    />
+                </div>
                 <Button onClick={handleRecordPayment} className="gap-2">
                     <CreditCardIcon className="size-4" />
                     Record Payment
@@ -477,14 +488,6 @@ export default function InvoiceDetailsPage() {
         onOpenChange={setIsPaymentDialogOpen} 
         invoice={invoice} 
         onSuccess={fetchInvoice} 
-      />
-
-      <InvoicePreviewDialog
-        open={isPreviewDialogOpen}
-        onOpenChange={setIsPreviewDialogOpen}
-        invoice={invoice}
-        masterCurrency={masterCurrency}
-        organization={organization}
       />
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

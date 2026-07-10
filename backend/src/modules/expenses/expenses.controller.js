@@ -13,6 +13,18 @@ class ExpensesController {
     }
   }
 
+  async getExpenseById(req, res, next) {
+    try {
+      const expense = await expensesService.getExpenseById(req.user.organizationId, req.params.id);
+      return res.status(200).json({ success: true, expense });
+    } catch (error) {
+      if (error.status === 401 || error.status === 404) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
   async createExpense(req, res, next) {
     try {
       const expense = await expensesService.createExpense(req.user.organizationId, req.body);

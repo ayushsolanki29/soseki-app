@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SearchIcon, PlusIcon, FileTextIcon, MoreHorizontal, EyeIcon, DownloadIcon, TrashIcon, CheckCircleIcon } from "lucide-react";
 import API from "@/lib/api";
@@ -36,7 +35,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
-import { InvoicePreviewDialog } from "@/components/invoices/invoice-preview-dialog";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
@@ -46,8 +44,6 @@ export default function InvoicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [paymentInvoice, setPaymentInvoice] = useState(null);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [previewInvoice, setPreviewInvoice] = useState(null);
-  const [isPreviewDialogOpen, setIsPreviewDialogOpen] = useState(false);
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -98,8 +94,16 @@ export default function InvoicesPage() {
   }
 
   const handleOpenPreview = (invoice) => {
-      setPreviewInvoice(invoice);
-      setIsPreviewDialogOpen(true);
+      const width = 800;
+      const height = 1000;
+      const left = (window.innerWidth - width) / 2;
+      const top = (window.innerHeight - height) / 2;
+      
+      window.open(
+          `/dashboard/invoices/${invoice.id}/preview`, 
+          'InvoicePreview', 
+          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+      );
   }
 
   const handleDeleteClick = (invoice) => {
@@ -300,14 +304,6 @@ export default function InvoicesPage() {
         onOpenChange={setIsPaymentDialogOpen} 
         invoice={paymentInvoice} 
         onSuccess={fetchInvoices} 
-      />
-
-      <InvoicePreviewDialog
-        open={isPreviewDialogOpen}
-        onOpenChange={setIsPreviewDialogOpen}
-        invoice={previewInvoice}
-        masterCurrency={masterCurrency}
-        organization={organization}
       />
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

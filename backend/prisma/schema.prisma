@@ -40,11 +40,11 @@ model Organization {
   updatedAt      DateTime  @updatedAt
   masterCurrency String    @default("INR")
   address        String?
-  invoiceFooterNote String?
-  expenseFooterNote String?
   dateFormat     String    @default("dd-MMM-yy")
   status         String    @default("Active") // Active, Blocked
   supportTickets SupportTicket[]
+  templateRequests TemplateRequest[]
+  profile        OrganizationProfile?
 }
 
 model Client {
@@ -330,8 +330,8 @@ model SuperUser {
 
 model EmailPreference {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category  String   // e.g., 'Marketing', 'Transactional', 'Alerts'
   optOut    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -356,4 +356,42 @@ model EmailQueue {
   updatedAt    DateTime @updatedAt
 
   @@index([status, nextRunAt])
+}
+
+model TemplateRequest {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  type           String       // 'Invoice' or 'Expense'
+  description    String
+  attachmentUrl  String?
+  status         String       @default("Pending") // Pending, Completed
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model OrganizationProfile {
+  id                 String       @id @default(uuid())
+  organizationId     String       @unique
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  phone              String?
+  email              String?
+  taxId              String?      // Generic (e.g. GSTIN, VAT, EIN)
+  registrationNumber String?      // Generic (e.g. PAN, SSN, Company Reg)
+  region             String?      // State / Province / Territory
+  
+  invoiceFooterNote  String?
+  expenseFooterNote  String?
+  invoiceTemplate    String       @default("soseki-modern")
+  expenseTemplate    String       @default("soseki-modern")
+  termsAndConditions String?
+  
+  accountNumber      String?
+  bankName           String?
+  routingNumber      String?      // Generic (e.g. IFSC, Sort Code, Routing Number)
+  branch             String?
+  
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }

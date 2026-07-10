@@ -18,6 +18,27 @@ class ExpensesService {
     return expenses;
   }
 
+  async getExpenseById(organizationId, id) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const expense = await prisma.expense.findUnique({
+      where: { id, organizationId },
+      include: { client: true, project: true, invoice: true },
+    });
+
+    if (!expense) {
+      const error = new Error("Expense not found");
+      error.status = 404;
+      throw error;
+    }
+
+    return expense;
+  }
+
   async createExpense(organizationId, data) {
     if (!organizationId) {
       const error = new Error("Unauthorized: No organization found");
