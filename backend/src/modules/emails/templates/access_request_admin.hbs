@@ -1,39 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>New Access Request</title>
-    <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .content { background-color: #f9f9f9; padding: 20px; border-radius: 8px; }
-        .details { margin-top: 20px; background: #fff; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
-        .footer { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>New Access Request</h2>
-        </div>
-        <div class="content">
-            <p>Admin, a new user has requested access to Soseki App.</p>
-            <div class="details">
-                <p><strong>Name:</strong> {{fullName}}</p>
-                <p><strong>Email:</strong> {{email}}</p>
-                {{#if country}}<p><strong>Country:</strong> {{country}}</p>{{/if}}
-                {{#if profession}}<p><strong>Profession:</strong> {{profession}}</p>{{/if}}
-                {{#if earningsRange}}<p><strong>Earnings:</strong> {{earningsRange}}</p>{{/if}}
-                {{#if previousTool}}<p><strong>Previous Tool:</strong> {{previousTool}}</p>{{/if}}
-            </div>
-            <p style="margin-top: 20px;">
-                Log in to the Super Admin dashboard to manage waitlist requests.
-            </p>
-        </div>
-        <div class="footer">
-            <p>System Notification &bull; Soseki App</p>
-        </div>
-    </div>
-</body>
-</html>
+<p style="font-size:16px; margin-top:0;">Hello Admin,</p>
+<p style="font-size:16px;">A new user has requested access to Soseki via the waitlist.</p>
+<h3 style="margin-top: 20px;">Lead Details:</h3>
+<ul style="font-size:16px;">
+    <li><strong>Name:</strong> {{fullName}}</li>
+    <li><strong>Email:</strong> {{email}}</li>
+    <li><strong>Country:</strong> {{country}}</li>
+    <li><strong>Profession:</strong> {{profession}}</li>
+    <li><strong>Earnings Range:</strong> {{earningsRange}}</li>
+    <li><strong>Previous Tool:</strong> {{previousTool}}</li>
+</ul>
+<p style="text-align: center; margin-top: 30px;">
+    <a href="{{process.env.CLIENT_URL}}/admin/waitlist" class="btn">View Waitlist</a>
+</p>

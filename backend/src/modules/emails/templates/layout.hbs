@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>{{subject}}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+      
+      * {
+        font-family: 'Inter', Arial, sans-serif;
+      }
+      body { background-color: rgb(243,244,246); margin: 0; padding: 0; }
+      
+      .container { max-width: 640px; margin: 2rem auto; width: 100%; background-color: rgb(255,255,255); padding: 1.5rem; border-radius: 10px; }
+      
+      .header { padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+      
+      .content { background-color: rgb(243,244,246); padding: 2rem 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; color: rgb(67,69,75); }
+      
+      .footer { text-align: center; color: rgb(123,125,129); font-size: 12px; margin-top: 2rem; padding-bottom: 2rem; }
+      
+      .btn { line-height: 1.5rem; text-decoration: none; display: inline-block; background-color: rgb(20,23,30); padding: 16px 28px; border-radius: 0.5rem; font-size: 16px; font-weight: 420; color: rgb(255,255,255); text-align: center; margin-top: 1.5rem; }
+      
+      @media (max-width:600px) {
+        .container { margin-top: 0; padding: 0.5rem; border-radius: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <table width="100%">
+          <tr>
+            <td style="width: 50%; text-align: left; vertical-align: middle;">
+              <strong>Soseki App</strong>
+            </td>
+            <td style="width: 50%; text-align: right; vertical-align: middle;">
+              <span style="color:rgb(123,125,129); font-size: 13px;">Notification</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="content">
+        {{{body}}}
+      </div>
+
+      <div class="footer">
+        <p>&copy; 2026 Soseki App. All rights reserved.</p>
+        {{#if showUnsubscribe}}
+        <p>To manage your email preferences, <a href="{{unsubscribeUrl}}" style="color: #4F46E5;">click here</a>.</p>
+        {{/if}}
+      </div>
+    </div>
+  </body>
+</html>

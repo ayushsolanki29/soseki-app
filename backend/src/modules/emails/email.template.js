@@ -41,7 +41,22 @@ const getTemplate = (templateName) => {
  */
 const renderTemplate = (templateName, context) => {
   const template = getTemplate(templateName);
-  return template(context);
+  
+  // If rendering the layout itself, just return the template
+  if (templateName === 'layout') {
+    return template(context);
+  }
+
+  const bodyHtml = template(context);
+  
+  try {
+    const layoutTemplate = getTemplate('layout');
+    context.body = bodyHtml;
+    return layoutTemplate(context);
+  } catch (e) {
+    // If layout doesn't exist yet, fallback to just returning the body
+    return bodyHtml;
+  }
 };
 
 module.exports = {
