@@ -386,8 +386,15 @@ export default function InvoiceDetailsPage() {
                                           <TableCell>{formatDate(payment.date)}</TableCell>
                                           <TableCell>{payment.method}</TableCell>
                                           <TableCell>{payment.reference || '-'}</TableCell>
-                                          <TableCell className="text-right font-medium text-emerald-600">
-                                              +{formatCurrency(payment.amount, invoice.currency)}
+                                          <TableCell className="text-right font-medium">
+                                              <div className="text-emerald-600">
+                                                +{formatCurrency(payment.amount, invoice.currency)}
+                                              </div>
+                                              {masterCurrency && invoice.currency && invoice.currency !== masterCurrency && (
+                                                  <div className="text-xs text-muted-foreground mt-0.5 font-normal">
+                                                      +{formatCurrency(payment.amount * (invoice.exchangeRate || 1.0), masterCurrency)}
+                                                  </div>
+                                              )}
                                           </TableCell>
                                       </TableRow>
                                   ))}
@@ -418,8 +425,15 @@ export default function InvoiceDetailsPage() {
                                           <TableCell>{formatDate(expense.date)}</TableCell>
                                           <TableCell>{expense.description}</TableCell>
                                           <TableCell>{expense.category}</TableCell>
-                                          <TableCell className="text-right font-medium text-destructive">
-                                              -{formatCurrency(expense.amount, invoice.currency)}
+                                          <TableCell className="text-right font-medium">
+                                              <div className="text-destructive">
+                                                -{formatCurrency(expense.amount, expense.currency || invoice.currency)}
+                                              </div>
+                                              {masterCurrency && (expense.currency || invoice.currency) !== masterCurrency && (
+                                                  <div className="text-xs text-muted-foreground mt-0.5 font-normal">
+                                                      -{formatCurrency(expense.amount * (expense.exchangeRate || invoice.exchangeRate || 1.0), masterCurrency)}
+                                                  </div>
+                                              )}
                                           </TableCell>
                                       </TableRow>
                                   ))}

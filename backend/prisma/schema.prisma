@@ -177,6 +177,7 @@ model Expense {
   amount         Float
   date           DateTime     @default(now())
   category       String
+  status         String       @default("Paid")
   currency       String?
   exchangeRate   Float?
 

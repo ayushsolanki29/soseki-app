@@ -576,10 +576,10 @@ export function InvoiceForm({ initialData = null }) {
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={(e) => handleSubmit(e, "Draft")} disabled={isSubmitting}>
-                Save as Draft
+                {initialData ? "Update Draft" : "Save as Draft"}
             </Button>
             <Button onClick={(e) => handleSubmit(e, "Sent")} disabled={isSubmitting}>
-                Create & Send Invoice
+                {initialData ? "Update Invoice" : "Create & Send Invoice"}
             </Button>
         </div>
     </div>

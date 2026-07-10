@@ -14,6 +14,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
     amount: 0,
     date: new Date().toISOString().split('T')[0],
     category: "Software",
+    status: "Paid",
     clientId: "none",
     projectId: "none",
     invoiceId: defaultInvoiceId || "none",
@@ -40,6 +41,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           amount: expenseToEdit.amount,
           date: expenseToEdit.date ? new Date(expenseToEdit.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           category: isCustomCat ? "Other" : cat,
+          status: expenseToEdit.status || "Paid",
           customCategory: isCustomCat ? cat : "",
           clientId: expenseToEdit.clientId || "none",
           projectId: expenseToEdit.projectId || "none",
@@ -52,6 +54,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           amount: 0,
           date: new Date().toISOString().split('T')[0],
           category: "Software",
+          status: "Paid",
           clientId: "none",
           projectId: "none",
           invoiceId: defaultInvoiceId || "none",
@@ -119,6 +122,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
     try {
       const payload = {
         ...formData,
+        status: formData.status,
         clientId: formData.clientId === "none" ? null : formData.clientId,
         projectId: formData.projectId === "none" ? null : formData.projectId,
         invoiceId: formData.invoiceId === "none" ? null : formData.invoiceId,
@@ -210,6 +214,25 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
                 onChange={e => setFormData({...formData, date: e.target.value})}
                 required
             />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold">Status</label>
+            <Select 
+              value={formData.status} 
+              onValueChange={val => setFormData({...formData, status: val})}
+              items={["Pending", "Approved", "Rejected", "Paid"].map(s => ({ value: s, label: s }))}
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Approved">Approved</SelectItem>
+                    <SelectItem value="Rejected">Rejected</SelectItem>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                </SelectContent>
+            </Select>
           </div>
 
           <div className="flex flex-col gap-3">

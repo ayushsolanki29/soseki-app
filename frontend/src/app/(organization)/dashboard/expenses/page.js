@@ -129,10 +129,10 @@ export default function ExpensesPage() {
                   </TableCell>
                   <TableCell>
                     {expense.client ? (
-                      <div className="flex items-center gap-3">
+                      <Link href={`/dashboard/clients/${expense.clientId}`} className="flex items-center gap-3 hover:underline">
                         <DynamicAvatar type="client" seed={expense.client.name} size={28} />
                         {expense.client.name}
-                      </div>
+                      </Link>
                     ) : '-'}
                   </TableCell>
                   <TableCell>

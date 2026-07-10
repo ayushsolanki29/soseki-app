@@ -25,7 +25,7 @@ class ExpensesService {
       throw error;
     }
 
-    const { description, amount, date, category, clientId, projectId, invoiceId, currency, exchangeRate } = data;
+    const { description, amount, date, category, status, clientId, projectId, invoiceId, currency, exchangeRate } = data;
 
     const expenseAmount = parseFloat(amount);
     if (!expenseAmount || expenseAmount <= 0) {
@@ -46,6 +46,7 @@ class ExpensesService {
         invoiceId: invoiceId || null,
         currency: currency || null,
         exchangeRate: exchangeRate || null,
+        status: status || "Paid",
       },
       include: { client: true, project: true, invoice: true },
     });
@@ -60,7 +61,7 @@ class ExpensesService {
       throw error;
     }
 
-    const { description, amount, date, category, clientId, projectId, invoiceId, currency, exchangeRate } = data;
+    const { description, amount, date, category, status, clientId, projectId, invoiceId, currency, exchangeRate } = data;
 
     const updateData = {};
     if (description !== undefined) updateData.description = description;
@@ -80,6 +81,7 @@ class ExpensesService {
     if (invoiceId !== undefined) updateData.invoiceId = invoiceId || null;
     if (currency !== undefined) updateData.currency = currency || null;
     if (exchangeRate !== undefined) updateData.exchangeRate = exchangeRate || null;
+    if (status !== undefined) updateData.status = status;
 
     const expense = await prisma.expense.update({
       where: { id, organizationId },
