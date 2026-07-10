@@ -199,6 +199,9 @@ export function TaxInvoice({ invoice, masterCurrency = "INR", organization }) {
             </div>
         </div>
 
+      </div>
+      
+      <div className="mt-4">
         <SosekiBranding monochrome={true} />
       </div>
     </div>
