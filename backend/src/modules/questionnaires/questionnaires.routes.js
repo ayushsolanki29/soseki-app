@@ -13,6 +13,7 @@ router.post("/public/:slug", validate(questionnairesValidation.submitQuestionnai
 router.use(authMiddleware);
 
 router.get("/prompt", questionnairesController.getPrompt);
+router.get("/templates", questionnairesController.getTemplates);
 router.get("/", questionnairesController.getQuestionnaires);
 router.post("/", validate(questionnairesValidation.createQuestionnaireValidation), questionnairesController.createQuestionnaire);
 router.get("/:id", questionnairesController.getQuestionnaireById);

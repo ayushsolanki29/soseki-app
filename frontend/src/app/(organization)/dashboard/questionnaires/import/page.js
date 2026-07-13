@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2 } from "lucide-react";
+import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2, LightbulbIcon, FileTextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import API from "@/lib/api";
@@ -15,18 +15,23 @@ export default function ImportQuestionnairePage() {
   const [isImporting, setIsImporting] = useState(false);
   
   const [promptTemplate, setPromptTemplate] = useState("");
+  const [suggestionTemplates, setSuggestionTemplates] = useState(null);
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
 
   useEffect(() => {
-    fetchPrompt();
+    fetchPromptAndTemplates();
   }, []);
 
-  const fetchPrompt = async () => {
+  const fetchPromptAndTemplates = async () => {
     try {
-      const res = await API.get("/questionnaires/prompt");
-      setPromptTemplate(res.data.prompt);
+      const [promptRes, templatesRes] = await Promise.all([
+        API.get("/questionnaires/prompt"),
+        API.get("/questionnaires/templates")
+      ]);
+      setPromptTemplate(promptRes.data.prompt);
+      setSuggestionTemplates(templatesRes.data.templates);
     } catch (error) {
-      toast.error("Failed to load AI Prompt from server.");
+      toast.error("Failed to load resources from server.");
     } finally {
       setIsLoadingPrompt(false);
     }
@@ -69,6 +74,21 @@ export default function ImportQuestionnairePage() {
     }
   };
 
+  const setTemplate = (type) => {
+    if (!suggestionTemplates) {
+      toast.error("Templates are still loading, please wait.");
+      return;
+    }
+    
+    if (type === "onboarding" && suggestionTemplates.onboarding) {
+      setJsonInput(JSON.stringify(suggestionTemplates.onboarding, null, 2));
+      toast.success("Client Onboarding template loaded!");
+    } else if (type === "payment" && suggestionTemplates.payment) {
+      setJsonInput(JSON.stringify(suggestionTemplates.payment, null, 2));
+      toast.success("Payment Terms template loaded!");
+    }
+  };
+
   return (
     <div className="p-8 h-full max-w-5xl mx-auto flex flex-col gap-8">
       <div className="flex items-center gap-4 mb-2">
@@ -80,6 +100,28 @@ export default function ImportQuestionnairePage() {
           <p className="text-muted-foreground mt-1">Generate a complete questionnaire from raw data using ChatGPT or Claude.</p>
         </div>
       </div>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div className="flex items-center gap-2 text-primary font-medium">
+              <LightbulbIcon className="size-5" />
+              <span>Smart Suggestions:</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Don't have your own data? Start instantly with a ready-made template.</p>
+          </div>
+          <div className="flex gap-3 w-full">
+            <Button variant="outline" size="sm" onClick={() => setTemplate('onboarding')} className="flex-1 sm:flex-none gap-2 bg-background shadow-sm">
+              <FileTextIcon className="size-4 text-blue-500" />
+              Client Onboarding
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setTemplate('payment')} className="flex-1 sm:flex-none gap-2 bg-background shadow-sm">
+              <FileTextIcon className="size-4 text-green-500" />
+              Payment Terms
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Step 1: Prompt */}

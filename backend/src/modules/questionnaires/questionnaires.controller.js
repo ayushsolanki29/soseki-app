@@ -23,6 +23,15 @@ class QuestionnairesController {
     }
   }
 
+  async getTemplates(req, res, next) {
+    try {
+      const { QUESTIONNAIRE_TEMPLATES } = require("./questionnaires.constants");
+      return res.status(200).json({ success: true, templates: QUESTIONNAIRE_TEMPLATES });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createQuestionnaire(req, res, next) {
     try {
       const questionnaire = await questionnairesService.createQuestionnaire(req.user.organizationId, req.body);

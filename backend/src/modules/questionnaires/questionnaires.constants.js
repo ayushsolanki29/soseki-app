@@ -30,6 +30,33 @@ TARGET SCHEMA:
 Please begin analyzing the following data and generate the JSON form:
 [INSERT YOUR DATA HERE]`;
 
+const QUESTIONNAIRE_TEMPLATES = {
+  onboarding: {
+    title: "Client Onboarding Form",
+    description: "Please provide your basic information so we can get started with your project.",
+    fields: [
+      { type: "TEXT", label: "Company Name", required: true },
+      { type: "TEXT", label: "Primary Contact Person", required: true },
+      { type: "EMAIL", label: "Email Address", required: true },
+      { type: "TEXT", label: "Phone Number", required: false },
+      { type: "TEXTAREA", label: "Briefly describe your main project goals", required: true },
+      { type: "SELECT", label: "Expected Timeline", options: ["ASAP", "Within 1 Month", "1-3 Months", "Flexible"], required: true }
+    ]
+  },
+  payment: {
+    title: "Payment Terms Agreement",
+    description: "Please review and acknowledge our standard payment terms.",
+    fields: [
+      { type: "RADIO", label: "Preferred Payment Method", options: ["Bank Transfer", "Credit Card", "PayPal"], required: true },
+      { type: "TEXTAREA", label: "Billing Address", required: true },
+      { type: "TEXT", label: "Billing Contact Email", required: true },
+      { type: "CHECKBOX", label: "I acknowledge the Net-30 payment terms", options: ["I Agree"], required: true },
+      { type: "CHECKBOX", label: "I acknowledge the 2% late fee policy for overdue invoices", options: ["I Agree"], required: true }
+    ]
+  }
+};
+
 module.exports = {
-  QUESTIONNAIRE_PROMPT
+  QUESTIONNAIRE_PROMPT,
+  QUESTIONNAIRE_TEMPLATES
 };
