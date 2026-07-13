@@ -23,7 +23,7 @@ class SupportTicketsService {
       take: limitNum,
       select: {
         id: true,
-        subject: true,
+        title: true,
         status: true,
         priority: true,
         createdAt: true,

@@ -6,6 +6,7 @@ const importDataValidation = Joi.object({
   projects: Joi.array().items(Joi.object().unknown(true)).optional(),
   invoices: Joi.array().items(Joi.object().unknown(true)).optional(),
   payments: Joi.array().items(Joi.object().unknown(true)).optional(),
+  expenses: Joi.array().items(Joi.object().unknown(true)).optional(),
 });
 
 module.exports = {

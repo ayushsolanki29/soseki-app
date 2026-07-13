@@ -30,7 +30,8 @@ class PaymentsService {
         amount: true,
         date: true,
         method: true,
-        status: true,
+        reference: true,
+        invoiceId: true,
         createdAt: true,
         invoice: {
           select: {
