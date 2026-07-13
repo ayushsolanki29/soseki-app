@@ -31,6 +31,9 @@ class AuthController {
 
   async logout(req, res, next) {
     try {
+      const refreshToken = req.cookies.refreshToken;
+      await authService.logout(refreshToken);
+      
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       return res.status(200).json({ success: true, message: "Logged out successfully" });

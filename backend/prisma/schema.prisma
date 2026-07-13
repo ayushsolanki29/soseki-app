@@ -12,39 +12,41 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  passwordHash  String
-  name          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  supportTickets SupportTicket[]
-  supportMessages SupportTicketMessage[]
-  sessions       Session[]
+  id               String                 @id @default(uuid())
+  email            String                 @unique
+  passwordHash     String
+  name             String?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  organizationId   String?
+  organization     Organization?          @relation(fields: [organizationId], references: [id])
+  supportTickets   SupportTicket[]
+  supportMessages  SupportTicketMessage[]
+  sessions         Session[]
   emailPreferences EmailPreference[]
+
+  @@index([organizationId])
 }
 
 model Organization {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  users     User[]
-  clients   Client[]
-  projects  Project[]
-  invoices       Invoice[]
-  expenses       Expense[]
-  quickItems     QuickItem[]
-  questionnaires Questionnaire[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  masterCurrency String    @default("INR")
-  address        String?
-  dateFormat     String    @default("dd-MMM-yy")
-  status         String    @default("Active") // Active, Blocked
-  supportTickets SupportTicket[]
+  id               String               @id @default(uuid())
+  name             String               @unique
+  users            User[]
+  clients          Client[]
+  projects         Project[]
+  invoices         Invoice[]
+  expenses         Expense[]
+  quickItems       QuickItem[]
+  questionnaires   Questionnaire[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  masterCurrency   String               @default("INR")
+  address          String?
+  dateFormat       String               @default("dd-MMM-yy")
+  status           String               @default("Active") // Active, Blocked
+  supportTickets   SupportTicket[]
   templateRequests TemplateRequest[]
-  profile        OrganizationProfile?
+  profile          OrganizationProfile?
 }
 
 model Client {
@@ -58,10 +60,10 @@ model Client {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  projects       Project[]
-  invoices       Invoice[]
-  expenses       Expense[]
-  questionnaires Questionnaire[]
+  projects               Project[]
+  invoices               Invoice[]
+  expenses               Expense[]
+  questionnaires         Questionnaire[]
   questionnaireResponses QuestionnaireResponse[]
 
   @@index([organizationId])
@@ -80,10 +82,10 @@ model Project {
   organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-  
-  invoices         Invoice[]
-  expenses         Expense[]
-  questionnaires   Questionnaire[]
+
+  invoices       Invoice[]
+  expenses       Expense[]
+  questionnaires Questionnaire[]
 
   @@index([clientId])
   @@index([organizationId])
@@ -98,143 +100,153 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([expiresAt])
 }
 
 model Invoice {
-  id              String         @id @default(uuid())
-  invoiceNumber   String
-  status          String         @default("Draft") // Draft, Sent, Partially Paid, Paid, Overdue, Cancelled
-  issueDate       DateTime       @default(now())
-  dueDate         DateTime
-  currency        String         @default("USD")
-  subtotal        Float          @default(0)
-  taxAmount       Float          @default(0)
-  discountAmount  Float          @default(0)
-  totalAmount     Float          @default(0)
-  paidAmount      Float          @default(0)
-  exchangeRate    Float          @default(1.0)
-  notice          String?
-  notes           String?
-  terms           String?
-  
-  clientId        String
-  client          Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  projectId       String?
-  project         Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  organizationId  String
-  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
-  items           InvoiceItem[]
-  payments        Payment[]
-  activities      Activity[]
-  expenses        Expense[]
-  
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             String   @id @default(uuid())
+  invoiceNumber  String
+  status         String   @default("Draft") // Draft, Sent, Partially Paid, Paid, Overdue, Cancelled
+  issueDate      DateTime @default(now())
+  dueDate        DateTime
+  currency       String   @default("USD")
+  subtotal       Float    @default(0)
+  taxAmount      Float    @default(0)
+  discountAmount Float    @default(0)
+  totalAmount    Float    @default(0)
+  paidAmount     Float    @default(0)
+  exchangeRate   Float    @default(1.0)
+  notice         String?
+  notes          String?
+  terms          String?
+
+  clientId       String
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  items      InvoiceItem[]
+  payments   Payment[]
+  activities Activity[]
+  expenses   Expense[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([clientId])
   @@index([organizationId])
+  @@index([projectId])
+  @@index([organizationId, status])
 }
 
 model InvoiceItem {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   description String
-  quantity    Int      @default(1)
+  quantity    Int    @default(1)
   unitPrice   Float
-  taxRate     Float    @default(0)
+  taxRate     Float  @default(0)
   total       Float
-  
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
 }
 
 model Payment {
-  id          String   @id @default(uuid())
-  amount      Float
-  date        DateTime @default(now())
-  method      String   // Credit Card, Bank Transfer, Cash, Check
-  reference   String?
-  
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  amount    Float
+  date      DateTime @default(now())
+  method    String // Credit Card, Bank Transfer, Cash, Check
+  reference String?
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([invoiceId])
 }
 
 model Activity {
   id          String   @id @default(uuid())
-  type        String   // CREATED, UPDATED, SENT, PAYMENT_RECORDED, PAID, PDF_DOWNLOADED
+  type        String // CREATED, UPDATED, SENT, PAYMENT_RECORDED, PAID, PDF_DOWNLOADED
   description String?
   date        DateTime @default(now())
-  
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
 }
 
 model Expense {
-  id             String       @id @default(uuid())
-  description    String
-  amount         Float
-  date           DateTime     @default(now())
-  category       String
-  status         String       @default("Paid")
-  currency       String?
-  exchangeRate   Float?
+  id           String   @id @default(uuid())
+  description  String
+  amount       Float
+  date         DateTime @default(now())
+  category     String
+  status       String   @default("Paid")
+  currency     String?
+  exchangeRate Float?
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
-  clientId       String?
-  client         Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  
-  projectId      String?
-  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  
-  invoiceId      String?
-  invoice        Invoice?     @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@index([clientId])
   @@index([projectId])
   @@index([invoiceId])
+  @@index([organizationId, date])
 }
 
 model QuickItem {
-  id             String       @id @default(uuid())
-  name           String       // Title or Description of the service/item
-  defaultPrice   Float        @default(0)
-  
+  id           String @id @default(uuid())
+  name         String // Title or Description of the service/item
+  defaultPrice Float  @default(0)
+
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
 }
 
 model WaitlistLead {
-  id             String   @id @default(uuid())
-  fullName       String
-  email          String   @unique
-  country        String?
-  profession     String?
-  earningsRange  String?
-  previousTool   String?
-  createdAt      DateTime @default(now())
+  id            String   @id @default(uuid())
+  fullName      String
+  email         String   @unique
+  country       String?
+  profession    String?
+  earningsRange String?
+  previousTool  String?
+  createdAt     DateTime @default(now())
 }
 
 model Questionnaire {
-  id             String       @id @default(uuid())
-  title          String
-  description    String?
-  slug           String       @unique
-  status         String       @default("Active") // Active, Paused, Closed
-  maxResponses   Int?
-  responseCount  Int          @default(0)
+  id            String  @id @default(uuid())
+  title         String
+  description   String?
+  slug          String  @unique
+  status        String  @default("Active") // Active, Paused, Closed
+  maxResponses  Int?
+  responseCount Int     @default(0)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -243,31 +255,32 @@ model Questionnaire {
   projectId      String?
   project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
-  fields         QuestionnaireField[]
-  responses      QuestionnaireResponse[]
+  fields    QuestionnaireField[]
+  responses QuestionnaireResponse[]
 
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@index([clientId])
   @@index([projectId])
+  @@index([organizationId, status])
 }
 
 model QuestionnaireField {
   id              String        @id @default(uuid())
   questionnaireId String
   questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  type            String
-  label           String
-  description     String?
-  required        Boolean       @default(false)
-  order           Int
-  options         Json?
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  type        String
+  label       String
+  description String?
+  required    Boolean @default(false)
+  order       Int
+  options     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([questionnaireId])
 }
@@ -277,12 +290,12 @@ model QuestionnaireResponse {
   questionnaireId String
   questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
 
-  clientId        String?
-  client          Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
 
-  answers         Json         
+  answers Json
 
-  createdAt       DateTime      @default(now())
+  createdAt DateTime @default(now())
 
   @@index([questionnaireId])
   @@index([clientId])
@@ -330,9 +343,9 @@ model SuperUser {
 
 model EmailPreference {
   id        String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category  String   // e.g., 'Marketing', 'Transactional', 'Alerts'
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  String // e.g., 'Marketing', 'Transactional', 'Alerts'
   optOut    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -342,18 +355,18 @@ model EmailPreference {
 }
 
 model EmailQueue {
-  id           String   @id @default(uuid())
-  to           String
-  subject      String
-  htmlBody     String
-  category     String   @default("Transactional") // To check preferences before sending
-  status       String   @default("Pending") // Pending, Processing, Sent, Failed
-  attempts     Int      @default(0)
-  maxAttempts  Int      @default(3)
-  lastError    String?
-  nextRunAt    DateTime @default(now())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  to          String
+  subject     String
+  htmlBody    String
+  category    String   @default("Transactional") // To check preferences before sending
+  status      String   @default("Pending") // Pending, Processing, Sent, Failed
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  lastError   String?
+  nextRunAt   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([status, nextRunAt])
 }
@@ -362,36 +375,38 @@ model TemplateRequest {
   id             String       @id @default(uuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  type           String       // 'Invoice' or 'Expense'
+  type           String // 'Invoice' or 'Expense'
   description    String
   attachmentUrl  String?
   status         String       @default("Pending") // Pending, Completed
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
 }
 
 model OrganizationProfile {
-  id                 String       @id @default(uuid())
-  organizationId     String       @unique
-  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+  id             String       @id @default(uuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   phone              String?
   email              String?
-  taxId              String?      // Generic (e.g. GSTIN, VAT, EIN)
-  registrationNumber String?      // Generic (e.g. PAN, SSN, Company Reg)
-  region             String?      // State / Province / Territory
-  
+  taxId              String? // Generic (e.g. GSTIN, VAT, EIN)
+  registrationNumber String? // Generic (e.g. PAN, SSN, Company Reg)
+  region             String? // State / Province / Territory
+
   invoiceFooterNote  String?
   expenseFooterNote  String?
-  invoiceTemplate    String       @default("soseki-modern")
-  expenseTemplate    String       @default("soseki-modern")
+  invoiceTemplate    String  @default("soseki-modern")
+  expenseTemplate    String  @default("soseki-modern")
   termsAndConditions String?
-  
-  accountNumber      String?
-  bankName           String?
-  routingNumber      String?      // Generic (e.g. IFSC, Sort Code, Routing Number)
-  branch             String?
-  
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+
+  accountNumber String?
+  bankName      String?
+  routingNumber String? // Generic (e.g. IFSC, Sort Code, Routing Number)
+  branch        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

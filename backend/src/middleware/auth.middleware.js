@@ -48,24 +48,21 @@ const authMiddleware = async (req, res, next) => {
       return next();
     }
 
-    const user = await prisma.user.findUnique({
+    const userStatus = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { 
         id: true, 
-        email: true, 
-        name: true, 
-        organizationId: true,
         organization: {
           select: { status: true }
         }
       },
     });
 
-    if (!user) {
+    if (!userStatus) {
       return res.status(401).json({ success: false, message: "User not found" });
     }
 
-    if (user.organization?.status === "Blocked") {
+    if (userStatus.organization?.status === "Blocked") {
       return res.status(403).json({ 
         success: false, 
         message: "Your organization has been blocked.", 
@@ -73,7 +70,13 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.user = {
+      id: payload.userId,
+      email: payload.email,
+      name: payload.name,
+      organizationId: payload.organizationId,
+      organization: userStatus.organization
+    };
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {

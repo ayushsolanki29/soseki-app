@@ -28,6 +28,8 @@ class AuthService {
     // Generate accessToken
     const payload = {
       userId: user.id,
+      email: user.email,
+      name: user.name,
       hasOrg: !!user.organizationId,
       organizationId: user.organizationId || null,
     };
@@ -57,6 +59,19 @@ class AuthService {
         name: user.name,
       },
     };
+  }
+
+  async logout(refreshToken) {
+    if (refreshToken) {
+      try {
+        await prisma.session.delete({
+          where: { refreshToken },
+        });
+      } catch (error) {
+        // If session doesn't exist, ignore the error (idempotent logout)
+        if (error.code !== 'P2025') throw error;
+      }
+    }
   }
 
   async checkEmail(email) {
