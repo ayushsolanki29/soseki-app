@@ -3,16 +3,33 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/ui/button";
+import { MobileNav } from "@/components/mobile-nav";
+import Link from "next/link";
+
+export const navLinks = [
+	{
+		label: "Features",
+		href: "#",
+	},
+	{
+		label: "Pricing",
+		href: "/pricing",
+	},
+	{
+		label: "About",
+		href: "#",
+	},
+];
 
 export function Header() {
 	const scrolled = useScroll(10);
 
 	return (
-        <header
+		<header
 			className={cn(
-				"sticky top-0 z-50 mx-auto w-full max-w-4xl border-transparent border-b md:rounded-full md:border md:transition-all md:ease-out",
+				"sticky top-0 z-50 mx-auto w-full max-w-4xl border-b md:rounded-full md:border md:transition-all md:ease-out bg-white md:mt-4 shadow-sm",
 				{
-					"border-border bg-white/95 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 md:top-2 md:max-w-3xl md:shadow-md":
+					"border-border bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 md:top-2 md:max-w-3xl md:shadow-md":
 						scrolled,
 				}
 			)}
@@ -25,18 +42,30 @@ export function Header() {
 					}
 				)}
 			>
-				<a className="flex items-center gap-2 rounded-md p-2 hover:bg-muted" href="/">
-					<Logo className="h-5" />
-					<span className="text-xl font-bold tracking-tight text-slate-900">Soseki</span>
-				</a>
-				<div className="hidden items-center gap-7 md:flex text-[15px] font-medium text-slate-600">
-					<a href="/founders" className="hover:text-black transition-colors">Founders</a>
-					<a href="/guide" className="hover:text-black transition-colors">Guide</a>
-					<a href="/docs" className="hover:text-black transition-colors">Docs</a>
-					<a href="/pricing" className="hover:text-black transition-colors">Pricing</a>
-					<Button size="sm" className="ml-2">Get Started</Button>
+				<Link
+					className="flex items-center gap-2 rounded-md p-2 hover:bg-muted dark:hover:bg-muted/50"
+					href="/"
+				>
+					<Logo className="h-4" />
+                    <span className="font-bold text-slate-900 tracking-tight">Soseki</span>
+				</Link>
+				<div className="hidden items-center gap-2 md:flex">
+					<div>
+						{navLinks.map((link) => (
+							<Button asChild key={link.label} size="sm" variant="ghost" className="text-slate-600 font-medium">
+								<Link href={link.href}>{link.label}</Link>
+							</Button>
+						))}
+					</div>
+					<Button asChild size="sm" variant="outline" className="ml-2">
+						<Link href="/login">Sign In</Link>
+					</Button>
+					<Button asChild size="sm">
+                        <Link href="/login">Get Started</Link>
+                    </Button>
 				</div>
+				<MobileNav />
 			</nav>
-        </header>
-    );
+		</header>
+	);
 }
