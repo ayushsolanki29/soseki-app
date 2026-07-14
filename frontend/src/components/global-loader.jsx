@@ -1,47 +1,63 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Logo } from "./logo";
 
 export function GlobalLoader() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const [progress, setProgress] = useState(0);
-
-  // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    console.log("[GlobalLoader] Component mounted. Current readyState:", document.readyState);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    // Simulate loading progress
-    const duration = 1500;
-    const interval = 30;
-    const steps = duration / interval;
-    let currentStep = 0;
 
-    const timer = setInterval(() => {
-      currentStep++;
-      const newProgress = Math.min((currentStep / steps) * 100, 100);
-      setProgress(newProgress);
+    const startTime = Date.now();
 
-      if (currentStep >= steps) {
+    const handleLoad = () => {
+      console.log("[GlobalLoader] handleLoad triggered!");
+      setProgress(100);
+      
+      const elapsed = Date.now() - startTime;
+      const minScreenTime = 2500;
+      const remainingTime = Math.max(0, minScreenTime - elapsed);
+      
+      console.log(`[GlobalLoader] Waiting ${remainingTime}ms before hiding...`);
+      setTimeout(() => {
+        setIsFadingOut(true);
+        setTimeout(() => setIsLoading(false), 500); // Wait for fade out animation
+      }, remainingTime);
+    };
+
+    if (document.readyState === "complete") {
+      console.log("[GlobalLoader] document is already complete, firing handleLoad.");
+      handleLoad();
+    } else {
+      console.log("[GlobalLoader] document not complete. Waiting for load event...");
+      const timer = setInterval(() => {
+        setProgress((oldProgress) => {
+          if (oldProgress >= 90) return oldProgress;
+          return oldProgress + 5;
+        });
+      }, 100);
+
+      window.addEventListener("load", handleLoad);
+      return () => {
         clearInterval(timer);
-        setTimeout(() => setIsLoading(false), 300);
-      }
-    }, interval);
-
-    return () => clearInterval(timer);
+        window.removeEventListener("load", handleLoad);
+      };
+    }
   }, []);
 
   if (!mounted) {
-    // Return static version for SSR to ensure it blocks the screen instantly
     return (
-      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f3f8ff]">
+      <div className="fixed inset-0 z-[999999] flex flex-col items-center justify-center bg-white m-0 p-0">
         <div className="flex flex-col items-center gap-6">
-          <div><Logo className="w-16 h-16 text-blue-600" /></div>
-          <div className="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-             <div className="h-full bg-blue-600 rounded-full w-0" />
+          <Logo className="w-16 h-16 text-blue-600" />
+          <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+             <div className="h-full bg-blue-600 rounded-full w-[10%]" />
           </div>
           <div className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">
             Loading Soseki...
@@ -51,39 +67,28 @@ export function GlobalLoader() {
     );
   }
 
+  if (!isLoading) {
+    return null;
+  }
+
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          key="global-loader"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f3f8ff]"
-        >
-          <div className="flex flex-col items-center gap-6">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Logo className="w-16 h-16 text-blue-600" />
-            </motion.div>
-            <div className="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-blue-600 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.1, ease: "linear" }}
-              />
-            </div>
-            <div className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">
-              Loading Soseki...
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div 
+      className={`fixed inset-0 z-[999999] flex flex-col items-center justify-center bg-white m-0 p-0 transition-opacity duration-500 ease-in-out ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}
+    >
+      <div className="flex flex-col items-center gap-6">
+        <div className="animate-in fade-in zoom-in duration-500 delay-150 fill-mode-both">
+          <Logo className="w-16 h-16 text-blue-600 drop-shadow-md" />
+        </div>
+        <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+          <div
+            className="h-full bg-blue-600 rounded-full transition-all duration-300 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="text-[11px] font-bold text-slate-400 tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300 fill-mode-both">
+          Loading Soseki...
+        </div>
+      </div>
+    </div>
   );
 }
