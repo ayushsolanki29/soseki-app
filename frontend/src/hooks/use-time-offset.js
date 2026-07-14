@@ -23,6 +23,7 @@ export function useTimeOffset(minutesToAdd = 10, fallback = { hour: "4", minute:
     hour = hour ? hour : 12; // the hour '0' should be '12'
     const minute = date.getMinutes().toString().padStart(2, '0');
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeData({
       hour: hour.toString(),
       minute,

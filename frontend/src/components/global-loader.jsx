@@ -12,6 +12,7 @@ export function GlobalLoader() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     // Simulate loading progress
     const duration = 1500;
