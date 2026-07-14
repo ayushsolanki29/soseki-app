@@ -1,0 +1,104 @@
+import { Button } from "@/components/ui/button";
+import { FullWidthDivider } from "@/components/full-width-divider";
+import { CheckIcon } from "lucide-react";
+
+const pricingPlans = [
+	{
+		name: "STARTER",
+		price: "Free",
+		description: "For early-stage startups",
+		featuresTitle: "FREE, FOREVER:",
+		features: [
+			"10 customers",
+			"10 documents",
+			"10 invoices",
+			"Auto-updated taxes",
+		],
+		href: "#",
+	},
+	{
+		name: "SCALE",
+		isPopular: true,
+		href: "#",
+		price: "$8",
+		period: "month",
+		description: "For fast-growing teams",
+		featuresTitle: "EVERYTHING IN STARTER, PLUS:",
+		features: [
+			"20 customers",
+			"25 documents",
+			"30 invoices",
+			"Auto-updated taxes",
+			"Cloud Sync",
+		],
+	},
+];
+
+export function PricingSection() {
+	return (
+        <section
+            className="mx-auto max-w-5xl place-content-center border-x py-24">
+            <div className="relative">
+				<FullWidthDivider position="top" />
+				<FullWidthDivider position="bottom" />
+
+				<div
+                    className="grid grid-cols-1 gap-px bg-border md:grid-cols-2 lg:grid-cols-4">
+					<div className="flex flex-col bg-background p-8 md:col-span-2">
+						<p className="mb-6 text-muted-foreground text-sm uppercase tracking-wider">
+							PRICING
+						</p>
+						<h1 className="font-bold text-3xl leading-tight md:text-5xl">
+							Pricing that doesn't suck
+						</h1>
+					</div>
+
+					{pricingPlans.map((plan) => (
+						<PricingCard key={plan.name} plan={plan} />
+					))}
+				</div>
+			</div>
+        </section>
+    );
+}
+
+function PricingCard({
+    plan
+}) {
+	return (
+        <div className="flex flex-col bg-background *:px-4 *:py-6">
+            <div className="border-b">
+				<p className="mb-6 text-muted-foreground text-sm uppercase tracking-wider">
+					{plan.name}
+				</p>
+				<div className="mb-2 flex items-baseline gap-2">
+					<h2 className="font-bold text-4xl">{plan.price}</h2>
+					{plan.period && (
+						<span className="text-muted-foreground text-xs">
+							/ {plan.period}
+						</span>
+					)}
+				</div>
+				<p className="mb-8 line-clamp-1 text-muted-foreground">
+					{plan.description}
+				</p>
+
+				<Button
+                    className="w-full"
+                    variant={plan.isPopular ? "default" : "outline"}
+                    render={<a href={plan.href} />}
+                    nativeButton={false}>Get started</Button>
+			</div>
+            <div className="space-y-3 text-muted-foreground text-sm">
+				<p className="mb-6 text-xs uppercase">{plan.featuresTitle}</p>
+
+				{plan.features.map((feature) => (
+					<p className="flex items-center gap-2 text-foreground/80" key={feature}>
+						<CheckIcon className="size-4" />
+						{feature}
+					</p>
+				))}
+			</div>
+        </div>
+    );
+}
