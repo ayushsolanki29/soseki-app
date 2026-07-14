@@ -8,7 +8,7 @@ export function GlobalLoader() {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // We use this to prevent hydration mismatch with motion components
+  // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,13 +34,11 @@ export function GlobalLoader() {
   }, []);
 
   if (!mounted) {
-    // Return a static version for SSR to ensure it blocks the screen immediately
+    // Return static version for SSR to ensure it blocks the screen instantly
     return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#f3f8ff]">
+      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f3f8ff]">
         <div className="flex flex-col items-center gap-6">
-          <div>
-            <Logo className="w-16 h-16 text-blue-600" />
-          </div>
+          <div><Logo className="w-16 h-16 text-blue-600" /></div>
           <div className="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
              <div className="h-full bg-blue-600 rounded-full w-0" />
           </div>
@@ -61,7 +59,7 @@ export function GlobalLoader() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#f3f8ff]"
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f3f8ff]"
         >
           <div className="flex flex-col items-center gap-6">
             <motion.div

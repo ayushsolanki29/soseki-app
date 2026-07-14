@@ -25,7 +25,6 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
 import { formatCurrency } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";

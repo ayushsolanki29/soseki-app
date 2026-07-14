@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UploadCloudIcon } from "lucide-react";
 
 export default function WorkspaceSettingsPage() {
   const [name, setName] = useState("");

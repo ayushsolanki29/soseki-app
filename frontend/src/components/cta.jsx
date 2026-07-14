@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { FullWidthDivider } from "@/components/full-width-divider";
-import { ArrowRightIcon } from "lucide-react";
 import { DynamicTime } from "@/components/dynamic-time";
 
 export function CallToAction() {

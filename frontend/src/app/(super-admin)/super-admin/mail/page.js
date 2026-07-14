@@ -7,8 +7,7 @@ import {
   CheckCircle2Icon, 
   XCircleIcon, 
   ClockIcon, 
-  RefreshCwIcon,
-  SearchIcon
+  RefreshCwIcon
 } from "lucide-react";
 
 export default function MailMonitoringPage() {

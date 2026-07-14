@@ -105,7 +105,7 @@ export function TestimonialsSection() {
 						Built for <span className="text-blue-600">ambitious freelancers</span>
 					</h2>
 					<p className="text-[18px] text-slate-700 max-w-2xl leading-relaxed">
-						Soseki is for modern freelancers and agencies. It's the powerful all-in-one business software we wish we had ourselves.
+						Soseki is for modern freelancers and agencies. It&apos;s the powerful all-in-one business software we wish we had ourselves.
 					</p>
 					
 					<div className="flex justify-center mt-3">

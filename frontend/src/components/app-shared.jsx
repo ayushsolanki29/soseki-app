@@ -6,7 +6,6 @@ import {
     CheckSquareIcon, 
     SettingsIcon, 
     HelpCircleIcon, 
-    ActivityIcon, 
     FolderIcon,
     ReceiptIcon,
     UserCircleIcon,

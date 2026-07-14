@@ -7,13 +7,9 @@ import { HoverQuickActions } from "@/components/hover-quick-actions";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { 
-    CheckCircle2Icon, 
-    FileTextIcon, 
-    BriefcaseIcon,
+import {
     AlertCircleIcon,
-    CalendarIcon,
-    ClipboardListIcon
+    CalendarIcon
 } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
 import { getSession } from "@/lib/auth";
