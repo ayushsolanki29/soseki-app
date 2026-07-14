@@ -18,7 +18,7 @@ import { ZeroLockinSection } from "@/components/landing/zero-lockin-section";
 export default function LandingPage() {
   return (
     <main>
-      <GlobalLoader />
+      {/* <GlobalLoader /> */}
       <div className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-hidden">
         <Header />
 
@@ -46,7 +46,7 @@ export default function LandingPage() {
         <GlobalBillingSection />
         <ClientIntakeSection />
         <FinancialClaritySection />
-        <ZeroLockinSection />
+        {/* <ZeroLockinSection /> */}
 
         {/* Testimonials Section */}
         <section className="bg-[#fcfdfd] py-12 border-b border-slate-100">

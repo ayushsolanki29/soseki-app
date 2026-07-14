@@ -50,84 +50,14 @@ export function HeroSection() {
         transition={{ duration: 1, delay: 1.7, ease: [0.16, 1, 0.3, 1] }}
         className="mt-24 w-full max-w-[1100px] relative"
       >
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden flex text-left h-[700px] relative z-10">
-
-          {/* Sidebar Mock */}
-          <div className="w-[240px] bg-[#fafafa] border-r border-slate-100 p-4 hidden md:flex flex-col gap-2 shrink-0">
-            <div className="flex items-center gap-2 px-3 py-2 text-slate-800 font-bold mb-4">
-              <Image src="/logo.svg" alt="Soseki Logo" width={20} height={20} className="w-5 h-5" />
-              <span className="text-[15px]">Soseki</span>
-            </div>
-            <div className="px-3 py-2 text-[13px] text-slate-500 font-medium flex items-center gap-2 rounded-md hover:bg-slate-100 cursor-pointer">
-              <Search className="w-4 h-4" /> Search
-            </div>
-
-            <div className="mt-6 flex flex-col gap-1">
-              <div className="px-3 py-1.5 text-[13px] text-slate-900 font-semibold bg-white shadow-sm border border-slate-100 rounded-md flex items-center justify-between cursor-pointer">
-                <span>Dashboard</span>
-                <span className="bg-slate-100 text-slate-400 text-[10px] font-bold py-0.5 px-1.5 rounded-[4px]">3</span>
-              </div>
-              <div className="px-3 py-1.5 text-[13px] text-slate-500 font-medium flex items-center justify-between hover:bg-slate-100 rounded-md mt-1 cursor-pointer">
-                <span>Clients</span> <span className="bg-slate-100 text-slate-400 text-[10px] font-bold py-0.5 px-1.5 rounded-[4px]">12</span>
-              </div>
-              <div className="px-3 py-1.5 text-[13px] text-slate-500 font-medium hover:bg-slate-100 rounded-md cursor-pointer">Projects</div>
-              <div className="px-3 py-1.5 text-[13px] text-slate-500 font-medium hover:bg-slate-100 rounded-md cursor-pointer">Invoices</div>
-              <div className="px-3 py-1.5 text-[13px] text-slate-500 font-medium hover:bg-slate-100 rounded-md cursor-pointer">Expenses</div>
-            </div>
-          </div>
-
-          {/* Main Content Mock */}
-          <div className="flex-1 bg-white p-10 overflow-hidden flex flex-col">
-            <h2 className="text-[22px] font-bold text-slate-900 tracking-tight mb-8">Dashboard</h2>
-
-            {/* KPI Cards */}
-            <div className="grid grid-cols-4 gap-6 mb-8">
-              {[
-                { label: "Cash", value: "$2,309,091" },
-                { label: "Burn", value: "-$41,206" },
-                { label: "Runway", value: "4y 8mo" },
-                { label: "MRR", value: "$76,981" },
-              ].map((stat, i) => (
-                <div key={i} className="p-5 rounded-[12px] border border-slate-100 bg-white flex flex-col gap-3 shadow-[0_2px_8px_rgb(0,0,0,0.04)]">
-                  <span className="text-[13px] text-slate-500 font-semibold">{stat.label}</span>
-                  <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Table Mockup */}
-            <div className="flex-1 rounded-[12px] flex flex-col pt-4">
-              <div className="grid grid-cols-5 border-b border-slate-100 pb-3 px-2">
-                <span className="text-[12px] font-semibold text-slate-500">Date</span>
-                <span className="text-[12px] font-semibold text-slate-500 col-span-2">Client</span>
-                <span className="text-[12px] font-semibold text-slate-500 text-right">Amount</span>
-                <span className="text-[12px] font-semibold text-slate-500 text-right">Status</span>
-              </div>
-              <div className="flex flex-col mt-2">
-                {[
-                  { date: "Jul 12, 2026", client: "Acme Corp", amount: "$4,500.00", status: "Paid" },
-                  { date: "Jul 10, 2026", client: "Globex Inc", amount: "$2,100.00", status: "Pending" },
-                  { date: "Jul 05, 2026", client: "Initech", amount: "$8,900.00", status: "Paid" },
-                  { date: "Jul 02, 2026", client: "Umbrella Corp", amount: "$1,250.00", status: "Paid" },
-                  { date: "Jun 28, 2026", client: "Massive Dynamic", amount: "$3,400.00", status: "Overdue" },
-                ].map((inv, i) => (
-                  <div key={i} className="grid grid-cols-5 items-center py-3 px-2 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded-md transition-colors cursor-pointer">
-                    <span className="text-[13px] text-slate-500 font-medium">{inv.date}</span>
-                    <span className="text-[13px] font-semibold text-slate-800 col-span-2">{inv.client}</span>
-                    <span className="text-[13px] font-semibold text-slate-900 text-right">{inv.amount}</span>
-                    <div className="flex justify-end">
-                      <span className={cn("text-[11px] px-2 py-0.5 rounded-[4px] font-bold",
-                        inv.status === 'Paid' ? 'bg-green-100 text-green-700' :
-                          inv.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-red-100 text-red-700'
-                      )}>{inv.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <Image 
+          src="/dashboard.png" 
+          alt="Soseki Dashboard Preview" 
+          width={1100} 
+          height={700} 
+          priority
+          className="w-full rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 relative z-10 object-cover" 
+        />
       </motion.div>
     </main>
   );

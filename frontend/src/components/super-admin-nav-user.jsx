@@ -43,13 +43,11 @@ export function SuperAdminNavUser() {
 
 	return (
 		<DropdownMenu>
-            <DropdownMenuTrigger render={
-                <button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <Avatar className="size-8">
-                        <DynamicAvatar type="superadmin" seed="super-admin" size={32} />
-                    </Avatar>
-                </button>
-            } />
+            <DropdownMenuTrigger className="flex items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0">
+                <Avatar className="size-8">
+                    <DynamicAvatar type="superadmin" seed="super-admin" size={32} />
+                </Avatar>
+            </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-60">
 				<DropdownMenuItem className="flex items-center justify-start gap-2">
 					<DropdownMenuLabel className="flex items-center gap-3">

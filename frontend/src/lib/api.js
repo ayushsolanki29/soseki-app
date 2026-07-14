@@ -51,6 +51,12 @@ API.interceptors.response.use(
 
     // Check if the error is 401 Unauthorized and we haven't already retried
     if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      // DO NOT intercept 401s from login or refresh endpoints!
+      if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true; // Mark to avoid infinite loops
 
       const isSuperAdminRequest = originalRequest.url?.includes('/super-admin/');
@@ -69,7 +75,10 @@ API.interceptors.response.use(
         // If refresh fails, it means the session is completely dead.
         // Redirect to login or handle logout state
         if (typeof window !== 'undefined') {
-          window.location.href = isSuperAdminRequest ? '/super-admin/login' : '/login';
+          // Only redirect if they are not already on the login page to avoid refresh loops
+          if (window.location.pathname !== '/login' && window.location.pathname !== '/super-admin/login') {
+             window.location.href = isSuperAdminRequest ? '/super-admin/login' : '/login';
+          }
         }
         return Promise.reject(refreshError);
       }

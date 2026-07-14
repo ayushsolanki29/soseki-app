@@ -53,7 +53,7 @@ export function NavUser() {
 
 	return (
         <DropdownMenu>
-            <DropdownMenuTrigger render={<button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring" />}>
+            <DropdownMenuTrigger className="flex items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0">
                 <Avatar className="size-8">
                     <DynamicAvatar type="organization" seed={orgName} size={32} />
                 </Avatar>
@@ -62,7 +62,7 @@ export function NavUser() {
 				<DropdownMenuItem className="flex items-center justify-start gap-2">
 					<DropdownMenuLabel className="flex items-center gap-3">
 						<Avatar className="size-10">
-							<DynamicAvatar type="organization" seed={orgName} size={40} />
+							<DynamicAvatar type="user" seed={user?.name || user?.email || "User"} size={40} />
 						</Avatar>
 						<div className="flex flex-col">
 							<span className="font-semibold text-sm text-foreground">{user?.name || "User"}</span>

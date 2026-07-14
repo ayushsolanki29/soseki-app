@@ -52,6 +52,9 @@ const authMiddleware = async (req, res, next) => {
       where: { id: payload.userId },
       select: { 
         id: true, 
+        email: true,
+        name: true,
+        organizationId: true,
         organization: {
           select: { status: true }
         }
@@ -71,10 +74,10 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = {
-      id: payload.userId,
-      email: payload.email,
-      name: payload.name,
-      organizationId: payload.organizationId,
+      id: userStatus.id,
+      email: userStatus.email,
+      name: userStatus.name,
+      organizationId: userStatus.organizationId,
       organization: userStatus.organization
     };
     next();
