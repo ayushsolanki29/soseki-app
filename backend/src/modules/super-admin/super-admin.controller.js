@@ -93,7 +93,7 @@ class SuperAdminController {
     try {
       const { id } = req.params;
       const { newPassword } = req.body;
-      const user = await superAdminService.changeOrgAdminPassword(id, newPassword);
+      await superAdminService.changeOrgAdminPassword(id, newPassword);
       return res.status(200).json({ success: true, message: "Password updated successfully" });
     } catch (error) {
       next(error);

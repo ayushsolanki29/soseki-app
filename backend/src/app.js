@@ -86,7 +86,7 @@ app.get("/health", (req, res) => {
 });
 
 // 11. 404 Route Handler
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Can't find ${req.originalUrl} on this server!`,

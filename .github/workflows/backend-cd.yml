@@ -1,0 +1,66 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run ESLint
+        run: npm run lint
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy backend to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Navigate to backend folder"
+            cd /apps/soseki/backend
+
+            echo "Pull latest code"
+            git pull origin main
+
+            echo "Install dependencies"
+            npm install
+
+            echo "Generate Prisma client"
+            npx prisma generate
+
+            # Uncomment the line below ONLY when you need to run database migrations
+            # npm run db:dev
+
+            echo "Restart backend"
+            pm2 restart backend 
+
+            pm2 save
+            echo "Backend deployed successfully"
