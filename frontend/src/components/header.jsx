@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { useScroll } from "@/hooks/use-scroll";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { MobileNav } from "@/components/mobile-nav";
 import Link from "next/link";
 
@@ -52,17 +52,15 @@ export function Header() {
 				<div className="hidden items-center gap-2 md:flex">
 					<div>
 						{navLinks.map((link) => (
-							<Button asChild key={link.label} size="sm" variant="ghost" className="text-slate-600 font-medium">
-								<Link href={link.href}>{link.label}</Link>
-							</Button>
+							<Link key={link.label} href={link.href} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-slate-600 font-medium")}>
+								{link.label}
+							</Link>
 						))}
 					</div>
-					<Button asChild size="sm" variant="outline" className="ml-2">
-						<Link href="/login">Sign In</Link>
-					</Button>
-					<Button asChild size="sm">
-                        <Link href="/login">Get Started</Link>
-                    </Button>
+					
+					<Link href="/login" className={buttonVariants({ size: "sm" })}>
+                        Get Started
+                    </Link>
 				</div>
 				<MobileNav />
 			</nav>

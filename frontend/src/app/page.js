@@ -6,20 +6,17 @@ import { PricingSection } from "@/components/pricing-section";
 import { CallToAction } from "@/components/cta";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { GlobalLoader } from "@/components/global-loader";
 
 // New modular landing components
 import { HeroSection } from "@/components/landing/hero-section";
 import { GlobalBillingSection } from "@/components/landing/global-billing-section";
 import { ClientIntakeSection } from "@/components/landing/client-intake-section";
 import { FinancialClaritySection } from "@/components/landing/financial-clarity-section";
-import { ZeroLockinSection } from "@/components/landing/zero-lockin-section";
 
 export default function LandingPage() {
   return (
     <main>
-      {/* <GlobalLoader /> */}
-      <div className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-hidden">
+      <div className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-clip">
         <Header />
 
         <HeroSection />

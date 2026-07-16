@@ -5,17 +5,11 @@ import Image from "next/image";
 import { ArrowRight, Search } from "lucide-react";
 import { DynamicTime } from "@/components/dynamic-time";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
 
 export function HeroSection() {
   return (
     <main className="mx-auto max-w-5xl px-6 pt-24 pb-32 text-center flex flex-col items-center overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
-        className="flex flex-col items-center w-full"
-      >
+      <div className="flex flex-col items-center w-full">
         <Link href="/docs" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-[13px] font-medium text-slate-600 hover:bg-slate-200 transition-colors mb-8">
           The open-source platform for freelancers and agencies <ArrowRight className="w-3.5 h-3.5" />
         </Link>
@@ -41,15 +35,10 @@ export function HeroSection() {
         <p className="text-[13px] text-slate-400 font-medium">
           For freelancers, consultants, and small agencies.
         </p>
-      </motion.div>
+      </div>
 
       {/* Dashboard Mockup exactly matching the layout style */}
-      <motion.div 
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 1.7, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-24 w-full max-w-[1100px] relative"
-      >
+      <div className="mt-24 w-full max-w-[1100px] relative">
         <Image 
           src="/dashboard.png" 
           alt="Soseki Dashboard Preview" 
@@ -58,7 +47,7 @@ export function HeroSection() {
           priority
           className="w-full rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 relative z-10 object-cover" 
         />
-      </motion.div>
+      </div>
     </main>
   );
 }
