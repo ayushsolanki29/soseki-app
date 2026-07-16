@@ -8,7 +8,7 @@ This folder contains the Next.js frontend for Soseki.
 - Handle dashboard, auth, and workspace pages
 - Keep UI components and client-side logic organized
 - Communicate with the backend API
-
+  
 ## Main Areas
 
 - `src/app/` - route groups and pages
