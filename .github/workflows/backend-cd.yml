@@ -57,11 +57,11 @@ jobs:
             npx prisma generate
 
             # Uncomment the line below ONLY when you need to run database migrations
-            # npm run db:dev
+            npm run db:dev
 
             echo "Restart backend"
             pm2 restart backend 
 
             pm2 save
             echo "Backend deployed successfully"
-             #finished
+            

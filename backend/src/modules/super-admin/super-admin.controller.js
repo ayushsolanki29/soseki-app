@@ -137,6 +137,22 @@ class SuperAdminController {
       next(error);
     }
   }
-}
+  async getTrafficStats(req, res, next) {
+    try {
+      const stats = await superAdminService.getTrafficStats();
+      return res.status(200).json({ success: true, stats });
+    } catch (error) {
+      next(error);
+    }
+  }
 
+  async getDashboardStats(req, res, next) {
+    try {
+      const stats = await superAdminService.getDashboardStats();
+      return res.status(200).json({ success: true, ...stats });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
 module.exports = new SuperAdminController();

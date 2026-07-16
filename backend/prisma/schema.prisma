@@ -410,3 +410,19 @@ model OrganizationProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model PageVisit {
+  id          String   @id @default(uuid())
+  path        String
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([utmSource])
+}

@@ -2,6 +2,8 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
+import { BackgroundTracker } from "@/components/background-tracker";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -22,6 +24,9 @@ export default function RootLayout({ children }) {
       <body className="t-page-fade min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster richColors position="bottom-right" />
+        <Suspense fallback={null}>
+          <BackgroundTracker />
+        </Suspense>
       </body>
     </html>
   );

@@ -10,6 +10,7 @@ const validate = require("../../middleware/validate.middleware");
 
 router.post("/auth/login", superAdminController.login);
 router.get("/dashboard/charts", superAdminController.getCharts);
+router.get("/dashboard/stats", superAdminController.getDashboardStats);
 router.post("/users", validate(superAdminValidation.createUserValidation), superAdminController.createUser);
 router.get("/organizations", superAdminController.getOrganizations);
 router.get("/organizations/:id", superAdminController.getOrganizationDetails);
@@ -20,5 +21,6 @@ router.get("/tickets", superAdminController.getAllTickets);
 router.get("/access-requests", superAdminController.getAccessRequests);
 router.get("/mail/stats", superAdminController.getMailQueueStats);
 router.get("/mail/logs", superAdminController.getMailLogs);
+router.get("/traffic", superAdminController.getTrafficStats);
 
 module.exports = router;

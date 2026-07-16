@@ -9,6 +9,7 @@ const organizationRoutes = require('./organization/organization.routes');
 const clientsRoutes = require('./clients/clients.routes');
 const projectsRoutes = require('./projects/projects.routes');
 const leadsRoutes = require('./leads/leads.routes');
+const trackingRoutes = require('./tracking/tracking.routes');
 const invoicesRoutes = require('./invoices/invoices.routes');
 const expensesRoutes = require('./expenses/expenses.routes');
 const paymentsRoutes = require('./payments/payments.routes');
@@ -35,6 +36,7 @@ router.use('/questionnaires', questionnairesRoutes);
 router.use('/quick-items', quickItemsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/super-admin', superAdminRoutes);
+router.use('/tracking', trackingRoutes);
 router.use('/migration', migrationRoutes);
 
 module.exports = router;

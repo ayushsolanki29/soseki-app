@@ -7,6 +7,7 @@ import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Delta, DeltaIcon, DeltaValue } from "@/components/delta";
 import { formatCurrency, cn } from "@/lib/utils";
+import { TrafficWidget } from "@/components/traffic-widget";
 import { BuildingIcon, UserIcon, AlertCircleIcon, CalendarIcon, ActivityIcon, CheckCircle2Icon } from "lucide-react";
 
 const getOrganizationsColumns = () => [
@@ -56,48 +57,60 @@ const getTicketsColumns = () => [
     }
 ];
 
+import { useEffect, useState } from "react";
+
 export default function SuperAdminDashboardPage() {
+    const [dashboardData, setDashboardData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+                const res = await fetch(`${apiUrl}/super-admin/dashboard/stats`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setDashboardData(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDashboardData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full min-h-[400px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
+    const { stats: dbStats, recentOrgs, recentTickets, activityTimeline } = dashboardData || {};
     const stats = [
-        { label: "Total Organizations", value: 124, delta: 12.5, footnote: "vs last month", isCurrency: false },
-        { label: "Active Users", value: 1492, delta: 5.2, footnote: "vs last month", isCurrency: false },
-        { label: "MRR (Revenue)", value: 45290, delta: 15.3, footnote: "vs last month", isCurrency: true },
-        { label: "Open Tickets", value: 12, delta: -2.4, footnote: "vs last week", isCurrency: false },
-        { label: "Server Uptime", value: "99.99%", delta: 0, footnote: "stable", isCurrency: false },
-        { label: "New Signups", value: 38, delta: 8.1, footnote: "this week", isCurrency: false },
-        { label: "Churn Rate", value: "1.2%", delta: -0.5, footnote: "vs last month", isCurrency: false }
+        { label: "Total Organizations", value: dbStats?.totalOrgs || 0, delta: 12.5, footnote: "vs last month", isCurrency: false },
+        { label: "Active Users", value: dbStats?.activeUsers || 0, delta: 5.2, footnote: "vs last month", isCurrency: false },
+        { label: "MRR (Revenue)", value: dbStats?.mrr || 0, delta: 15.3, footnote: "vs last month", isCurrency: true },
+        { label: "Open Tickets", value: dbStats?.openTickets || 0, delta: -2.4, footnote: "vs last week", isCurrency: false },
+        { label: "New Signups", value: dbStats?.newSignups || 0, delta: 8.1, footnote: "this week", isCurrency: false }
     ];
 
-    const recentOrgs = [
-        { id: "1", name: "Acme Corp", email: "admin@acme.com", plan: "Pro", status: "Active" },
-        { id: "2", name: "Globex Inc", email: "finance@globex.com", plan: "Starter", status: "Active" },
-        { id: "3", name: "Stark Industries", email: "tony@stark.com", plan: "Enterprise", status: "Active" },
-        { id: "4", name: "Wayne Ent", email: "bruce@wayne.com", plan: "Pro", status: "Active" },
-        { id: "5", name: "Cyberdyne", email: "miles@cyberdyne.com", plan: "Starter", status: "Inactive" },
-    ];
-
-    const recentTickets = [
-        { id: "TK-1042", subject: "Billing issue with latest invoice", organization: "Acme Corp", priority: "High" },
-        { id: "TK-1043", subject: "Need help setting up custom domain", organization: "Globex Inc", priority: "Medium" },
-        { id: "TK-1044", subject: "Feature request: advanced reporting", organization: "Stark Industries", priority: "Low" },
-        { id: "TK-1045", subject: "API rate limit exceeded", organization: "Wayne Ent", priority: "High" },
-        { id: "TK-1046", subject: "Login problems for team members", organization: "Acme Corp", priority: "Medium" },
-    ];
-
-    const activityTimeline = [
-        { id: "act-1", title: "New Organization Joined", subtitle: "Acme Corp upgraded to Pro", meta: "2 hours ago", icon: <BuildingIcon className="text-emerald-500" /> },
-        { id: "act-2", title: "System Update Deployed", subtitle: "v1.0.42 released", meta: "5 hours ago", icon: <ActivityIcon className="text-blue-500" /> },
-        { id: "act-3", title: "High Priority Ticket Opened", subtitle: "API rate limit exceeded - Wayne Ent", meta: "1 day ago", icon: <AlertCircleIcon className="text-rose-500" /> },
-        { id: "act-4", title: "Subscription Renewed", subtitle: "Globex Inc (Starter Plan)", meta: "2 days ago", icon: <CheckCircle2Icon className="text-emerald-500" /> },
-        { id: "act-5", title: "New Lead Added", subtitle: "bruce@wayne.com joined waitlist", meta: "2 days ago", icon: <UserIcon /> }
-    ];
-
-    const upcomingRenewals = [
-        { id: "ren-1", title: "Stark Industries", subtitle: "Enterprise Plan ($499/mo)", meta: "Tomorrow", icon: <CalendarIcon /> },
-        { id: "ren-2", title: "Acme Corp", subtitle: "Pro Plan ($49/mo)", meta: "In 3 days", icon: <CalendarIcon /> },
-        { id: "ren-3", title: "Globex Inc", subtitle: "Starter Plan ($19/mo)", meta: "In 5 days", icon: <CalendarIcon /> },
-        { id: "ren-4", title: "Wayne Ent", subtitle: "Pro Plan ($49/mo)", meta: "In 1 week", icon: <CalendarIcon /> },
-        { id: "ren-5", title: "Cyberdyne", subtitle: "Starter Plan ($19/mo)", meta: "In 2 weeks", icon: <CalendarIcon /> }
-    ];
+    // Map icons to the timeline activities
+    const mappedTimeline = (activityTimeline || []).map(act => {
+        let icon = <ActivityIcon className="text-blue-500" />;
+        if (act.type === 'ORG_JOINED') icon = <BuildingIcon className="text-emerald-500" />;
+        if (act.type === 'TICKET_OPENED') icon = <AlertCircleIcon className="text-rose-500" />;
+        if (act.type === 'LEAD_ADDED') icon = <UserIcon />;
+        
+        return {
+            ...act,
+            icon,
+            meta: new Date(act.date).toLocaleDateString()
+        };
+    });
 
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -113,7 +126,7 @@ export default function SuperAdminDashboardPage() {
                 <div className="absolute bottom-6 left-6 z-20 text-white">
                     <h2 className="text-3xl font-bold font-heading">Welcome back, Super Admin</h2>
                     <p className="text-white/90 mt-2 text-sm sm:text-base">
-                        Here is your platform summary for today. Soseki is currently running smoothly with <span className="font-semibold text-white">124 organizations</span>.
+                        Here is your platform summary for today. Soseki is currently running smoothly with <span className="font-semibold text-white">{dbStats?.totalOrgs || 0} organizations</span>.
                     </p>
                 </div>
             </div>
@@ -167,18 +180,14 @@ export default function SuperAdminDashboardPage() {
                 actionPath="/super-admin/tickets"
             />
 
+            <TrafficWidget className="md:col-span-2 lg:col-span-4 mb-4" />
+
             {/* List Widgets */}
             <DashboardListWidget
-                className="md:col-span-2 lg:col-span-2"
+                className="md:col-span-2 lg:col-span-4"
                 title="System Activity"
                 description="Recent platform-wide events."
-                items={activityTimeline}
-            />
-            <DashboardListWidget
-                className="md:col-span-2 lg:col-span-2"
-                title="Upcoming Renewals"
-                description="Subscription renewals happening soon."
-                items={upcomingRenewals}
+                items={mappedTimeline}
             />
         </div>
     )
