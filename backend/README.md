@@ -8,7 +8,7 @@ This folder contains the Express and Prisma backend for Soseki.
 - Handle authentication, business logic, and validation
 - Manage database access through Prisma
 - Keep feature modules isolated and reusable
-
+v sd
 ## Main Areas
 
 - `src/app.js` and `src/server.js` - server bootstrap
