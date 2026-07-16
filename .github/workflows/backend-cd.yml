@@ -64,3 +64,4 @@ jobs:
 
             pm2 save
             echo "Backend deployed successfully"
+             #finished
