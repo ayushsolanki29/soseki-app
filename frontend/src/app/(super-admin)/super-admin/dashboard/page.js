@@ -132,27 +132,29 @@ export default function SuperAdminDashboardPage() {
             </div>
 
             {/* Stats Row */}
-            {stats.map((s) => (
-                <Card className="shadow-none dark:ring-0" key={s.label}>
-                    <CardHeader>
-                        <CardTitle className="font-normal text-muted-foreground text-xs">
-                            {s.label}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-2">
-                        <p className="font-semibold text-2xl tabular-nums">
-                            {s.isCurrency ? formatCurrency(s.value, "USD") : s.value}
-                        </p>
-                        <div className="flex items-center gap-1 text-xs">
-                            <Delta value={s.delta}>
-                                <DeltaIcon />
-                                <DeltaValue />
-                            </Delta>
-                            <span className="text-muted-foreground">{s.footnote}</span>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+            <div className="sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {stats.map((s) => (
+                    <Card className="shadow-none dark:ring-0" key={s.label}>
+                        <CardHeader>
+                            <CardTitle className="font-normal text-muted-foreground text-xs">
+                                {s.label}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-2">
+                            <p className="font-semibold text-2xl tabular-nums">
+                                {s.isCurrency ? formatCurrency(s.value, "USD") : s.value}
+                            </p>
+                            <div className="flex items-center gap-1 text-xs">
+                                <Delta value={s.delta}>
+                                    <DeltaIcon />
+                                    <DeltaValue />
+                                </Delta>
+                                <span className="text-muted-foreground">{s.footnote}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
 
             {/* Charts */}
             <RevenueOverviewChart apiEndpoint="/super-admin/dashboard/charts" />

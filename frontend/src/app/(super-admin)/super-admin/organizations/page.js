@@ -93,8 +93,8 @@ export default async function SuperAdminOrganizationsPage() {
                   <TableCell>{org._count.invoices}</TableCell>
                   <TableCell>{formatDate(org.createdAt)}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/super-admin/organizations/${org.id}`}>View Details</Link>
+                    <Button variant="outline" size="sm" render={<Link href={`/super-admin/organizations/${org.id}`} />}>
+                      View Details
                     </Button>
                   </TableCell>
                 </TableRow>
