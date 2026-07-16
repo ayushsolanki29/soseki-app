@@ -15,6 +15,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = 'force-dynamic';
+
 export default async function SuperAdminOrganizationsPage() {
   let organizations = [];
   try {

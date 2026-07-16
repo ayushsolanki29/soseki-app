@@ -10,6 +10,8 @@ import {
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { formatDate } from "@/lib/utils";
 
+export const dynamic = 'force-dynamic';
+
 export default async function SuperAdminAccessRequestsPage() {
   let requests = [];
   try {

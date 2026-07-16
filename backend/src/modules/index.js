@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import routes
-const demoRoutes = require('./demo/demo.routes');
+
 const authRoutes = require('./auth/auth.routes');
 const usersRoutes = require('./users/users.routes');
 const organizationRoutes = require('./organization/organization.routes');
@@ -20,7 +20,7 @@ const superAdminRoutes = require('./super-admin/super-admin.routes');
 const migrationRoutes = require('./migration/migration.routes');
 
 // Define routes
-router.use('/demo', demoRoutes);
+
 router.use('/auth', authRoutes);
 router.use('/users', usersRoutes);
 router.use('/organization', organizationRoutes);

@@ -17,7 +17,8 @@ export async function serverFetch(endpoint, options = {}) {
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers
+    headers,
+    cache: 'no-store' // Prevents Next.js from permanently caching the response
   });
 
   if (!response.ok) {
