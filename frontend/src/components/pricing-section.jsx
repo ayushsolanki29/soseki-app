@@ -4,32 +4,34 @@ import { CheckIcon } from "lucide-react";
 
 const pricingPlans = [
 	{
-		name: "STARTER",
+		name: "OPEN SOURCE",
 		price: "Free",
-		description: "For early-stage startups",
+		description: "For independent freelancers & individuals",
 		featuresTitle: "FREE, FOREVER:",
 		features: [
-			"10 customers",
-			"10 documents",
-			"10 invoices",
-			"Auto-updated taxes",
+			"Unlimited clients & projects",
+			"Unlimited invoices & expenses",
+			"Multi-Currency Invoicing",
+			"Smart Questionnaires",
+			"AI-Assisted Migration",
+			"100% Self-Hostable",
 		],
 		href: "#",
 	},
 	{
-		name: "SCALE",
+		name: "COMMERCIAL",
 		isPopular: true,
 		href: "#",
-		price: "$8",
+		price: "$29",
 		period: "month",
-		description: "For fast-growing teams",
-		featuresTitle: "EVERYTHING IN STARTER, PLUS:",
+		description: "For boutique agencies & growing teams",
+		featuresTitle: "EVERYTHING IN OPEN SOURCE And",
 		features: [
-			"20 customers",
-			"25 documents",
-			"30 invoices",
-			"Auto-updated taxes",
-			"Cloud Sync",
+			"Managed Cloud Hosting",
+			"Dedicated Priority Support",
+			"Custom Domain & Branding",
+			"Automated Cloud Backups",
+			"Advanced Analytics & Exports",
 		],
 	},
 ];
@@ -79,7 +81,7 @@ function PricingCard({
 						</span>
 					)}
 				</div>
-				<p className="mb-8 line-clamp-1 text-muted-foreground">
+				<p className="mb-8 text-muted-foreground">
 					{plan.description}
 				</p>
 

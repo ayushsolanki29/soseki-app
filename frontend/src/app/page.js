@@ -29,16 +29,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Overview Features Grid */}
-        <section className="bg-slate-50 py-24 border-b border-slate-100 px-6">
-          <div className="max-w-5xl mx-auto text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Everything you need to run your business</h2>
-            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-              A comprehensive suite of tools designed specifically for the unique workflows of freelancers and small agencies.
-            </p>
-          </div>
-          <FeatureSection />
-        </section>
+
 
         <GlobalBillingSection />
         <ClientIntakeSection />
@@ -49,7 +40,16 @@ export default function LandingPage() {
         <section className="bg-[#fcfdfd] py-12 border-b border-slate-100">
           <TestimonialsSection />
         </section>
-
+        {/* Overview Features Grid */}
+        <section className="bg-slate-50 py-24 border-b border-slate-100 px-6">
+          <div className="max-w-5xl mx-auto text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Everything you need to run your business</h2>
+            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+              A comprehensive suite of tools designed specifically for the unique workflows of freelancers and small agencies.
+            </p>
+          </div>
+          <FeatureSection />
+        </section>
         {/* Integrations Section */}
         <section className="bg-white">
           <Integrations />

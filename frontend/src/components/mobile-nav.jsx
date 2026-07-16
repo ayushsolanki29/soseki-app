@@ -1,33 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Portal, PortalBackdrop } from "@/components/portal";
 import { navLinks } from "@/components/header";
 import { XIcon, MenuIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
 
 export function MobileNav() {
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Prevent scrolling when open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  const [open, setOpen] = React.useState(false);
 
   return (
     <div className="md:hidden">
@@ -43,17 +26,13 @@ export function MobileNav() {
         <MenuIcon className="size-5" />
       </Button>
 
-      {open && mounted && createPortal(
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6" id="mobile-menu">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 z-40 bg-slate-900/20 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setOpen(false)}
-          />
-
-          {/* Modal Card */}
+      {open && (
+        <Portal id="mobile-menu" className="z-[99999] items-center justify-center p-4">
+          <PortalBackdrop onClick={() => setOpen(false)} />
+          
           <div
             className="relative z-50 flex w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-white shadow-2xl p-6 animate-in zoom-in-95 fade-in duration-200"
+            data-slot={open ? "open" : "closed"}
           >
             {/* Header */}
             <div className="relative flex items-center justify-center mb-10">
@@ -92,15 +71,14 @@ export function MobileNav() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   buttonVariants({ size: "lg", variant: "default" }),
-                  "mt-2 w-3/4 max-w-[200px] text-[17px] rounded-xl h-12 bg-blue-600 hover:bg-blue-700 shadow-sm"
+                  "mt-2 w-3/4 max-w-[200px] text-[17px] rounded-xl h-12 bg-blue-600 hover:bg-blue-700 shadow-sm text-white"
                 )}
               >
                 Get started
               </Link>
             </div>
           </div>
-        </div>,
-        document.body
+        </Portal>
       )}
     </div>
   );
