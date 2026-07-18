@@ -6,9 +6,22 @@ class TrackingController {
     res.status(204).send();
 
     // Now asynchronously process the visit data in the background
+    let cleanReferrer = req.body.referrer;
+    if (cleanReferrer) {
+      try {
+        const refUrl = new URL(cleanReferrer);
+        const internalDomains = ["soseki.app", "www.soseki.app", "api.soseki.app", "localhost:3000"];
+        if (internalDomains.includes(refUrl.host)) {
+          cleanReferrer = null;
+        }
+      } catch (e) {
+        // invalid URL
+      }
+    }
+
     const data = {
       path: req.body.path,
-      referrer: req.body.referrer,
+      referrer: cleanReferrer,
       utmSource: req.body.utmSource,
       utmMedium: req.body.utmMedium,
       utmCampaign: req.body.utmCampaign,
