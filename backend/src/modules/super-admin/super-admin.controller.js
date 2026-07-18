@@ -28,6 +28,21 @@ class SuperAdminController {
     }
   }
 
+  async logout(req, res, next) {
+    try {
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+      };
+      res.clearCookie("superAccessToken", cookieOptions);
+      return res.status(200).json({ success: true, message: "Logged out successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getCharts(req, res, next) {
     try {
       const charts = await superAdminService.getCharts();

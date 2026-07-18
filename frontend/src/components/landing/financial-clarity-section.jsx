@@ -128,8 +128,10 @@ export function FinancialClaritySection() {
                         <TableCell className="text-right pr-6 text-sm text-slate-500">$24</TableCell>
                       </TableRow>
                       <TableRow className="h-12 bg-blue-50/30 hover:bg-blue-50/80 transition-colors border-transparent relative overflow-hidden group/row">
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 transform -translate-x-full group-hover/row:translate-x-0 transition-transform duration-300" />
-                        <TableCell className="pl-6 font-semibold text-sm text-slate-800">OpenAI</TableCell>
+                        <TableCell className="pl-6 font-semibold text-sm text-slate-800">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 transform -translate-x-full group-hover/row:translate-x-0 transition-transform duration-300" />
+                          OpenAI
+                        </TableCell>
                         <TableCell className="text-right text-sm text-slate-500">$200</TableCell>
                         <TableCell className="text-right text-sm p-1">
                           <div className="flex justify-end items-center gap-1 group-hover/row:scale-110 transition-transform origin-right duration-300">

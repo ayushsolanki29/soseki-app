@@ -9,6 +9,7 @@ const validate = require("../../middleware/validate.middleware");
 // which just checked session and some basic things.
 
 router.post("/auth/login", superAdminController.login);
+router.post("/auth/logout", superAdminController.logout);
 router.get("/dashboard/charts", superAdminController.getCharts);
 router.get("/dashboard/stats", superAdminController.getDashboardStats);
 router.post("/users", validate(superAdminValidation.createUserValidation), superAdminController.createUser);

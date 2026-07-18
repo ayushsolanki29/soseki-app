@@ -35,8 +35,15 @@ class AuthController {
       const refreshToken = req.cookies.refreshToken;
       await authService.logout(refreshToken);
       
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+      };
+
+      res.clearCookie("accessToken", cookieOptions);
+      res.clearCookie("refreshToken", cookieOptions);
       return res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
       next(error);
