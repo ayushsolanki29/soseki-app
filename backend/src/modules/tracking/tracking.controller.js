@@ -1,4 +1,5 @@
 const trackingService = require("./tracking.service");
+const { URL } = require("url");
 
 class TrackingController {
   async trackVisit(req, res) {
