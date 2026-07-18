@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogoIcon } from "@/components/logo";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/lib/api";
@@ -204,7 +204,8 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" className="w-full h-10 mt-6 shadow-none font-medium rounded-md" size="default" disabled={isLoading}>
-              {step === "email" ? "Continue" : (isLoading ? "Signing in..." : "Sign in")}
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {step === "email" ? (isLoading ? "Verifying..." : "Continue") : (isLoading ? "Signing in..." : "Sign in")}
             </Button>
           </form>
 

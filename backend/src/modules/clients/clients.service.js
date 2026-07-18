@@ -63,6 +63,7 @@ class ClientsService {
     if (existingClient) {
       const error = new Error("A client with this email already exists");
       error.status = 400;
+      error.clientId = existingClient.id;
       throw error;
     }
 

@@ -16,10 +16,11 @@ export function ProjectForm({ onSuccess, onCancel, initialData = null }) {
     startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     estimatedEndDate: initialData?.estimatedEndDate ? new Date(initialData.estimatedEndDate).toISOString().split('T')[0] : "",
     status: initialData?.status || "Planning",
-    clientId: initialData?.clientId || "",
+    clientId: initialData?.clientId || initialData?.client?.id || "",
   });
   
   const [clients, setClients] = useState([]);
+  const [isFetchingClients, setIsFetchingClients] = useState(true);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +31,8 @@ export function ProjectForm({ onSuccess, onCancel, initialData = null }) {
         setClients(res.data.clients);
       } catch (error) {
         toast.error("Failed to load clients");
+      } finally {
+        setIsFetchingClients(false);
       }
     };
     fetchClients();
@@ -91,10 +94,12 @@ export function ProjectForm({ onSuccess, onCancel, initialData = null }) {
             <select 
               value={formData.clientId}
               onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-              disabled={isLoading}
+              disabled={isLoading || isFetchingClients}
               className="flex-1 h-11 flex rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="" disabled>Select a client</option>
+              <option value="" disabled>
+                {isFetchingClients ? "Loading clients..." : (clients.length === 0 ? "No clients found" : "Select a client")}
+              </option>
               {clients.map(client => (
                 <option key={client.id} value={client.id}>{client.name}</option>
               ))}

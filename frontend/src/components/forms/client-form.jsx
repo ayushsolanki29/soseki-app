@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import API from "@/lib/api";
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export function ClientForm({ onSuccess, onCancel, initialData = null }) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     email: initialData?.email || "",
@@ -32,6 +34,7 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!validate()) return;
 
     setIsLoading(true);
@@ -51,7 +54,11 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
       onSuccess?.(clientData);
     } catch (error) {
       toast.error("Operation failed", {
-        description: error.response?.data?.error || "Something went wrong.",
+        description: error.response?.data?.message || error.response?.data?.error || "Something went wrong.",
+        action: error.response?.data?.clientId ? {
+          label: "View Client",
+          onClick: () => router.push(`/dashboard/clients/${error.response.data.clientId}`)
+        } : undefined
       });
     } finally {
       setIsLoading(false);

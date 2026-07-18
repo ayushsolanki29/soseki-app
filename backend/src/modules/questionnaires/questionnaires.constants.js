@@ -37,7 +37,7 @@ const QUESTIONNAIRE_TEMPLATES = {
     fields: [
       { type: "TEXT", label: "Company Name", required: true },
       { type: "TEXT", label: "Primary Contact Person", required: true },
-      { type: "EMAIL", label: "Email Address", required: true },
+      { type: "TEXT", label: "Email Address", required: true },
       { type: "TEXT", label: "Phone Number", required: false },
       { type: "TEXTAREA", label: "Briefly describe your main project goals", required: true },
       { type: "SELECT", label: "Expected Timeline", options: ["ASAP", "Within 1 Month", "1-3 Months", "Flexible"], required: true }

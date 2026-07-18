@@ -10,12 +10,15 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { CheckCircle2Icon, Loader2Icon, LockIcon } from "lucide-react";
+import { CheckCircle2Icon, Loader2Icon, LockIcon, Globe } from "lucide-react";
+import { GithubIcon } from "@/components/github-icon";
+import { XIcon } from "@/components/x-icon";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { LogoIcon } from "@/components/logo";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import Link from "next/link";
 import API from "@/lib/api";
+import { APP_SOCIALS, LEGAL_PAGES } from "@/lib/constants";
 
 export default function PublicQuestionnairePage({ params }) {
   const unwrappedParams = use(params);
@@ -130,15 +133,59 @@ export default function PublicQuestionnairePage({ params }) {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-muted/20 py-12 px-4 sm:px-6 flex items-center justify-center t-page-fade">
-        <Card className="max-w-md w-full text-center py-8 border-primary/20 bg-primary/5">
-          <CardContent className="space-y-6">
-            <div className="mx-auto size-16 bg-primary/20 rounded-full flex items-center justify-center">
+      <div className="min-h-screen bg-background py-12 px-4 sm:px-6 flex flex-col items-center justify-center t-page-fade relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none" />
+        
+        <Card className="max-w-md w-full text-center py-8 border-border/40 shadow-2xl shadow-black/5 rounded-2xl bg-card/50 backdrop-blur-sm relative z-10">
+          <CardContent className="space-y-8 pt-4">
+            <div className="mx-auto size-16 bg-primary/10 rounded-full flex items-center justify-center">
               <CheckCircle2Icon className="size-8 text-primary" />
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold tracking-tight">Thank you!</h2>
-              <p className="text-muted-foreground">Your response has been successfully submitted to {data?.organization?.name}.</p>
+            
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground">Thank you!</h2>
+              <p className="text-muted-foreground text-sm">Your response has been successfully submitted.</p>
+            </div>
+
+            <div className="flex flex-col items-center gap-3 p-4 bg-muted/30 rounded-xl border border-border/40">
+              {data?.organization?.name && (
+                <DynamicAvatar type="organization" seed={data.organization.name} size={48} className="shadow-sm" />
+              )}
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  Stored securely with <span className="font-bold">{data?.organization?.name}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">Your data is safe and encrypted.</p>
+              </div>
+            </div>
+
+            <div className="space-y-6 pt-6 border-t border-border/40">
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Connect with us</p>
+                <div className="flex items-center justify-center gap-3">
+                  {APP_SOCIALS.map((social) => (
+                    <a 
+                      key={social.name} 
+                      href={social.url} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="p-2.5 bg-background border border-border/40 rounded-full hover:bg-muted/60 transition-colors shadow-sm text-muted-foreground hover:text-foreground"
+                      title={social.name}
+                    >
+                      <span className="sr-only">{social.name}</span>
+                      {social.name === "GitHub" && <GithubIcon className="size-4" />}
+                      {social.name === "Twitter" && <XIcon className="size-4" />}
+                      {social.name === "Website" && <Globe className="size-4" />}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              
+              <Link href="/">
+                <Button className="w-full rounded-full h-11" variant="outline">
+                  Return to Homepage
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -184,12 +231,14 @@ export default function PublicQuestionnairePage({ params }) {
                   </div>
 
                   <div className="pt-2 ml-6">
-                    {field.type === 'TEXT' && (
+                    {(field.type === 'TEXT' || !['TEXTAREA', 'SELECT', 'RADIO', 'CHECKBOX'].includes(field.type)) && (
                       <Input 
+                        type={field.type === 'EMAIL' ? 'email' : (field.type === 'NUMBER' ? 'number' : 'text')}
                         placeholder="Your answer" 
                         required={field.required}
                         value={answers[field.id] || ""}
                         onChange={(e) => handleAnswerChange(field.id, e.target.value)}
+                        maxLength={255}
                         className="max-w-md bg-background/50 border-border/50 focus-visible:ring-primary/20 h-12 text-base"
                       />
                     )}
@@ -200,6 +249,7 @@ export default function PublicQuestionnairePage({ params }) {
                         required={field.required}
                         value={answers[field.id] || ""}
                         onChange={(e) => handleAnswerChange(field.id, e.target.value)}
+                        maxLength={2000}
                         className="min-h-[120px] bg-background/50 border-border/50 focus-visible:ring-primary/20 text-base resize-y"
                       />
                     )}
@@ -276,12 +326,35 @@ export default function PublicQuestionnairePage({ params }) {
           <span className="font-bold text-foreground tracking-tight">Soseki</span>
         </Link>
         
+        {/* Socials */}
+        <div className="flex items-center gap-3 text-muted-foreground/80">
+          {APP_SOCIALS.map((social) => (
+            <a 
+              key={social.name} 
+              href={social.url} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="hover:text-foreground transition-colors p-2 bg-background border border-border/40 rounded-full hover:bg-muted/40 shadow-sm"
+              title={social.name}
+            >
+              <span className="sr-only">{social.name}</span>
+              {social.name === "GitHub" && <GithubIcon className="size-4" />}
+              {social.name === "Twitter" && <XIcon className="size-4" />}
+              {social.name === "Website" && <Globe className="size-4" />}
+            </a>
+          ))}
+        </div>
+
+        {/* Legal Pages */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground/60">
-          <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-          <span>&middot;</span>
-          <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-          <span>&middot;</span>
-          <a href="#" className="hover:text-foreground transition-colors">Report Abuse</a>
+          {LEGAL_PAGES.map((page, idx) => (
+            <span key={page.name} className="flex items-center gap-4">
+              <Link href={page.url} className="hover:text-foreground transition-colors">
+                {page.name}
+              </Link>
+              {idx < LEGAL_PAGES.length - 1 && <span>&middot;</span>}
+            </span>
+          ))}
         </div>
       </div>
     </div>

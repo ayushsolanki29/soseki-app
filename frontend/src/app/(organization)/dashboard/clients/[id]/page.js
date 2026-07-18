@@ -38,16 +38,21 @@ export default function ClientDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [masterCurrency, setMasterCurrency] = useState("USD");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [organization, setOrganization] = useState(null);
 
   const fetchClient = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
+      const [res, orgRes, userRes] = await Promise.all([
           API.get(`/clients/${id}`),
-          API.get(`/organization`)
+          API.get(`/organization`),
+          API.get(`/auth/me`)
       ]);
       setClient(res.data.client);
       setMasterCurrency(orgRes.data.organization.masterCurrency);
+      setOrganization(orgRes.data.organization);
+      setCurrentUser(userRes.data.user);
     } catch (error) {
       toast.error("Failed to load client details");
       router.push("/dashboard/clients");
@@ -178,15 +183,23 @@ export default function ClientDetailsPage() {
                 </Badge>
               </div>
               <div className="flex items-center gap-4 mt-1 text-muted-foreground text-sm">
-                <div className="flex items-center gap-1.5">
-                    <MailIcon className="size-4" />
-                    {client.email}
-                </div>
+                {client.email && (
+                  <a 
+                    href={`mailto:${client.email}?subject=Update regarding your account&body=${encodeURIComponent(`Hi ${client.name},\n\n\n\n---\nBest regards,\n${currentUser?.name || ''}\n${organization?.name || ''}`)}`}
+                    className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                  >
+                      <MailIcon className="size-4" />
+                      {client.email}
+                  </a>
+                )}
                 {client.phone && (
-                    <div className="flex items-center gap-1.5">
+                    <a 
+                      href={`tel:${client.phone}`}
+                      className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                    >
                         <PhoneIcon className="size-4" />
                         {client.phone}
-                    </div>
+                    </a>
                 )}
               </div>
             </div>

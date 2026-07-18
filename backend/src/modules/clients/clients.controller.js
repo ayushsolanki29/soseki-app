@@ -25,7 +25,11 @@ class ClientsController {
       return res.status(201).json({ success: true, client });
     } catch (error) {
       if (error.status === 401 || error.status === 400) {
-        return res.status(error.status).json({ success: false, message: error.message });
+        return res.status(error.status).json({ 
+          success: false, 
+          message: error.message,
+          ...(error.clientId && { clientId: error.clientId })
+        });
       }
       next(error);
     }
