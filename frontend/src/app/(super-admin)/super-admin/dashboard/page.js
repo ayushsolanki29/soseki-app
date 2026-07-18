@@ -95,7 +95,8 @@ export default function SuperAdminDashboardPage() {
         { label: "Active Users", value: dbStats?.activeUsers || 0, isCurrency: false },
         { label: "Total Traffic", value: dbStats?.totalVisits || 0, isCurrency: false },
         { label: "Open Tickets", value: dbStats?.openTickets || 0, isCurrency: false },
-        { label: "New Signups", value: dbStats?.newSignups || 0, isCurrency: false }
+        { label: "New Signups", value: dbStats?.newSignups || 0, isCurrency: false },
+        { label: "Template Requests", value: dbStats?.templateRequestsCount || 0, isCurrency: false }
     ];
 
     // Map icons to the timeline activities
@@ -132,7 +133,7 @@ export default function SuperAdminDashboardPage() {
             </div>
 
             {/* Stats Row */}
-            <div className="sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 {stats.map((s) => (
                     <Card className="shadow-none dark:ring-0" key={s.label}>
                         <CardHeader>

@@ -23,5 +23,7 @@ router.get("/access-requests", superAdminController.getAccessRequests);
 router.get("/mail/stats", superAdminController.getMailQueueStats);
 router.get("/mail/logs", superAdminController.getMailLogs);
 router.get("/traffic", superAdminController.getTrafficStats);
+router.get("/template-requests", superAdminController.getTemplateRequests);
+router.patch("/template-requests/:id", superAdminController.updateTemplateRequestStatus);
 
 module.exports = router;

@@ -169,5 +169,24 @@ class SuperAdminController {
       next(error);
     }
   }
+  async getTemplateRequests(req, res, next) {
+    try {
+      const requests = await superAdminService.getTemplateRequests();
+      return res.status(200).json({ success: true, requests });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateTemplateRequestStatus(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const request = await superAdminService.updateTemplateRequestStatus(id, status);
+      return res.status(200).json({ success: true, request });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new SuperAdminController();

@@ -160,7 +160,8 @@ class SuperAdminService {
       totalVisits,
       recentOrgsData,
       recentTickets,
-      recentLeads
+      recentLeads,
+      templateRequestsCount
     ] = await Promise.all([
       prisma.organization.count({ where: { status: 'Active' } }),
       prisma.user.count(),
@@ -183,8 +184,9 @@ class SuperAdminService {
       }),
       prisma.waitlistLead.findMany({
         orderBy: { createdAt: 'desc' },
-        take: 3
-      })
+        take: 5
+      }),
+      prisma.templateRequest.count({ where: { status: 'Pending' } })
     ]);
 
     const mrr = mrrResult._sum.totalAmount || 0;
@@ -244,6 +246,7 @@ class SuperAdminService {
         mrr,
         totalVisits,
         openTickets,
+        templateRequestsCount,
         serverUptime: "99.99%",
         newSignups: recentSignups,
         churnRate: "1.2%" // Static placeholder
@@ -525,6 +528,23 @@ class SuperAdminService {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+  async getTemplateRequests() {
+    return prisma.templateRequest.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        organization: {
+          select: { name: true }
+        }
+      }
+    });
+  }
+
+  async updateTemplateRequestStatus(id, status) {
+    return prisma.templateRequest.update({
+      where: { id },
+      data: { status }
+    });
   }
 }
 

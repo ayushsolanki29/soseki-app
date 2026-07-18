@@ -31,7 +31,7 @@ export default function WorkspaceSettingsPage() {
 
   // Custom Template Request State
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
-  const [requestType, setRequestType] = useState("invoice");
+  const [requestType, setRequestType] = useState("Invoice");
   const [requestDescription, setRequestDescription] = useState("");
   const [requestFile, setRequestFile] = useState(null);
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
@@ -132,6 +132,7 @@ export default function WorkspaceSettingsPage() {
 
   const handleRequestTemplate = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!requestDescription.trim()) return toast.error("Please provide a description");
 
     setIsSubmittingRequest(true);
@@ -374,8 +375,8 @@ export default function WorkspaceSettingsPage() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="invoice">Invoice</SelectItem>
-                            <SelectItem value="expense">Expense Receipt</SelectItem>
+                            <SelectItem value="Invoice">Invoice</SelectItem>
+                            <SelectItem value="Expense">Expense Receipt</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
