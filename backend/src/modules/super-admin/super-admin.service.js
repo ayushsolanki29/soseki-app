@@ -106,10 +106,41 @@ class SuperAdminService {
       fill: getColor(item.status)
     })).sort((a, b) => b.share - a.share); // Sort largest to smallest
 
+    // Visits Overview (Last 4 weeks)
+    const twentyEightDaysAgo = new Date();
+    twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 28);
+    twentyEightDaysAgo.setHours(0, 0, 0, 0);
+
+    const visits = await prisma.pageVisit.findMany({
+      where: {
+        createdAt: { gte: twentyEightDaysAgo }
+      },
+      select: { createdAt: true }
+    });
+
+    const visitsOverview = [];
+    
+    for (let i = 0; i < 4; i++) {
+      const weekStartDate = new Date(twentyEightDaysAgo);
+      weekStartDate.setDate(weekStartDate.getDate() + (i * 7));
+      
+      const weekEndDate = new Date(weekStartDate);
+      weekEndDate.setDate(weekEndDate.getDate() + 6);
+      
+      const dayLabel = `${weekStartDate.getDate()} ${monthNames[weekStartDate.getMonth()]} - ${weekEndDate.getDate()} ${monthNames[weekEndDate.getMonth()]}`;
+      
+      const nextWeekDate = new Date(weekEndDate);
+      nextWeekDate.setDate(nextWeekDate.getDate() + 1);
+      
+      const weekVisits = visits.filter(v => v.createdAt >= weekStartDate && v.createdAt < nextWeekDate);
+      
+      visitsOverview.push({ month: dayLabel, visits: weekVisits.length });
+    }
+
     return {
       revenueOverview,
-      growthPctNum: 15.3, // Mock value, requires historical comparison logic which is complex
       invoiceStatus,
+      visitsOverview,
     };
   }
 
@@ -126,6 +157,7 @@ class SuperAdminService {
       openTickets, 
       recentSignups,
       mrrResult,
+      totalVisits,
       recentOrgsData,
       recentTickets,
       recentLeads
@@ -138,6 +170,7 @@ class SuperAdminService {
         where: { status: 'Paid', issueDate: { gte: thirtyDaysAgo } },
         _sum: { totalAmount: true }
       }),
+      prisma.pageVisit.count(),
       prisma.organization.findMany({
         orderBy: { createdAt: 'desc' },
         take: 5,
@@ -209,6 +242,7 @@ class SuperAdminService {
         totalOrgs,
         activeUsers,
         mrr,
+        totalVisits,
         openTickets,
         serverUptime: "99.99%",
         newSignups: recentSignups,

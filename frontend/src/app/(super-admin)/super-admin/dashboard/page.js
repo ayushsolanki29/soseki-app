@@ -2,10 +2,10 @@
 
 import { DashboardDataTable } from "@/components/dashboard-data-table";
 import { DashboardListWidget } from "@/components/dashboard-list-widget";
-import { RevenueOverviewChart } from "@/components/conversation-volume-chart";
-import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
+
+import { TrafficOverviewChart } from "@/components/traffic-overview-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Delta, DeltaIcon, DeltaValue } from "@/components/delta";
+
 import { formatCurrency, cn } from "@/lib/utils";
 import { TrafficWidget } from "@/components/traffic-widget";
 import { BuildingIcon, UserIcon, AlertCircleIcon, CalendarIcon, ActivityIcon, CheckCircle2Icon } from "lucide-react";
@@ -91,11 +91,11 @@ export default function SuperAdminDashboardPage() {
 
     const { stats: dbStats, recentOrgs, recentTickets, activityTimeline } = dashboardData || {};
     const stats = [
-        { label: "Total Organizations", value: dbStats?.totalOrgs || 0, delta: 12.5, footnote: "vs last month", isCurrency: false },
-        { label: "Active Users", value: dbStats?.activeUsers || 0, delta: 5.2, footnote: "vs last month", isCurrency: false },
-        { label: "MRR (Revenue)", value: dbStats?.mrr || 0, delta: 15.3, footnote: "vs last month", isCurrency: true },
-        { label: "Open Tickets", value: dbStats?.openTickets || 0, delta: -2.4, footnote: "vs last week", isCurrency: false },
-        { label: "New Signups", value: dbStats?.newSignups || 0, delta: 8.1, footnote: "this week", isCurrency: false }
+        { label: "Total Organizations", value: dbStats?.totalOrgs || 0, isCurrency: false },
+        { label: "Active Users", value: dbStats?.activeUsers || 0, isCurrency: false },
+        { label: "Total Traffic", value: dbStats?.totalVisits || 0, isCurrency: false },
+        { label: "Open Tickets", value: dbStats?.openTickets || 0, isCurrency: false },
+        { label: "New Signups", value: dbStats?.newSignups || 0, isCurrency: false }
     ];
 
     // Map icons to the timeline activities
@@ -144,23 +144,16 @@ export default function SuperAdminDashboardPage() {
                             <p className="font-semibold text-2xl tabular-nums">
                                 {s.isCurrency ? formatCurrency(s.value, "USD") : s.value}
                             </p>
-                            <div className="flex items-center gap-1 text-xs">
-                                <Delta value={s.delta}>
-                                    <DeltaIcon />
-                                    <DeltaValue />
-                                </Delta>
-                                <span className="text-muted-foreground">{s.footnote}</span>
-                            </div>
+
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
+
+
             {/* Charts */}
-            <RevenueOverviewChart apiEndpoint="/super-admin/dashboard/charts" />
-            <div className="flex flex-col gap-4 lg:col-span-1">
-                <InvoiceStatusChart apiEndpoint="/super-admin/dashboard/charts" className="flex-1" />
-            </div>
+            <TrafficOverviewChart apiEndpoint="/super-admin/dashboard/charts" />
 
             {/* Data Tables */}
             <DashboardDataTable
