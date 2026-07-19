@@ -245,6 +245,69 @@ class InvoicesService {
 
     return { success: true };
   }
+
+  async recordPayment(organizationId, invoiceId, data) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const { amount, date, method, reference } = data;
+    const paymentAmount = parseFloat(amount);
+
+    if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      const error = new Error("Invalid payment amount");
+      error.status = 400;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId, organizationId },
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const newPaidAmount = invoice.paidAmount + paymentAmount;
+    let newStatus = invoice.status;
+    
+    if (newPaidAmount >= invoice.totalAmount) {
+      newStatus = "Paid";
+    } else if (newPaidAmount > 0 && invoice.status !== "Paid") {
+      newStatus = "Partially Paid";
+    }
+
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        paidAmount: newPaidAmount,
+        status: newStatus,
+        payments: {
+          create: {
+            amount: paymentAmount,
+            date: date ? new Date(date) : new Date(),
+            method: method || "Bank Transfer",
+            reference: reference || null,
+          }
+        },
+        activities: {
+          create: {
+            type: "UPDATED",
+            description: `Payment of ${invoice.currency} ${paymentAmount.toFixed(2)} recorded via ${method || "Bank Transfer"}`
+          }
+        }
+      },
+      include: {
+        payments: true
+      }
+    });
+
+    return updatedInvoice;
+  }
 }
 
 module.exports = new InvoicesService();

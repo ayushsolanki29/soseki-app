@@ -241,9 +241,9 @@ export default function InvoicesPage() {
                   <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                   <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                   <TableCell>
-                      <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)}</div>
-                      {invoice.currency !== masterCurrency && (
-                          <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount, invoice.currency)})</div>
+                      <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount, invoice.currency || masterCurrency)}</div>
+                      {(invoice.currency && invoice.currency !== masterCurrency) && (
+                          <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)})</div>
                       )}
                   </TableCell>
                   <TableCell>

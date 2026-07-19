@@ -140,7 +140,14 @@ export default function ExpensesPage() {
                     ) : '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-destructive">
-                    -{formatCurrency(expense.amount, expense.currency || expense.invoice?.currency || organization?.masterCurrency || "USD")}
+                    <div className="flex flex-col items-end gap-1">
+                      <span>-{formatCurrency(expense.amount, expense.currency || organization?.masterCurrency || "USD")}</span>
+                      {(expense.currency && organization?.masterCurrency && expense.currency !== organization.masterCurrency) && (
+                        <span className="text-xs text-muted-foreground font-normal">
+                          -{formatCurrency(expense.amount * (expense.exchangeRate || 1.0), organization.masterCurrency)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

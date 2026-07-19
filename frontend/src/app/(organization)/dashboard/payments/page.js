@@ -102,7 +102,14 @@ export default function PaymentsPage() {
                     {payment.reference || '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-emerald-600">
-                    +{formatCurrency(payment.amount, payment.invoice.currency)}
+                    <div className="flex flex-col items-end gap-1">
+                      <span>+{formatCurrency(payment.amount, payment.invoice.currency || organization?.masterCurrency || "USD")}</span>
+                      {(payment.invoice.currency && organization?.masterCurrency && payment.invoice.currency !== organization.masterCurrency) && (
+                        <span className="text-xs text-muted-foreground font-normal">
+                          +{formatCurrency(payment.amount * (payment.invoice.exchangeRate || 1.0), organization.masterCurrency)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
