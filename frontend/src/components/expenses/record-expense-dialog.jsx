@@ -10,6 +10,9 @@ import { toast } from "sonner";
 import { fetchExchangeRate } from "@/lib/exchange";
 import { CURRENCIES } from "@/lib/currencies";
 import { useOrganization } from "@/components/providers/organization-provider";
+import { PlusCircleIcon } from "lucide-react";
+import { CreateClientDialog } from "@/components/forms/create-client-dialog";
+import { CreateProjectDialog } from "@/components/forms/create-project-dialog";
 
 export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvoiceId, expenseToEdit }) {
   const [formData, setFormData] = useState({
@@ -27,6 +30,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const { organization } = useOrganization();
   const masterCurrency = organization?.masterCurrency || "USD";
@@ -52,6 +56,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           invoiceId: expenseToEdit.invoiceId || defaultInvoiceId || "none",
           currency: expenseToEdit.currency || "USD"
         });
+        setExchangeRate(expenseToEdit.exchangeRate || 1.0);
       } else {
         setFormData(prev => ({
           description: "",
@@ -72,11 +77,13 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
   const fetchMetadata = async () => {
     try {
-      const [cRes, iRes] = await Promise.all([
+      const [cRes, pRes, iRes] = await Promise.all([
         API.get("/clients"),
+        API.get("/projects"),
         API.get("/invoices")
       ]);
       setClients(cRes.data.clients || []);
+      setProjects(pRes.data.projects || []);
       setInvoices(iRes.data.invoices || []);
       
       if (organization?.masterCurrency && !expenseToEdit && formData.currency !== organization.masterCurrency) {
@@ -268,10 +275,23 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           </div>
 
           <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold">Link to Client (Optional)</label>
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold">Link to Client (Optional)</label>
+                <CreateClientDialog 
+                    trigger={
+                        <button type="button" className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                            <PlusCircleIcon className="size-3" /> Add new
+                        </button>
+                    }
+                    onSuccess={(client) => {
+                        setClients([client, ...clients]);
+                        setFormData({...formData, clientId: client.id, projectId: "none", invoiceId: "none"});
+                    }}
+                />
+            </div>
             <Select 
               value={formData.clientId} 
-              onValueChange={val => setFormData({...formData, clientId: val})}
+              onValueChange={val => setFormData({...formData, clientId: val, projectId: "none", invoiceId: "none"})}
               items={[
                 { value: "none", label: "None" },
                 ...clients.map(c => ({ value: c.id, label: c.name }))
@@ -282,7 +302,52 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="none">None</SelectItem>
+                    {(formData.clientId !== "none" && !clients.find(c => c.id === formData.clientId) && expenseToEdit?.client) && (
+                        <SelectItem value={formData.clientId}>{expenseToEdit.client.name}</SelectItem>
+                    )}
                     {clients.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold">Link to Project (Optional)</label>
+                <CreateProjectDialog 
+                    trigger={
+                        <button type="button" className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                            <PlusCircleIcon className="size-3" /> Add new
+                        </button>
+                    }
+                    onSuccess={(project) => {
+                        setProjects([project, ...projects]);
+                        const newClientId = project.clientId || project.client?.id || formData.clientId;
+                        setFormData({...formData, projectId: project.id, clientId: newClientId, invoiceId: "none"});
+                    }}
+                />
+            </div>
+            <Select 
+              value={formData.projectId} 
+              onValueChange={val => setFormData({...formData, projectId: val, invoiceId: "none"})}
+              disabled={formData.clientId === "none"}
+              items={[
+                { value: "none", label: "None" },
+                ...projects
+                  .filter(proj => proj.clientId === formData.clientId)
+                  .map(proj => ({ value: proj.id, label: proj.title }))
+              ]}
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder={formData.clientId === "none" ? "Select a client first" : "Select Project"} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {(formData.projectId !== "none" && !projects.find(p => p.id === formData.projectId) && expenseToEdit?.project) && (
+                        <SelectItem value={formData.projectId}>{expenseToEdit.project.title}</SelectItem>
+                    )}
+                    {projects
+                      .filter(proj => proj.clientId === formData.clientId)
+                      .map(p => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
                 </SelectContent>
             </Select>
           </div>
@@ -291,20 +356,37 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
             <label className="text-sm font-semibold">Link to Invoice (Optional)</label>
             <Select 
               value={formData.invoiceId} 
-              onValueChange={val => setFormData({...formData, invoiceId: val})}
-              items={[
-                { value: "none", label: "None" },
-                ...invoices
-                  .filter(inv => inv.clientId === formData.clientId)
-                  .map(inv => ({ value: inv.id, label: inv.invoiceNumber }))
-              ]}
+              onValueChange={val => {
+                if (val === "none") {
+                  setFormData({...formData, invoiceId: val});
+                  return;
+                }
+                const selectedInvoice = invoices.find(inv => inv.id === val);
+                if (selectedInvoice) {
+                  setFormData({
+                    ...formData, 
+                    invoiceId: val, 
+                    clientId: selectedInvoice.clientId || formData.clientId,
+                    projectId: selectedInvoice.projectId || formData.projectId
+                  });
+                } else {
+                  setFormData({...formData, invoiceId: val});
+                }
+              }}
+              disabled={formData.clientId === "none" && invoices.length === 0}
             >
                 <SelectTrigger>
-                    <SelectValue placeholder="Select Invoice" />
+                    <SelectValue placeholder={formData.clientId !== "none" ? "Select Invoice" : "Select Client first (or any invoice)"} />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {invoices.map(i => <SelectItem key={i.id} value={i.id}>{i.invoiceNumber}</SelectItem>)}
+                    {(formData.invoiceId !== "none" && !invoices.find(i => i.id === formData.invoiceId) && expenseToEdit?.invoice) && (
+                        <SelectItem value={formData.invoiceId}>{expenseToEdit.invoice.invoiceNumber}</SelectItem>
+                    )}
+                    {invoices
+                      .filter(i => formData.clientId === "none" || i.clientId === formData.clientId)
+                      .filter(i => formData.projectId === "none" || i.projectId === formData.projectId || !i.projectId)
+                      .map(i => <SelectItem key={i.id} value={i.id}>{i.invoiceNumber}</SelectItem>)}
                 </SelectContent>
             </Select>
           </div>

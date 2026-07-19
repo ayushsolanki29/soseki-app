@@ -18,8 +18,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { GlobalRecordPaymentDialog } from "@/components/invoices/global-record-payment-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function PaymentsPage() {
+  const { organization } = useOrganization();
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
