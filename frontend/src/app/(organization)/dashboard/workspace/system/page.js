@@ -125,8 +125,8 @@ export default function SystemSettingsPage() {
                 </div>
                 
                 <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-                    <DialogTrigger asChild>
-                        <Button variant="destructive">Delete Account</Button>
+                    <DialogTrigger render={<Button variant="destructive" />}>
+                        Delete Account
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
