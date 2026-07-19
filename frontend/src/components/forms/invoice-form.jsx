@@ -33,16 +33,18 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CreateClientDialog } from "./create-client-dialog";
 import { CreateProjectDialog } from "./create-project-dialog";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export function InvoiceForm({ initialData = null }) {
   const router = useRouter();
+  const { organization } = useOrganization();
   
   // Data State
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [masterCurrency, setMasterCurrency] = useState("USD");
+  const masterCurrency = organization?.masterCurrency || "USD";
   const [exchangeRate, setExchangeRate] = useState(initialData?.exchangeRate || 1.0);
   const [isFetchingRate, setIsFetchingRate] = useState(false);
   const [quickItems, setQuickItems] = useState([]);
@@ -75,20 +77,17 @@ export function InvoiceForm({ initialData = null }) {
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
-        const [clientsRes, projectsRes, orgRes, quickRes] = await Promise.all([
+        const [clientsRes, projectsRes, quickRes] = await Promise.all([
           API.get("/clients?limit=1000&status=All"),
           API.get("/projects?limit=1000&status=All"),
-          API.get("/organization"),
           API.get("/quick-items")
         ]);
         setClients(clientsRes.data.clients || []);
         setProjects(projectsRes.data.projects || []);
         setQuickItems(quickRes.data.quickItems || []);
-        if (orgRes.data.organization?.masterCurrency) {
-            setMasterCurrency(orgRes.data.organization.masterCurrency);
-            if (!initialData?.id && !initialData?.currency) {
-                setFormData(prev => ({ ...prev, currency: orgRes.data.organization.masterCurrency }));
-            }
+        
+        if (organization?.masterCurrency && !initialData?.id && !initialData?.currency) {
+            setFormData(prev => ({ ...prev, currency: organization.masterCurrency }));
         }
       } catch (error) {
         toast.error("Failed to load clients and projects");
@@ -585,10 +584,16 @@ export function InvoiceForm({ initialData = null }) {
                         <Input type="number" className="h-8 w-24 text-right" value={formData.taxAmount} onChange={e => setFormData({...formData, taxAmount: e.target.value})} />
                     </div>
                     <div className="pt-4 mt-4 border-t flex justify-between font-bold text-lg">
-                        <span>Grand Total</span>
+                        <span>Grand Total ({formData.currency})</span>
                         <span>{formatCurrency(grandTotal, formData.currency)}</span>
                     </div>
-                    <div className="flex justify-between font-medium text-primary">
+                    {formData.currency !== masterCurrency && (
+                        <div className="flex justify-between text-xs text-muted-foreground pb-2 border-b">
+                            <span>Reference Amount ({masterCurrency})</span>
+                            <span>{formatCurrency(grandTotal * (exchangeRate || 1.0), masterCurrency)}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between font-medium text-primary pt-2">
                         <span>Balance Due</span>
                         <span>{formatCurrency(grandTotal, formData.currency)}</span>
                     </div>

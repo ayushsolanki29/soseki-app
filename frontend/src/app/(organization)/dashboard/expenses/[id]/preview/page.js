@@ -7,22 +7,19 @@ import { SosekiModernExpense } from "@/components/expenses/templates/soseki-mode
 import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "lucide-react";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function ExpensePreviewPage() {
   const { id } = useParams();
+  const { organization, refetch } = useOrganization();
   const [expense, setExpense] = useState(null);
-  const [organization, setOrganization] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchExpense = async () => {
       try {
-        const [res, orgRes] = await Promise.all([
-          API.get(`/expenses/${id}`),
-          API.get("/organization")
-        ]);
+        const res = await API.get(`/expenses/${id}`);
         setExpense(res.data.expense);
-        setOrganization(orgRes.data.organization);
         
         // Setup print styles and document title
         document.title = `Expense - ${res.data.expense.id.slice(0,6).toUpperCase()}`;
@@ -71,7 +68,7 @@ export default function ExpensePreviewPage() {
           <div className="flex items-center gap-3">
             <DocumentSettingsDialog 
                 organization={organization} 
-                onOrganizationUpdate={setOrganization} 
+                onOrganizationUpdate={() => refetch()} 
                 documentType="expense"
                 masterCurrency={expense?.currency || "INR"}
             />

@@ -58,7 +58,7 @@ jobs:
             npx prisma generate
 
             # Uncomment the line below ONLY when you need to run database migrations
-            #npm run db:dev
+            #npx prisma db push --accept-data-loss
 
             echo "Restart backend"
             pm2 restart backend 

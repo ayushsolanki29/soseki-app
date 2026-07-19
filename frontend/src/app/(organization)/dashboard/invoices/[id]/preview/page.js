@@ -10,26 +10,20 @@ import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "lucide-react";
 import { toast } from "sonner";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function InvoicePreviewPage() {
   const { id } = useParams();
+  const { organization, refetch } = useOrganization();
   const [invoice, setInvoice] = useState(null);
-  const [organization, setOrganization] = useState(null);
-  const [masterCurrency, setMasterCurrency] = useState("USD");
+  const masterCurrency = organization?.masterCurrency || "USD";
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const [res, orgRes] = await Promise.all([
-          API.get(`/invoices/${id}`),
-          API.get("/organization")
-        ]);
+        const res = await API.get(`/invoices/${id}`);
         setInvoice(res.data.invoice);
-        setOrganization(orgRes.data.organization);
-        if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-        }
         
         // Setup print styles and document title
         document.title = `Invoice - ${res.data.invoice.invoiceNumber}`;
@@ -101,7 +95,7 @@ export default function InvoicePreviewPage() {
           <div className="flex items-center gap-3">
             <DocumentSettingsDialog 
                 organization={organization} 
-                onOrganizationUpdate={setOrganization} 
+                onOrganizationUpdate={() => refetch()} 
                 documentType="invoice" 
                 masterCurrency={invoice?.currency || "INR"}
             />

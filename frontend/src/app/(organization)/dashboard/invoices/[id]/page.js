@@ -31,6 +31,7 @@ import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 
 export default function InvoiceDetailsPage() {
@@ -38,6 +39,7 @@ export default function InvoiceDetailsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const { organization, refetch } = useOrganization();
   
   const [invoice, setInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,21 +55,14 @@ export default function InvoiceDetailsPage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [masterCurrency, setMasterCurrency] = useState("INR");
-  const [organization, setOrganization] = useState(null);
+  
+  const masterCurrency = organization?.masterCurrency || "USD";
 
   const fetchInvoice = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
-          API.get(`/invoices/${id}`),
-          API.get("/organization")
-      ]);
+      const res = await API.get(`/invoices/${id}`);
       setInvoice(res.data.invoice);
-      if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-      }
-      setOrganization(orgRes.data.organization);
     } catch (error) {
       toast.error("Failed to load invoice details");
     } finally {
@@ -224,7 +219,7 @@ export default function InvoiceDetailsPage() {
                     </Button>
                     <DocumentSettingsDialog 
                         organization={organization}
-                        onOrganizationUpdate={setOrganization}
+                        onOrganizationUpdate={() => refetch()}
                         documentType="invoice"
                         masterCurrency={masterCurrency}
                     />

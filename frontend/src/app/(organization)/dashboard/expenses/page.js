@@ -19,25 +19,22 @@ import Link from "next/link";
 import { RecordExpenseDialog } from "@/components/expenses/record-expense-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function ExpensesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { organization } = useOrganization();
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecordExpenseOpen, setIsRecordExpenseOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
-  const [organization, setOrganization] = useState(null);
 
   const fetchExpenses = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
-        API.get("/expenses"),
-        API.get("/organization")
-      ]);
+      const res = await API.get("/expenses");
       setExpenses(res.data.expenses || []);
-      setOrganization(orgRes.data.organization);
     } catch (error) {
       toast.error("Failed to load expenses");
     } finally {

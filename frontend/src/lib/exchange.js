@@ -19,13 +19,13 @@ export async function fetchExchangeRate(baseCurrency, targetCurrency) {
   // Use mock data in development to save API quota
   if (process.env.NODE_ENV === "development") {
     console.log(`[DEV MODE] Using mock exchange rate for ${baseCurrency} to ${targetCurrency}`);
-    
+
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     const baseToUsd = MOCK_BASE_TO_USD[baseCurrency] || 1.0;
     const targetToUsd = MOCK_BASE_TO_USD[targetCurrency] || 1.0;
-    
+
     // Math: (Base -> USD) / (Target -> USD) = Base -> Target
     const rate = baseToUsd / targetToUsd;
     return Number(rate.toFixed(4));
@@ -35,11 +35,11 @@ export async function fetchExchangeRate(baseCurrency, targetCurrency) {
   try {
     const res = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/latest/${baseCurrency}`);
     const data = await res.json();
-    
+
     if (data.result === "success" && data.conversion_rates && data.conversion_rates[targetCurrency]) {
       return data.conversion_rates[targetCurrency];
     }
-    
+
     console.warn(`Failed to parse exchange rate for ${targetCurrency} from API response`, data);
     return 1.0;
   } catch (error) {

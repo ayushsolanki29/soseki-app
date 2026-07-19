@@ -32,6 +32,8 @@ class InvoicesService {
         status: true,
         totalAmount: true,
         paidAmount: true,
+        currency: true,
+        exchangeRate: true,
         createdAt: true,
         client: {
           select: { id: true, name: true, email: true }
@@ -40,7 +42,7 @@ class InvoicesService {
           select: { id: true, title: true }
         }
       },
-      orderBy: { issueDate: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return {

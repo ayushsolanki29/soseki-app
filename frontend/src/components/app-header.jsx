@@ -9,17 +9,13 @@ import { NavUser } from "@/components/nav-user";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import API from "@/lib/api";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 const activeItem = navLinks.find((item) => item.isActive);
 
 export function AppHeader() {
-    const [orgName, setOrgName] = useState("");
-
-    useEffect(() => {
-        API.get("/organization")
-            .then(res => setOrgName(res.data.organization.name))
-            .catch(() => setOrgName("Soseki Workspace"));
-    }, []);
+    const { organization } = useOrganization();
+    const orgName = organization?.name || "";
 	return (
         <header
             className={cn(

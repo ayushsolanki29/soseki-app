@@ -12,7 +12,7 @@ export function CurrencyGrid({ value, onChange, disabled }) {
           onClick={() => onChange(currency.code)}
           disabled={disabled}
           className={cn(
-            "relative flex items-center justify-start gap-3 h-14 px-3 rounded-2xl border transition-all outline-none focus-visible:ring-4 focus-visible:ring-primary/10 group",
+            "relative flex items-center justify-center gap-3 h-14 px-3 rounded-2xl border transition-all outline-none focus-visible:ring-4 focus-visible:ring-primary/10 group",
             value === currency.code
               ? "border-primary ring-1 ring-primary shadow-sm bg-primary/5"
               : "border-muted-foreground/20 hover:border-primary/40 bg-transparent"

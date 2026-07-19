@@ -52,7 +52,7 @@ model Organization {
 model Client {
   id             String       @id @default(uuid())
   name           String
-  email          String       @unique
+  email          String
   phone          String?
   status         String       @default("Active") // Active, Inactive, Lead
   organizationId String
@@ -67,6 +67,7 @@ model Client {
   questionnaireResponses QuestionnaireResponse[]
 
   @@index([organizationId])
+  @@unique([email, organizationId])
 }
 
 model Project {

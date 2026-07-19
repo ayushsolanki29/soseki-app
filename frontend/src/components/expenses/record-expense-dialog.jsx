@@ -9,6 +9,7 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import { fetchExchangeRate } from "@/lib/exchange";
 import { CURRENCIES } from "@/lib/currencies";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvoiceId, expenseToEdit }) {
   const [formData, setFormData] = useState({
@@ -27,7 +28,8 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState([]);
   const [invoices, setInvoices] = useState([]);
-  const [masterCurrency, setMasterCurrency] = useState("USD");
+  const { organization } = useOrganization();
+  const masterCurrency = organization?.masterCurrency || "USD";
   const [exchangeRate, setExchangeRate] = useState(1.0);
   const [isFetchingRate, setIsFetchingRate] = useState(false);
 
@@ -70,18 +72,15 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
   const fetchMetadata = async () => {
     try {
-      const [cRes, iRes, orgRes] = await Promise.all([
+      const [cRes, iRes] = await Promise.all([
         API.get("/clients"),
-        API.get("/invoices"),
-        API.get("/organization")
+        API.get("/invoices")
       ]);
       setClients(cRes.data.clients || []);
       setInvoices(iRes.data.invoices || []);
-      if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-          if (!expenseToEdit) {
-              setFormData(prev => ({ ...prev, currency: orgRes.data.organization.masterCurrency }));
-          }
+      
+      if (organization?.masterCurrency && !expenseToEdit && formData.currency !== organization.masterCurrency) {
+          setFormData(prev => ({ ...prev, currency: organization.masterCurrency }));
       }
     } catch (error) {
       console.error("Failed to load metadata", error);
