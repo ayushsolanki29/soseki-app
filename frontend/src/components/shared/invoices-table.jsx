@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter } from "next/navigation";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 export function InvoicesTable({ invoices, isLoading, masterCurrency }) {
   const router = useRouter();
@@ -50,7 +51,10 @@ export function InvoicesTable({ invoices, isLoading, masterCurrency }) {
                     return (
                     <TableRow key={invoice.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/invoices/${invoice.id}`)}>
                         <TableCell className="font-medium group-hover:text-primary transition-colors">
-                            {invoice.invoiceNumber}
+                            <div className="flex items-center gap-3">
+                                <DynamicAvatar type="invoice" seed={invoice.invoiceNumber} size={32} />
+                                <span>{invoice.invoiceNumber}</span>
+                            </div>
                         </TableCell>
                         <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                         <TableCell>{formatDate(invoice.dueDate)}</TableCell>

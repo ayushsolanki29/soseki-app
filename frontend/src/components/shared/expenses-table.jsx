@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter } from "next/navigation";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 export function ExpensesTable({ expenses, isLoading, masterCurrency }) {
   const router = useRouter();
@@ -42,7 +43,12 @@ export function ExpensesTable({ expenses, isLoading, masterCurrency }) {
                 expenses?.map((expense) => (
                     <TableRow key={expense.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/expenses?receipt=${expense.id}`)}>
                         <TableCell>{formatDate(expense.date)}</TableCell>
-                        <TableCell>{expense.category?.name || "-"}</TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-3">
+                                <DynamicAvatar type="expense" seed={expense.category || expense.id} size={32} />
+                                <span>{expense.category || "-"}</span>
+                            </div>
+                        </TableCell>
                         <TableCell className="max-w-[200px] truncate">{expense.description || "-"}</TableCell>
                         <TableCell className="text-right">
                             <div className="font-medium">

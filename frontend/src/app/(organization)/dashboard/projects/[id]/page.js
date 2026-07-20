@@ -223,9 +223,7 @@ export default function ProjectDetailsPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     <Link href={`/dashboard/clients/${project.clientId}`} className="flex items-center gap-3 text-sm p-6 hover:bg-muted/50 transition-colors cursor-pointer rounded-b-xl">
-                        <div className="bg-primary/10 p-2 rounded-full text-primary">
-                            <UserIcon className="size-5" />
-                        </div>
+                        <DynamicAvatar type="client" seed={project.client?.name} size={40} className="shadow-sm" />
                         <div>
                             <p className="font-medium group-hover:text-primary transition-colors">{project.client?.name}</p>
                             <p className="text-muted-foreground">{project.client?.email}</p>
