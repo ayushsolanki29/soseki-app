@@ -30,6 +30,7 @@ import {
 import { ClientForm } from "@/components/forms/client-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { PortalLinkWithSettings } from "@/components/shared/portal-link-with-settings";
 
 export default function ClientDetailsPage() {
   const { id } = useParams();
@@ -212,10 +213,13 @@ export default function ClientDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={copyPortalLink}>
-                <LinkIcon className="size-4 mr-2" />
-                Portal Link
-            </Button>
+            <PortalLinkWithSettings 
+                portalLink={`${window.location.origin}/c/${client.id}`}
+                organization={organization}
+                onOrganizationUpdate={() => fetchClient()}
+                documentType="invoice"
+                masterCurrency={masterCurrency}
+            />
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Client

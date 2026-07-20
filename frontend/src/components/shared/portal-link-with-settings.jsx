@@ -20,11 +20,11 @@ export function PortalLinkWithSettings({
     };
 
     return (
-        <div className={cn("flex items-center bg-secondary/50 rounded-md overflow-hidden border", className)}>
+        <div className={cn("flex items-center rounded-md border shadow-sm bg-background", className)}>
             <Button 
                 variant="ghost" 
                 onClick={copyPortalLink} 
-                className="gap-2 h-9 rounded-none hover:bg-secondary/80 border-r"
+                className="gap-2 h-9 rounded-r-none rounded-l-md hover:bg-accent border-r"
             >
                 <LinkIcon className="size-4" />
                 Portal Link
@@ -34,7 +34,7 @@ export function PortalLinkWithSettings({
                 onOrganizationUpdate={onOrganizationUpdate}
                 documentType={documentType}
                 masterCurrency={masterCurrency}
-                trigger={<Button variant="ghost" className="h-9 w-9 rounded-none px-0 hover:bg-secondary/80" />}
+                trigger={<Button variant="ghost" className="h-9 w-9 rounded-l-none rounded-r-md px-0 hover:bg-accent text-muted-foreground hover:text-foreground" />}
             />
         </div>
     );

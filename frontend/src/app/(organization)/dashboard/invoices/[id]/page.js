@@ -31,7 +31,7 @@ import { formatCurrency } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
-import { PortalLinkWithSettings } from "@/components/shared/portal-link-with-settings";
+import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
 import { useOrganization } from "@/components/providers/organization-provider";
 
 
@@ -215,13 +215,10 @@ export default function InvoiceDetailsPage() {
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
-                <PortalLinkWithSettings 
-                    portalLink={`${window.location.origin}/c/${invoice.clientId}`}
-                    organization={organization}
-                    onOrganizationUpdate={() => refetch()}
-                    documentType="invoice"
-                    masterCurrency={masterCurrency}
-                />
+                <Button variant="secondary" onClick={copyPortalLink} className="gap-2">
+                    <LinkIcon className="size-4" />
+                    Portal Link
+                </Button>
                 
                 <Button variant="outline" render={<Link href={`/dashboard/invoices/${invoice.id}/edit`} />} className="gap-2">
                     <EditIcon className="size-4" />
@@ -233,6 +230,12 @@ export default function InvoiceDetailsPage() {
                         <DownloadIcon className="size-4" />
                         Preview
                     </Button>
+                    <DocumentSettingsDialog 
+                        organization={organization}
+                        onOrganizationUpdate={() => refetch()}
+                        documentType="invoice"
+                        masterCurrency={masterCurrency}
+                    />
                 </div>
                 <Button onClick={handleRecordPayment} className="gap-2">
                     <CreditCardIcon className="size-4" />

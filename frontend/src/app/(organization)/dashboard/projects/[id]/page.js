@@ -22,6 +22,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { InvoicesTable } from "@/components/shared/invoices-table";
 import { ExpensesTable } from "@/components/shared/expenses-table";
+import { PortalLinkWithSettings } from "@/components/shared/portal-link-with-settings";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -29,6 +31,7 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const { organization, fetchOrganization } = useOrganization();
 
   const fetchProject = async () => {
     setIsLoading(true);
@@ -184,10 +187,12 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={copyPortalLink}>
-                <LinkIcon className="size-4 mr-2" />
-                Portal Link
-            </Button>
+            <PortalLinkWithSettings 
+                portalLink={`${window.location.origin}/c/${project.clientId}/p/${project.id}`}
+                organization={organization}
+                onOrganizationUpdate={fetchOrganization}
+                documentType="invoice"
+            />
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Project
