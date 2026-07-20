@@ -73,6 +73,18 @@ class InvoicesController {
       next(error);
     }
   }
+
+  async verifyPayment(req, res, next) {
+    try {
+      const invoice = await invoicesService.verifyPayment(req.user.organizationId, req.params.id);
+      return res.status(200).json({ success: true, invoice });
+    } catch (error) {
+      if (error.status === 401 || error.status === 404 || error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
 }
 
 module.exports = new InvoicesController();

@@ -160,6 +160,7 @@ exports.getClientInvoiceById = async (clientId, invoiceId) => {
       discountAmount: true,
       totalAmount: true,
       paidAmount: true,
+      exchangeRate: true,
       notice: true,
       notes: true,
       terms: true,
@@ -191,7 +192,8 @@ exports.getClientInvoiceById = async (clientId, invoiceId) => {
               routingNumber: true,
               branch: true,
               invoiceFooterNote: true,
-              invoiceTemplate: true
+              invoiceTemplate: true,
+              upiId: true
             }
           },
           masterCurrency: true
@@ -205,4 +207,59 @@ exports.getClientInvoiceById = async (clientId, invoiceId) => {
   }
 
   return invoice;
+};
+
+/**
+ * Record payment for an invoice
+ */
+exports.recordClientPayment = async (clientId, invoiceId, method, reference) => {
+  const invoice = await prisma.invoice.findFirst({
+    where: { 
+      id: invoiceId,
+      clientId: clientId 
+    },
+    include: {
+      organization: true
+    }
+  });
+
+  if (!invoice) {
+    throw new ApiError(404, "Invoice not found");
+  }
+
+  if (invoice.status === "Paid" || invoice.status === "Processing") {
+    throw new ApiError(400, `Invoice is already ${invoice.status.toLowerCase()}`);
+  }
+
+  // Create payment record and activity log, and update invoice status
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Create Payment record
+    const payment = await tx.payment.create({
+      data: {
+        amount: invoice.totalAmount - invoice.paidAmount,
+        method: method || "Bank Transfer",
+        reference: reference || null,
+        invoiceId: invoice.id
+      }
+    });
+
+    // 2. Update Invoice status to Processing
+    const updatedInvoice = await tx.invoice.update({
+      where: { id: invoice.id },
+      data: { status: "Processing" }
+    });
+
+    // 3. Log Activity
+    await tx.activity.create({
+      data: {
+        type: "PAYMENT_RECORDED",
+        description: `Client recorded payment via ${method || "Bank Transfer"}${reference ? ` (Ref: ${reference})` : ''}. Pending verification.`,
+        invoiceId: invoice.id
+      }
+    });
+
+    return updatedInvoice;
+  });
+
+  return result;
 };

@@ -64,3 +64,17 @@ exports.getClientInvoiceById = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Record payment for an invoice by Client
+ */
+exports.recordClientPayment = async (req, res, next) => {
+  try {
+    const { clientId, invoiceId } = req.params;
+    const { method, reference } = req.body;
+    const result = await portalService.recordClientPayment(clientId, invoiceId, method, reference);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -73,9 +73,11 @@ export default function ClientPortalInvoice({ params }) {
               <Download className="w-4 h-4 mr-2" /> Download PDF
             </Button>
             {!isPaid && (
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <CreditCard className="w-4 h-4 mr-2" /> Pay Now
-              </Button>
+              <Link href={`/c/${clientId}/i/${invoiceId}/pay`}>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <CreditCard className="w-4 h-4 mr-2" /> Pay Now
+                </Button>
+              </Link>
             )}
           </div>
         </div>
@@ -121,58 +123,21 @@ export default function ClientPortalInvoice({ params }) {
                     <span className="text-xl font-bold text-blue-700">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
 
-                  <div className="space-y-3">
-                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white" size="lg">
-                      <CreditCard className="w-4 h-4 mr-2" /> Pay with Card
+                  <Link href={`/c/${clientId}/i/${invoiceId}/pay`} className="block w-full">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="lg">
+                      <CreditCard className="w-4 h-4 mr-2" /> Pay Invoice securely
                     </Button>
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white px-2 text-slate-500">Or pay via</span>
-                      </div>
-                    </div>
-                    {invoice.organization.profile?.accountNumber && (
-                      <Button variant="outline" className="w-full" size="lg">
-                        <Building2 className="w-4 h-4 mr-2" /> Bank Transfer
-                      </Button>
-                    )}
-                  </div>
+                  </Link>
                   
                   <div className="text-xs text-center text-slate-400 mt-4">
-                    This is a secure, encrypted payment gateway.
+                    Multiple secure payment methods available.
                   </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {invoice.organization.profile?.bankName && !isPaid && (
-            <Card className="border-slate-200 shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Building className="w-4 h-4 text-slate-400" /> Bank Transfer Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm space-y-2 text-slate-600">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Bank Name:</span>
-                  <span className="font-medium text-slate-900">{invoice.organization.profile.bankName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Account No:</span>
-                  <span className="font-medium text-slate-900">{invoice.organization.profile.accountNumber}</span>
-                </div>
-                {invoice.organization.profile.routingNumber && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Routing/IFSC:</span>
-                    <span className="font-medium text-slate-900">{invoice.organization.profile.routingNumber}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+
         </div>
       </div>
     </div>

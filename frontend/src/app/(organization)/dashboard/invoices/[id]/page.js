@@ -20,7 +20,8 @@ import {
     EditIcon,
     BuildingIcon,
     TrashIcon,
-    LinkIcon
+    LinkIcon,
+    CheckCircle2Icon
 } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
@@ -80,6 +81,7 @@ export default function InvoiceDetailsPage() {
         case 'Draft': return 'outline';
         case 'Sent': return 'secondary';
         case 'Partially Paid': return 'default';
+        case 'Processing': return 'warning'; // or default/secondary depending on UI
         case 'Paid': return 'default';
         case 'Overdue': return 'destructive';
         case 'Cancelled': return 'secondary';
@@ -237,10 +239,25 @@ export default function InvoiceDetailsPage() {
                         masterCurrency={masterCurrency}
                     />
                 </div>
-                <Button onClick={handleRecordPayment} className="gap-2">
-                    <CreditCardIcon className="size-4" />
-                    Record Payment
-                </Button>
+                {invoice.status === "Processing" ? (
+                    <Button onClick={async () => {
+                        try {
+                            await API.post(`/invoices/${invoice.id}/verify-payment`);
+                            toast.success("Payment verified and invoice marked as Paid");
+                            fetchInvoice();
+                        } catch (error) {
+                            toast.error("Failed to verify payment");
+                        }
+                    }} className="gap-2 bg-amber-600 hover:bg-amber-700 text-white shadow-sm">
+                        <CheckCircle2Icon className="size-4" />
+                        Verify Payment
+                    </Button>
+                ) : (
+                    <Button onClick={handleRecordPayment} className="gap-2">
+                        <CreditCardIcon className="size-4" />
+                        Record Payment
+                    </Button>
+                )}
                 <Button variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-2" onClick={() => setIsDeleteDialogOpen(true)}>
                     <TrashIcon className="size-4" />
                     Delete

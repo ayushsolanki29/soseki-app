@@ -308,6 +308,55 @@ class InvoicesService {
 
     return updatedInvoice;
   }
+
+  async verifyPayment(organizationId, invoiceId) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId, organizationId },
+      include: { payments: true }
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    if (invoice.status !== "Processing") {
+      const error = new Error("Invoice is not pending verification");
+      error.status = 400;
+      throw error;
+    }
+
+    // Assuming the most recent payment is the unverified one that brought the total to full
+    // But since `recordClientPayment` creates a Payment record with the remaining amount,
+    // and updates status to Processing, we just change status to Paid, and update paidAmount
+    const pendingPaymentAmount = invoice.totalAmount - invoice.paidAmount;
+
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        status: "Paid",
+        paidAmount: invoice.totalAmount, // Assuming full payment was verified
+        activities: {
+          create: {
+            type: "UPDATED",
+            description: `Payment verification successful. Invoice marked as Paid.`
+          }
+        }
+      },
+      include: {
+        payments: true
+      }
+    });
+
+    return updatedInvoice;
+  }
 }
 
 module.exports = new InvoicesService();

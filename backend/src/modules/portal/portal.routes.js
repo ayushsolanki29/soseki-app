@@ -10,5 +10,6 @@ router.get("/client/:clientId/projects", portalController.getClientProjects);
 router.get("/client/:clientId/projects/:projectId", portalController.getClientProjectById);
 router.get("/client/:clientId/invoices", portalController.getClientInvoices);
 router.get("/client/:clientId/invoices/:invoiceId", portalController.getClientInvoiceById);
+router.post("/client/:clientId/invoices/:invoiceId/record-payment", portalController.recordClientPayment);
 
 module.exports = router;
