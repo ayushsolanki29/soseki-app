@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon, LinkIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { formatDate, formatId } from "@/lib/utils";
@@ -58,6 +58,13 @@ export default function ProjectDetailsPage() {
     } catch (error) {
       toast.error("Failed to delete project");
     }
+  };
+
+  const copyPortalLink = () => {
+    if (!project?.clientId) return;
+    const url = `${window.location.origin}/c/${project.clientId}/p/${project.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Project Portal Link copied to clipboard!");
   };
 
   if (isLoading) {
@@ -177,6 +184,10 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+            <Button variant="secondary" onClick={copyPortalLink}>
+                <LinkIcon className="size-4 mr-2" />
+                Portal Link
+            </Button>
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Project

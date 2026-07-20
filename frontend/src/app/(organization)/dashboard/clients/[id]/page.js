@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIcon, FileTextIcon, DollarSignIcon, LinkIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
@@ -76,6 +76,12 @@ export default function ClientDetailsPage() {
     } catch (error) {
       toast.error("Failed to update client status");
     }
+  };
+
+  const copyPortalLink = () => {
+    const url = `${window.location.origin}/c/${client.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Client Portal Link copied to clipboard!");
   };
 
   if (isLoading) {
@@ -206,6 +212,10 @@ export default function ClientDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+            <Button variant="secondary" onClick={copyPortalLink}>
+                <LinkIcon className="size-4 mr-2" />
+                Portal Link
+            </Button>
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Client

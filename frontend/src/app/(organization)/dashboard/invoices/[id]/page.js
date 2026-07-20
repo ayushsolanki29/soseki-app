@@ -19,7 +19,8 @@ import {
     CreditCardIcon,
     EditIcon,
     BuildingIcon,
-    TrashIcon
+    TrashIcon,
+    LinkIcon
 } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
@@ -116,6 +117,13 @@ export default function InvoiceDetailsPage() {
       }
   }
 
+  const copyPortalLink = () => {
+    if (!invoice?.clientId) return;
+    const url = `${window.location.origin}/c/${invoice.clientId}/i/${invoice.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Invoice Portal Link copied to clipboard!");
+  };
+
   if (isLoading) {
     return (
       <div className="p-8 w-full h-full flex flex-col gap-6">
@@ -207,6 +215,10 @@ export default function InvoiceDetailsPage() {
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={copyPortalLink} className="gap-2">
+                    <LinkIcon className="size-4" />
+                    Portal Link
+                </Button>
                 <Button variant="outline" render={<Link href={`/dashboard/invoices/${invoice.id}/edit`} />} className="gap-2">
                     <EditIcon className="size-4" />
                     Edit
