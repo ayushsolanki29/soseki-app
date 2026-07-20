@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, FileText, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { format } from "date-fns";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 export default function ClientPortalProject({ params }) {
   const { clientId, projectId } = use(params);
@@ -54,9 +55,12 @@ export default function ClientPortalProject({ params }) {
           <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Dashboard
         </Link>
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">{project.title}</h1>
-            <p className="text-slate-500">{project.organization.name}</p>
+          <div className="flex items-center gap-4">
+            <DynamicAvatar type="project" seed={project.title} size={64} className="shadow-lg border-2 border-background rounded-2xl" />
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">{project.title}</h1>
+              <p className="text-slate-500">{project.organization.name}</p>
+            </div>
           </div>
           <Badge variant={project.status === "Active" ? "default" : "secondary"} className="w-fit text-sm px-3 py-1">
             {project.status}

@@ -16,7 +16,8 @@ export function DocumentSettingsDialog({
     organization, 
     onOrganizationUpdate,
     documentType = "invoice",
-    masterCurrency = "INR"
+    masterCurrency = "INR",
+    trigger
 }) {
     const [isOpen, setIsOpen] = useState(false);
     
@@ -98,9 +99,15 @@ export function DocumentSettingsDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger render={<Button variant="outline" className="px-2" />}>
-                <SettingsIcon className="size-4" />
-            </DialogTrigger>
+            {trigger ? (
+                <DialogTrigger render={trigger}>
+                    <SettingsIcon className="size-4" />
+                </DialogTrigger>
+            ) : (
+                <DialogTrigger render={<Button variant="outline" className="px-2" />}>
+                    <SettingsIcon className="size-4" />
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-hidden flex flex-col p-0">
                 <form onSubmit={handleSaveSettings} className="flex flex-col h-full overflow-hidden">
                     <DialogHeader className="p-6 pb-4 border-b shrink-0">

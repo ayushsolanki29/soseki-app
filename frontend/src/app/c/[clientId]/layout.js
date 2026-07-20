@@ -7,25 +7,41 @@ import { Home, Briefcase, FileText } from "lucide-react";
 import API from "@/lib/api";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { LogoIcon } from "@/components/logo";
-import { useEffect, useState, use } from "react";
+import { PublicFooter } from "@/components/shared/public-footer";
+import { ClientPortalActions } from "@/components/portal/client-portal-actions";
+import { useEffect, useState, use, createContext } from "react";
+
+export const ClientPortalContext = createContext({ 
+  profile: null, 
+  isProfileLoading: true, 
+  profileError: false 
+});
 
 // For the portal, we should use a clean, standalone layout
 export default function ClientPortalLayout({ children, params }) {
   const { clientId } = use(params);
 
   const [profile, setProfile] = useState(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState(false);
 
   useEffect(() => {
+    setIsProfileLoading(true);
     API.get(`/portal/client/${clientId}`)
-      .then(res => setProfile(res.data.data))
+      .then(res => {
+        setProfile(res.data.data);
+        setIsProfileLoading(false);
+      })
       .catch(err => {
-        // silently fail, the page will handle the error
+        setProfileError(true);
+        setIsProfileLoading(false);
       });
   }, [clientId]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Minimalistic Portal Header */}
+    <ClientPortalContext.Provider value={{ profile, isProfileLoading, profileError }}>
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+        {/* Minimalistic Portal Header */}
       <header className="sticky top-0 z-40 w-full border-b bg-white backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
           <div className="flex gap-6 md:gap-10">
@@ -54,6 +70,10 @@ export default function ClientPortalLayout({ children, params }) {
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline-block">Invoices</span>
             </Link>
+            
+            <div className="pl-4 border-l border-slate-200">
+              <ClientPortalActions profile={profile} />
+            </div>
           </nav>
         </div>
       </header>
@@ -64,14 +84,10 @@ export default function ClientPortalLayout({ children, params }) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white py-6 md:py-8 mt-auto">
-        <div className="container mx-auto px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} Client Portal. All rights reserved.</p>
-          <div className="mt-4 md:mt-0">
-            Powered by Soseki
-          </div>
-        </div>
+      <footer className="bg-white pt-2 mt-auto">
+        <PublicFooter className="mt-8 pb-8" />
       </footer>
     </div>
+    </ClientPortalContext.Provider>
   );
 }

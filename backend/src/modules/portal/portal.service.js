@@ -29,6 +29,13 @@ exports.getClientProfile = async (clientId) => {
             select: {
               phone: true,
               email: true,
+              taxId: true,
+              registrationNumber: true,
+              region: true,
+              bankName: true,
+              accountNumber: true,
+              routingNumber: true,
+              branch: true,
             }
           }
         }
@@ -182,9 +189,11 @@ exports.getClientInvoiceById = async (clientId, invoiceId) => {
               bankName: true,
               routingNumber: true,
               branch: true,
-              invoiceFooterNote: true
+              invoiceFooterNote: true,
+              invoiceTemplate: true
             }
-          }
+          },
+          masterCurrency: true
         }
       }
     }

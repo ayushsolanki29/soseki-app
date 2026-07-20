@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { SosekiModernInvoice } from "@/components/invoices/templates/soseki-modern";
+import { TaxInvoice } from "@/components/invoices/templates/tax-invoice";
+
 export default function ClientPortalInvoice({ params }) {
   const { clientId, invoiceId } = use(params);
 
@@ -49,6 +52,8 @@ export default function ClientPortalInvoice({ params }) {
 
   const isPaid = invoice.status === "Paid";
   const amountDue = invoice.totalAmount - invoice.paidAmount;
+  const template = invoice.organization?.profile?.invoiceTemplate || "soseki-modern";
+  const masterCurrency = invoice.organization?.masterCurrency || "USD";
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -79,105 +84,16 @@ export default function ClientPortalInvoice({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Invoice Document */}
         <div className="lg:col-span-2">
-          <Card className="border-slate-200 shadow-sm overflow-hidden">
-            <div className="bg-slate-50 p-6 md:p-10 border-b border-slate-100 flex flex-col md:flex-row justify-between gap-6">
-              <div>
-                <div className="font-bold text-xl text-slate-900 mb-1">{invoice.organization.name}</div>
-                {invoice.organization.address && (
-                  <div className="text-slate-500 text-sm whitespace-pre-wrap">{invoice.organization.address}</div>
+          <Card className="border-slate-200 shadow-xl shadow-black/5 overflow-hidden relative bg-white">
+            <div className="w-full flex justify-center py-6">
+              <div className="w-full max-w-[210mm] bg-white pointer-events-none">
+                {template === "soseki-modern" && (
+                    <SosekiModernInvoice invoice={invoice} organization={invoice.organization} masterCurrency={masterCurrency} />
+                )}
+                {template === "tax-invoice" && (
+                    <TaxInvoice invoice={invoice} organization={invoice.organization} masterCurrency={masterCurrency} />
                 )}
               </div>
-              <div className="text-left md:text-right">
-                <div className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-2">Invoice Details</div>
-                <div className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2">
-                  <div className="flex justify-between md:justify-end gap-4 text-sm">
-                    <span className="text-slate-500">Date:</span>
-                    <span className="font-medium text-slate-900">{format(new Date(invoice.issueDate), "MMM d, yyyy")}</span>
-                  </div>
-                  <div className="flex justify-between md:justify-end gap-4 text-sm">
-                    <span className="text-slate-500">Due:</span>
-                    <span className="font-medium text-slate-900">{format(new Date(invoice.dueDate), "MMM d, yyyy")}</span>
-                  </div>
-                  <div className="flex justify-between md:justify-end gap-4 text-sm">
-                    <span className="text-slate-500">Status:</span>
-                    <Badge variant={isPaid ? "success" : invoice.status === "Overdue" ? "destructive" : "secondary"} className="ml-auto w-fit">
-                      {invoice.status}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 md:p-10">
-              <table className="w-full text-sm text-left">
-                <thead className="text-slate-500 border-b border-slate-200">
-                  <tr>
-                    <th className="pb-3 font-medium">Description</th>
-                    <th className="pb-3 font-medium text-center hidden sm:table-cell">Qty</th>
-                    <th className="pb-3 font-medium text-right hidden sm:table-cell">Price</th>
-                    <th className="pb-3 font-medium text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {invoice.items.map((item) => (
-                    <tr key={item.id}>
-                      <td className="py-4 text-slate-900 font-medium">
-                        {item.description}
-                        <div className="sm:hidden text-xs text-slate-500 mt-1">
-                          {item.quantity} x {invoice.currency} {item.unitPrice.toFixed(2)}
-                        </div>
-                      </td>
-                      <td className="py-4 text-center text-slate-600 hidden sm:table-cell">{item.quantity}</td>
-                      <td className="py-4 text-right text-slate-600 hidden sm:table-cell">
-                        {invoice.currency} {item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className="py-4 text-right font-medium text-slate-900">
-                        {invoice.currency} {item.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className="border-t border-slate-200 mt-6 pt-6 flex flex-col items-end gap-2 text-sm">
-                <div className="flex justify-between w-full sm:w-1/2 md:w-1/3">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="font-medium text-slate-900">{invoice.currency} {invoice.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                </div>
-                {invoice.taxAmount > 0 && (
-                  <div className="flex justify-between w-full sm:w-1/2 md:w-1/3">
-                    <span className="text-slate-500">Tax</span>
-                    <span className="font-medium text-slate-900">{invoice.currency} {invoice.taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                  </div>
-                )}
-                {invoice.discountAmount > 0 && (
-                  <div className="flex justify-between w-full sm:w-1/2 md:w-1/3">
-                    <span className="text-slate-500">Discount</span>
-                    <span className="font-medium text-slate-900">-{invoice.currency} {invoice.discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                  </div>
-                )}
-                <div className="flex justify-between w-full sm:w-1/2 md:w-1/3 text-base mt-2 pt-2 border-t border-slate-100">
-                  <span className="font-bold text-slate-900">Total</span>
-                  <span className="font-bold text-slate-900">{invoice.currency} {invoice.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                </div>
-                {invoice.paidAmount > 0 && (
-                  <div className="flex justify-between w-full sm:w-1/2 md:w-1/3 text-green-600">
-                    <span>Paid</span>
-                    <span>-{invoice.currency} {invoice.paidAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                  </div>
-                )}
-                <div className="flex justify-between w-full sm:w-1/2 md:w-1/3 text-lg mt-2 pt-2 border-t-2 border-slate-200">
-                  <span className="font-bold text-slate-900">Balance Due</span>
-                  <span className="font-bold text-blue-600">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                </div>
-              </div>
-
-              {invoice.notes && (
-                <div className="mt-10 pt-6 border-t border-slate-100">
-                  <h4 className="text-sm font-medium text-slate-900 mb-2">Notes</h4>
-                  <p className="text-sm text-slate-600 whitespace-pre-wrap">{invoice.notes}</p>
-                </div>
-              )}
             </div>
           </Card>
         </div>
