@@ -37,13 +37,15 @@ class PaymentsService {
           select: {
             id: true,
             invoiceNumber: true,
+            currency: true,
+            exchangeRate: true,
             client: {
               select: { id: true, name: true, email: true }
             }
           }
         }
       },
-      orderBy: { date: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return {

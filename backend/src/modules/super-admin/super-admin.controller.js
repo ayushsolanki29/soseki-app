@@ -6,6 +6,14 @@ class SuperAdminController {
       const { email, password } = req.body;
       const result = await superAdminService.login(email, password);
 
+      if (result.requires2FA) {
+        return res.status(200).json({
+          success: true,
+          requires2FA: true,
+          tempToken: result.tempToken
+        });
+      }
+
       const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -24,6 +32,92 @@ class SuperAdminController {
       if (error.status === 401) {
         return res.status(401).json({ success: false, message: error.message });
       }
+      next(error);
+    }
+  }
+
+  async verify2FALogin(req, res, next) {
+    try {
+      const { tempToken, token } = req.body;
+      const result = await superAdminService.verify2FALogin(tempToken, token);
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("superAccessToken", result.accessToken, cookieOptions);
+
+      return res.status(200).json({
+        success: true,
+        user: result.user,
+      });
+    } catch (error) {
+      if (error.status === 401 || error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async getSettings(req, res, next) {
+    try {
+      const adminId = req.superAdminId;
+      if (!adminId) return res.status(401).json({ success: false, message: "Unauthorized" });
+      const admin = await superAdminService.getSuperAdminDetails(adminId);
+      return res.status(200).json({ success: true, admin });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateSettings(req, res, next) {
+    try {
+      const adminId = req.superAdminId;
+      if (!adminId) return res.status(401).json({ success: false, message: "Unauthorized" });
+      const admin = await superAdminService.updateSettings(adminId, req.body);
+      return res.status(200).json({ success: true, admin });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async generate2FA(req, res, next) {
+    try {
+      const adminId = req.superAdminId;
+      if (!adminId) return res.status(401).json({ success: false, message: "Unauthorized" });
+      const result = await superAdminService.generate2FA(adminId);
+      return res.status(200).json({ success: true, ...result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verify2FASetup(req, res, next) {
+    try {
+      const adminId = req.superAdminId;
+      if (!adminId) return res.status(401).json({ success: false, message: "Unauthorized" });
+      const { token } = req.body;
+      await superAdminService.verify2FASetup(adminId, token);
+      return res.status(200).json({ success: true, message: "2FA enabled successfully" });
+    } catch (error) {
+      if (error.status === 400) return res.status(400).json({ success: false, message: error.message });
+      next(error);
+    }
+  }
+
+  async disable2FA(req, res, next) {
+    try {
+      const adminId = req.superAdminId;
+      if (!adminId) return res.status(401).json({ success: false, message: "Unauthorized" });
+      const { token } = req.body;
+      await superAdminService.disable2FA(adminId, token);
+      return res.status(200).json({ success: true, message: "2FA disabled successfully" });
+    } catch (error) {
+      if (error.status === 400) return res.status(400).json({ success: false, message: error.message });
       next(error);
     }
   }
@@ -104,6 +198,37 @@ class SuperAdminController {
     }
   }
 
+  async deleteOrganization(req, res, next) {
+    try {
+      const { id } = req.params;
+      await superAdminService.deleteOrganization(id);
+      return res.status(200).json({ success: true, message: "Organization deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const user = await superAdminService.updateUser(id, req.body);
+      const { passwordHash, ...safeUser } = user;
+      return res.status(200).json({ success: true, user: safeUser });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      await superAdminService.deleteUser(id);
+      return res.status(200).json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async changeOrgAdminPassword(req, res, next) {
     try {
       const { id } = req.params;
@@ -165,6 +290,25 @@ class SuperAdminController {
     try {
       const stats = await superAdminService.getDashboardStats();
       return res.status(200).json({ success: true, ...stats });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getTemplateRequests(req, res, next) {
+    try {
+      const requests = await superAdminService.getTemplateRequests();
+      return res.status(200).json({ success: true, requests });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateTemplateRequestStatus(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const request = await superAdminService.updateTemplateRequestStatus(id, status);
+      return res.status(200).json({ success: true, request });
     } catch (error) {
       next(error);
     }

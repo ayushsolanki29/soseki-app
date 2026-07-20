@@ -19,6 +19,7 @@ const quickItemsRoutes = require('./quick-items/quick-items.routes');
 const dashboardRoutes = require('./dashboard/dashboard.routes');
 const superAdminRoutes = require('./super-admin/super-admin.routes');
 const migrationRoutes = require('./migration/migration.routes');
+const portalRoutes = require('./portal/portal.routes');
 
 // Define routes
 
@@ -38,5 +39,6 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/super-admin', superAdminRoutes);
 router.use('/tracking', trackingRoutes);
 router.use('/migration', migrationRoutes);
+router.use('/portal', portalRoutes);
 
 module.exports = router;

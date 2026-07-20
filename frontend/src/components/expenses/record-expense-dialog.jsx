@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import API from "@/lib/api";
 import { toast } from "sonner";
+import { fetchExchangeRate } from "@/lib/exchange";
+import { CURRENCIES } from "@/lib/currencies";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvoiceId, expenseToEdit }) {
   const [formData, setFormData] = useState({
@@ -24,8 +27,10 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [invoices, setInvoices] = useState([]);
-  const [masterCurrency, setMasterCurrency] = useState("USD");
+  const { organization } = useOrganization();
+  const masterCurrency = organization?.masterCurrency || "USD";
   const [exchangeRate, setExchangeRate] = useState(1.0);
   const [isFetchingRate, setIsFetchingRate] = useState(false);
 
@@ -48,6 +53,7 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           invoiceId: expenseToEdit.invoiceId || defaultInvoiceId || "none",
           currency: expenseToEdit.currency || "USD"
         });
+        setExchangeRate(expenseToEdit.exchangeRate || 1.0);
       } else {
         setFormData(prev => ({
           description: "",
@@ -68,18 +74,17 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
 
   const fetchMetadata = async () => {
     try {
-      const [cRes, iRes, orgRes] = await Promise.all([
+      const [cRes, pRes, iRes] = await Promise.all([
         API.get("/clients"),
-        API.get("/invoices"),
-        API.get("/organization")
+        API.get("/projects"),
+        API.get("/invoices")
       ]);
       setClients(cRes.data.clients || []);
+      setProjects(pRes.data.projects || []);
       setInvoices(iRes.data.invoices || []);
-      if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-          if (!expenseToEdit) {
-              setFormData(prev => ({ ...prev, currency: orgRes.data.organization.masterCurrency }));
-          }
+      
+      if (organization?.masterCurrency && !expenseToEdit && formData.currency !== organization.masterCurrency) {
+          setFormData(prev => ({ ...prev, currency: organization.masterCurrency }));
       }
     } catch (error) {
       console.error("Failed to load metadata", error);
@@ -97,11 +102,8 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           }
           setIsFetchingRate(true);
           try {
-              const res = await fetch(`https://open.er-api.com/v6/latest/${formData.currency}`);
-              const data = await res.json();
-              if (data && data.rates && data.rates[masterCurrency]) {
-                  setExchangeRate(data.rates[masterCurrency]);
-              }
+              const rate = await fetchExchangeRate(formData.currency, masterCurrency);
+              setExchangeRate(rate);
           } catch (e) {
               console.error("Failed to fetch exchange rate", e);
           } finally {
@@ -176,14 +178,18 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
             <Select 
               value={formData.currency} 
               onValueChange={val => setFormData({...formData, currency: val})}
-              items={["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "INR"].map(c => ({ value: c, label: c }))}
             >
                 <SelectTrigger>
                     <SelectValue placeholder="Select Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                    {["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "INR"].map(cur => (
-                        <SelectItem key={cur} value={cur}>{cur}</SelectItem>
+                    {CURRENCIES.map(c => (
+                        <SelectItem key={c.code} value={c.code}>
+                            <div className="flex items-center gap-2">
+                                <img src={`https://flagcdn.com/w20/${c.country}.png`} alt={c.code} className="w-4 h-3 object-cover rounded-sm shadow-sm" />
+                                <span>{c.code} ({c.symbol})</span>
+                            </div>
+                        </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
@@ -269,14 +275,18 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
             <label className="text-sm font-semibold">Link to Client (Optional)</label>
             <Select 
               value={formData.clientId} 
-              onValueChange={val => setFormData({...formData, clientId: val})}
+              onValueChange={val => setFormData({...formData, clientId: val, projectId: "none", invoiceId: "none"})}
               items={[
                 { value: "none", label: "None" },
                 ...clients.map(c => ({ value: c.id, label: c.name }))
               ]}
             >
                 <SelectTrigger>
-                    <SelectValue placeholder="Select Client" />
+                    <SelectValue placeholder="Select Client">
+                        {formData.clientId !== "none" 
+                            ? (clients.find(c => c.id === formData.clientId)?.name || expenseToEdit?.client?.name || formData.clientId) 
+                            : "Select Client"}
+                    </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="none">None</SelectItem>
@@ -286,23 +296,70 @@ export function RecordExpenseDialog({ open, onOpenChange, onSuccess, defaultInvo
           </div>
 
           <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold">Link to Invoice (Optional)</label>
+            <label className="text-sm font-semibold">Link to Project (Optional)</label>
             <Select 
-              value={formData.invoiceId} 
-              onValueChange={val => setFormData({...formData, invoiceId: val})}
+              value={formData.projectId} 
+              onValueChange={val => setFormData({...formData, projectId: val, invoiceId: "none"})}
+              disabled={formData.clientId === "none"}
               items={[
                 { value: "none", label: "None" },
-                ...invoices
-                  .filter(inv => inv.clientId === formData.clientId)
-                  .map(inv => ({ value: inv.id, label: inv.invoiceNumber }))
+                ...projects
+                  .filter(proj => proj.clientId === formData.clientId)
+                  .map(proj => ({ value: proj.id, label: proj.title }))
               ]}
             >
                 <SelectTrigger>
-                    <SelectValue placeholder="Select Invoice" />
+                    <SelectValue placeholder={formData.clientId === "none" ? "Select a client first" : "Select Project"}>
+                        {formData.projectId !== "none" 
+                            ? (projects.find(p => p.id === formData.projectId)?.title || expenseToEdit?.project?.title || formData.projectId) 
+                            : (formData.clientId === "none" ? "Select a client first" : "Select Project")}
+                    </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {invoices.map(i => <SelectItem key={i.id} value={i.id}>{i.invoiceNumber}</SelectItem>)}
+                    {projects
+                      .filter(proj => proj.clientId === formData.clientId)
+                      .map(p => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+                </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold">Link to Invoice (Optional)</label>
+            <Select 
+              value={formData.invoiceId} 
+              onValueChange={val => {
+                if (val === "none") {
+                  setFormData({...formData, invoiceId: val});
+                  return;
+                }
+                const selectedInvoice = invoices.find(inv => inv.id === val);
+                if (selectedInvoice) {
+                  setFormData({
+                    ...formData, 
+                    invoiceId: val, 
+                    clientId: selectedInvoice.clientId || formData.clientId,
+                    projectId: selectedInvoice.projectId || formData.projectId
+                  });
+                } else {
+                  setFormData({...formData, invoiceId: val});
+                }
+              }}
+              disabled={formData.clientId === "none" && invoices.length === 0}
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder={formData.clientId !== "none" ? "Select Invoice" : "Select Client first (or any invoice)"}>
+                        {formData.invoiceId !== "none" 
+                            ? (invoices.find(i => i.id === formData.invoiceId)?.invoiceNumber || expenseToEdit?.invoice?.invoiceNumber || formData.invoiceId) 
+                            : (formData.clientId !== "none" ? "Select Invoice" : "Select Client first (or any invoice)")}
+                    </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {invoices
+                      .filter(i => formData.clientId === "none" || i.clientId === formData.clientId)
+                      .filter(i => formData.projectId === "none" || i.projectId === formData.projectId || !i.projectId)
+                      .map(i => <SelectItem key={i.id} value={i.id}>{i.invoiceNumber}</SelectItem>)}
                 </SelectContent>
             </Select>
           </div>

@@ -10,6 +10,7 @@ const loginValidation = Joi.object({
     "string.empty": "Missing email or password",
     "any.required": "Missing email or password",
   }),
+  termsAccepted: Joi.boolean().optional(),
 });
 
 const checkEmailValidation = Joi.object({

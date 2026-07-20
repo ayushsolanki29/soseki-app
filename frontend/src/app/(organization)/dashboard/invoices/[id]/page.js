@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatId } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -19,7 +19,9 @@ import {
     CreditCardIcon,
     EditIcon,
     BuildingIcon,
-    TrashIcon
+    TrashIcon,
+    LinkIcon,
+    CheckCircle2Icon
 } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
@@ -31,6 +33,7 @@ import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 
 export default function InvoiceDetailsPage() {
@@ -38,6 +41,7 @@ export default function InvoiceDetailsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const { organization, refetch } = useOrganization();
   
   const [invoice, setInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,21 +57,14 @@ export default function InvoiceDetailsPage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [masterCurrency, setMasterCurrency] = useState("INR");
-  const [organization, setOrganization] = useState(null);
+  
+  const masterCurrency = organization?.masterCurrency || "USD";
 
   const fetchInvoice = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
-          API.get(`/invoices/${id}`),
-          API.get("/organization")
-      ]);
+      const res = await API.get(`/invoices/${id}`);
       setInvoice(res.data.invoice);
-      if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-      }
-      setOrganization(orgRes.data.organization);
     } catch (error) {
       toast.error("Failed to load invoice details");
     } finally {
@@ -84,6 +81,7 @@ export default function InvoiceDetailsPage() {
         case 'Draft': return 'outline';
         case 'Sent': return 'secondary';
         case 'Partially Paid': return 'default';
+        case 'Processing': return 'warning'; // or default/secondary depending on UI
         case 'Paid': return 'default';
         case 'Overdue': return 'destructive';
         case 'Cancelled': return 'secondary';
@@ -120,6 +118,13 @@ export default function InvoiceDetailsPage() {
           setIsDeleting(false);
       }
   }
+
+  const copyPortalLink = () => {
+    if (!invoice?.clientId) return;
+    const url = `${window.location.origin}/c/${invoice.clientId}/i/${invoice.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Invoice Portal Link copied to clipboard!");
+  };
 
   if (isLoading) {
     return (
@@ -212,6 +217,11 @@ export default function InvoiceDetailsPage() {
                 </div>
             </div>
             <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={copyPortalLink} className="gap-2">
+                    <LinkIcon className="size-4" />
+                    Portal Link
+                </Button>
+                
                 <Button variant="outline" render={<Link href={`/dashboard/invoices/${invoice.id}/edit`} />} className="gap-2">
                     <EditIcon className="size-4" />
                     Edit
@@ -224,15 +234,78 @@ export default function InvoiceDetailsPage() {
                     </Button>
                     <DocumentSettingsDialog 
                         organization={organization}
-                        onOrganizationUpdate={setOrganization}
+                        onOrganizationUpdate={() => refetch()}
                         documentType="invoice"
                         masterCurrency={masterCurrency}
                     />
                 </div>
-                <Button onClick={handleRecordPayment} className="gap-2">
-                    <CreditCardIcon className="size-4" />
-                    Record Payment
-                </Button>
+                {invoice.status === "Processing" ? (
+                    <Dialog>
+                        <DialogTrigger render={<Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2" />}>
+                            <CheckCircle2Icon className="size-4" /> Verify Payment
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Verify Payment</DialogTitle>
+                                <DialogDescription>
+                                    Please verify the payment details provided by the client before confirming.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="py-2 space-y-4">
+                                {(() => {
+                                    const pendingPayment = [...(invoice.payments || [])].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                                    if (!pendingPayment) return <p className="text-slate-500 text-sm">No pending payment details found.</p>;
+                                    return (
+                                        <div className="bg-slate-50 p-4 rounded-lg space-y-3">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Method</span>
+                                                <span className="font-medium text-slate-900">{pendingPayment.method}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Reference Number</span>
+                                                <span className="font-mono font-medium text-slate-900">{pendingPayment.reference || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Amount Paid</span>
+                                                <span className="font-bold text-emerald-600">{formatCurrency(pendingPayment.amount, invoice.currency)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Date</span>
+                                                <span className="font-medium text-slate-900">{formatDate(pendingPayment.date)}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                            <DialogFooter>
+                                <DialogClose render={<Button variant="outline" />}>
+                                    Cancel
+                                </DialogClose>
+                                <DialogClose render={
+                                    <Button 
+                                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                                        onClick={async () => {
+                                            try {
+                                                await API.post(`/invoices/${invoice.id}/verify-payment`);
+                                                toast.success("Payment verified and invoice marked as Paid");
+                                                fetchInvoice();
+                                            } catch (error) {
+                                                toast.error("Failed to verify payment");
+                                            }
+                                        }}
+                                    />
+                                }>
+                                    Confirm Verification
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                ) : (
+                    <Button onClick={handleRecordPayment} className="gap-2">
+                        <CreditCardIcon className="size-4" />
+                        Record Payment
+                    </Button>
+                )}
                 <Button variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-2" onClick={() => setIsDeleteDialogOpen(true)}>
                     <TrashIcon className="size-4" />
                     Delete
@@ -391,7 +464,7 @@ export default function InvoiceDetailsPage() {
                                   </TableRow>
                               </TableHeader>
                               <TableBody>
-                                  {invoice.payments.map(payment => (
+                                  {[...(invoice.payments || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).map((payment) => (
                                       <TableRow key={payment.id}>
                                           <TableCell>{formatDate(payment.date)}</TableCell>
                                           <TableCell>{payment.method}</TableCell>

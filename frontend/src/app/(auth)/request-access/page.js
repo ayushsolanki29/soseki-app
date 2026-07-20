@@ -15,6 +15,7 @@ import { LogoIcon } from "@/components/logo";
 import { toast } from "sonner";
 import API from "@/lib/api";
 import Link from "next/link";
+import { COUNTRIES } from "@/lib/countries";
 import { 
   BriefcaseIcon, 
   CodeIcon, 
@@ -274,17 +275,9 @@ export default function RequestAccessPage() {
                       <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="United States">United States</SelectItem>
-                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                      <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="Australia">Australia</SelectItem>
-                      <SelectItem value="Germany">Germany</SelectItem>
-                      <SelectItem value="France">France</SelectItem>
-                      <SelectItem value="India">India</SelectItem>
-                      <SelectItem value="Brazil">Brazil</SelectItem>
-                      <SelectItem value="Japan">Japan</SelectItem>
-                      <SelectItem value="South Africa">South Africa</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      {COUNTRIES.map(country => (
+                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

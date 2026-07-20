@@ -22,6 +22,7 @@ const updateOrganizationValidation = Joi.object({
   bankName: Joi.string().allow("").optional(),
   routingNumber: Joi.string().allow("").optional(),
   branch: Joi.string().allow("").optional(),
+  upiId: Joi.string().allow("").optional(),
 });
 
 const createTemplateRequestValidation = Joi.object({

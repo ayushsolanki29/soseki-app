@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon, LinkIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { formatDate, formatId } from "@/lib/utils";
@@ -22,6 +22,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { InvoicesTable } from "@/components/shared/invoices-table";
 import { ExpensesTable } from "@/components/shared/expenses-table";
+import { PortalLinkWithSettings } from "@/components/shared/portal-link-with-settings";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -29,6 +31,7 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const { organization, refetch: fetchOrganization } = useOrganization();
 
   const fetchProject = async () => {
     setIsLoading(true);
@@ -58,6 +61,13 @@ export default function ProjectDetailsPage() {
     } catch (error) {
       toast.error("Failed to delete project");
     }
+  };
+
+  const copyPortalLink = () => {
+    if (!project?.clientId) return;
+    const url = `${window.location.origin}/c/${project.clientId}/p/${project.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Project Portal Link copied to clipboard!");
   };
 
   if (isLoading) {
@@ -177,6 +187,12 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+            <PortalLinkWithSettings 
+                portalLink={`${window.location.origin}/c/${project.clientId}/p/${project.id}`}
+                organization={organization}
+                onOrganizationUpdate={fetchOrganization}
+                documentType="invoice"
+            />
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Project
@@ -207,9 +223,7 @@ export default function ProjectDetailsPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     <Link href={`/dashboard/clients/${project.clientId}`} className="flex items-center gap-3 text-sm p-6 hover:bg-muted/50 transition-colors cursor-pointer rounded-b-xl">
-                        <div className="bg-primary/10 p-2 rounded-full text-primary">
-                            <UserIcon className="size-5" />
-                        </div>
+                        <DynamicAvatar type="client" seed={project.client?.name} size={40} className="shadow-sm" />
                         <div>
                             <p className="font-medium group-hover:text-primary transition-colors">{project.client?.name}</p>
                             <p className="text-muted-foreground">{project.client?.email}</p>

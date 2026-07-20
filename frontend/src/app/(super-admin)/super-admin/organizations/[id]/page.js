@@ -10,6 +10,89 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { OrgActions } from "./org-actions";
 import { formatDate } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+function UserAction({ user, onUpdate }) {
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: user.name || "", email: user.email || "", password: "" });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await API.put(`/super-admin/users/${user.id}`, formData);
+      toast.success("Success", { description: "User updated successfully." });
+      setOpen(false);
+      onUpdate();
+    } catch (error) {
+      toast.error("Error", { description: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this user? This cannot be undone.")) return;
+    setIsLoading(true);
+    try {
+      await API.delete(`/super-admin/users/${user.id}`);
+      toast.success("Success", { description: "User deleted successfully." });
+      setOpen(false);
+      onUpdate();
+    } catch (error) {
+      toast.error("Error", { description: error.message });
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant="outline" size="sm">Edit</Button>} />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit User</DialogTitle>
+          <DialogDescription>Update user details or reset their password.</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Name</Label>
+              <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+            </div>
+            <div className="grid gap-2">
+              <Label>Email</Label>
+              <Input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+            </div>
+            <div className="grid gap-2">
+              <Label>New Password (Optional)</Label>
+              <Input type="password" placeholder="Leave blank to keep unchanged" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} minLength={6} />
+            </div>
+          </div>
+          <DialogFooter className="flex justify-between items-center w-full">
+            <Button type="button" variant="destructive" onClick={handleDelete} disabled={isLoading}>Delete User</Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={isLoading}>Save Changes</Button>
+            </div>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function OrganizationDetailsPage() {
   const params = useParams();
@@ -166,9 +249,13 @@ export default function OrganizationDetailsPage() {
                     <span className="font-medium text-sm">{user.name || "Unnamed User"}</span>
                     <span className="text-xs text-muted-foreground">{user.email}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground mr-4">
                     Joined {formatDate(user.createdAt)}
                   </div>
+                  <UserAction user={user} onUpdate={() => {
+                    // Quick refresh of data
+                    API.get(`/super-admin/organizations/${id}`).then(res => setOrg(res.data.organization));
+                  }} />
                 </div>
               ))}
               {org.users.length === 0 && (

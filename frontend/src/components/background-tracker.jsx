@@ -10,14 +10,24 @@ export function BackgroundTracker() {
 
   useEffect(() => {
     // Only track the very first page load of the session to avoid spamming
-    if (tracked.current) return;
+    if (tracked.current || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("soseki_tracked"))) {
+      return;
+    }
     
-    // Do not track super-admin routes
-    if (pathname && pathname.startsWith("/super-admin")) {
+    // Do not track internal dashboard or super-admin routes
+    if (pathname && (pathname.startsWith("/super-admin") || pathname.startsWith("/dashboard"))) {
+      return;
+    }
+
+    // Do not track bots or crawlers
+    if (typeof navigator !== "undefined" && navigator.webdriver) {
       return;
     }
 
     tracked.current = true;
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem("soseki_tracked", "true");
+    }
 
     // We use setTimeout to push this to the end of the event loop
     // This ensures it has absolutely ZERO impact on page render time

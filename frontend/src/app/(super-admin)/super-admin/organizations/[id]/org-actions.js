@@ -15,6 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function OrgActions({ org }) {
   const router = useRouter();
@@ -22,11 +29,18 @@ export function OrgActions({ org }) {
   
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isDeletingOrg, setIsDeletingOrg] = useState(false);
   
   const [editData, setEditData] = useState({
     name: org.name || "",
     masterCurrency: org.masterCurrency || "USD",
     address: org.address || "",
+    dateFormat: org.dateFormat || "dd-MMM-yy",
+    invoiceFooterNote: org.profile?.invoiceFooterNote || "",
+    expenseFooterNote: org.profile?.expenseFooterNote || "",
+    invoiceTemplate: org.profile?.invoiceTemplate || "soseki-modern",
+    expenseTemplate: org.profile?.expenseTemplate || "soseki-modern",
+    termsAndConditions: org.profile?.termsAndConditions || "",
   });
   
   const [newPassword, setNewPassword] = useState("");
@@ -88,6 +102,23 @@ export function OrgActions({ org }) {
     }
   };
 
+  const handleDeleteSubmit = async () => {
+    setIsLoading(true);
+    try {
+      await API.delete(`/super-admin/organizations/${org.id}`);
+      toast.success("Success", {
+        description: "Organization deleted successfully."
+      });
+      router.push("/super-admin/organizations");
+    } catch (error) {
+      toast.error("Error", {
+        description: error.message
+      });
+      setIsLoading(false);
+      setIsDeletingOrg(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Details</Button>
@@ -98,6 +129,12 @@ export function OrgActions({ org }) {
         disabled={isLoading}
       >
         {org.status === "Blocked" ? "Unblock Organization" : "Block Organization"}
+      </Button>
+      <Button 
+        variant="destructive" 
+        onClick={() => setIsDeletingOrg(true)}
+      >
+        Delete Organization
       </Button>
 
       {/* Edit Dialog */}
@@ -122,12 +159,23 @@ export function OrgActions({ org }) {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="currency">Master Currency</Label>
-                <Input 
-                  id="currency" 
+                <Select 
                   value={editData.masterCurrency} 
-                  onChange={(e) => setEditData({...editData, masterCurrency: e.target.value})} 
-                  required 
-                />
+                  onValueChange={(value) => setEditData({...editData, masterCurrency: value})}
+                >
+                  <SelectTrigger id="currency">
+                    <SelectValue placeholder="Select Currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD - US Dollar</SelectItem>
+                    <SelectItem value="EUR">EUR - Euro</SelectItem>
+                    <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                    <SelectItem value="INR">INR - Indian Rupee</SelectItem>
+                    <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                    <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                    <SelectItem value="SGD">SGD - Singapore Dollar</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="address">Address</Label>
@@ -136,6 +184,61 @@ export function OrgActions({ org }) {
                   value={editData.address} 
                   onChange={(e) => setEditData({...editData, address: e.target.value})} 
                 />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="dateFormat">Date Format</Label>
+                <Input 
+                  id="dateFormat" 
+                  value={editData.dateFormat} 
+                  onChange={(e) => setEditData({...editData, dateFormat: e.target.value})} 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="invoiceFooterNote">Invoice Footer Note</Label>
+                <Input 
+                  id="invoiceFooterNote" 
+                  value={editData.invoiceFooterNote} 
+                  onChange={(e) => setEditData({...editData, invoiceFooterNote: e.target.value})} 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="expenseFooterNote">Expense Footer Note</Label>
+                <Input 
+                  id="expenseFooterNote" 
+                  value={editData.expenseFooterNote} 
+                  onChange={(e) => setEditData({...editData, expenseFooterNote: e.target.value})} 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="invoiceTemplate">Invoice Template</Label>
+                  <Select 
+                    value={editData.invoiceTemplate} 
+                    onValueChange={(value) => setEditData({...editData, invoiceTemplate: value})}
+                  >
+                    <SelectTrigger id="invoiceTemplate">
+                      <SelectValue placeholder="Select Template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="soseki-modern">Soseki Modern</SelectItem>
+                      <SelectItem value="tax-invoice">Detailed Tax Invoice</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="expenseTemplate">Expense Template</Label>
+                  <Select 
+                    value={editData.expenseTemplate} 
+                    onValueChange={(value) => setEditData({...editData, expenseTemplate: value})}
+                  >
+                    <SelectTrigger id="expenseTemplate">
+                      <SelectValue placeholder="Select Template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="soseki-modern">Soseki Modern</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             <DialogFooter>
@@ -171,9 +274,25 @@ export function OrgActions({ org }) {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsChangingPassword(false)}>Cancel</Button>
-              <Button type="submit" disabled={isLoading}>Change Password</Button>
+              <Button type="submit" disabled={isLoading || newPassword.length < 6}>Change Password</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Organization Dialog */}
+      <Dialog open={isDeletingOrg} onOpenChange={setIsDeletingOrg}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Delete Organization</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to completely delete {org.name}? This action cannot be undone and will permanently remove all users, projects, and data associated with this organization.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsDeletingOrg(false)} disabled={isLoading}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDeleteSubmit} disabled={isLoading}>Yes, Delete Organization</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

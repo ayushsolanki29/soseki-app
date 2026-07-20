@@ -32,6 +32,8 @@ class InvoicesService {
         status: true,
         totalAmount: true,
         paidAmount: true,
+        currency: true,
+        exchangeRate: true,
         createdAt: true,
         client: {
           select: { id: true, name: true, email: true }
@@ -40,7 +42,7 @@ class InvoicesService {
           select: { id: true, title: true }
         }
       },
-      orderBy: { issueDate: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return {
@@ -242,6 +244,118 @@ class InvoicesService {
     });
 
     return { success: true };
+  }
+
+  async recordPayment(organizationId, invoiceId, data) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const { amount, date, method, reference } = data;
+    const paymentAmount = parseFloat(amount);
+
+    if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      const error = new Error("Invalid payment amount");
+      error.status = 400;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId, organizationId },
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const newPaidAmount = invoice.paidAmount + paymentAmount;
+    let newStatus = invoice.status;
+    
+    if (newPaidAmount >= invoice.totalAmount) {
+      newStatus = "Paid";
+    } else if (newPaidAmount > 0 && invoice.status !== "Paid") {
+      newStatus = "Partially Paid";
+    }
+
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        paidAmount: newPaidAmount,
+        status: newStatus,
+        payments: {
+          create: {
+            amount: paymentAmount,
+            date: date ? new Date(date) : new Date(),
+            method: method || "Bank Transfer",
+            reference: reference || null,
+          }
+        },
+        activities: {
+          create: {
+            type: "UPDATED",
+            description: `Payment of ${invoice.currency} ${paymentAmount.toFixed(2)} recorded via ${method || "Bank Transfer"}`
+          }
+        }
+      },
+      include: {
+        payments: true
+      }
+    });
+
+    return updatedInvoice;
+  }
+
+  async verifyPayment(organizationId, invoiceId) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId, organizationId },
+      include: { payments: true }
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    if (invoice.status !== "Processing") {
+      const error = new Error("Invoice is not pending verification");
+      error.status = 400;
+      throw error;
+    }
+
+    // Assuming the most recent payment is the unverified one that brought the total to full
+    // But since `recordClientPayment` creates a Payment record with the remaining amount,
+    // and updates status to Processing, we just change status to Paid, and update paidAmount
+    const pendingPaymentAmount = invoice.totalAmount - invoice.paidAmount;
+
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        status: "Paid",
+        paidAmount: invoice.totalAmount, // Assuming full payment was verified
+        activities: {
+          create: {
+            type: "UPDATED",
+            description: `Payment verification successful. Invoice marked as Paid.`
+          }
+        }
+      },
+      include: {
+        payments: true
+      }
+    });
+
+    return updatedInvoice;
   }
 }
 

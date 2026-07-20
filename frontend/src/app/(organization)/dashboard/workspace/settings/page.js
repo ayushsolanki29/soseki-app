@@ -11,8 +11,11 @@ import { Label } from "@/components/ui/label";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CurrencyGrid } from "@/components/ui/currency-grid";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function WorkspaceSettingsPage() {
+  const { organization: contextOrg } = useOrganization();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [invoiceFooterNote, setInvoiceFooterNote] = useState("");
@@ -31,36 +34,29 @@ export default function WorkspaceSettingsPage() {
 
   // Custom Template Request State
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
-  const [requestType, setRequestType] = useState("invoice");
+  const [requestType, setRequestType] = useState("Invoice");
   const [requestDescription, setRequestDescription] = useState("");
   const [requestFile, setRequestFile] = useState(null);
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const res = await API.get("/organization");
-        setName(res.data.organization.name || "");
-        setAddress(res.data.organization.address || "");
-        setInvoiceFooterNote(res.data.organization.profile?.invoiceFooterNote || "");
-        setExpenseFooterNote(res.data.organization.profile?.expenseFooterNote || "");
-        setDateFormat(res.data.organization.dateFormat || "dd-MMM-yy");
-        setMasterCurrency(res.data.organization.masterCurrency || "USD");
-        setInvoiceTemplate(res.data.organization.profile?.invoiceTemplate || "soseki-modern");
-        setExpenseTemplate(res.data.organization.profile?.expenseTemplate || "soseki-modern");
-        
-        const counts = res.data.organization._count;
-        if (counts && (counts.invoices > 0 || counts.expenses > 0)) {
-          setHasTransactions(true);
-        }
-      } catch (error) {
-        toast.error("Failed to load organization settings");
-      } finally {
-        setIsLoading(false);
+    if (contextOrg) {
+      setName(contextOrg.name || "");
+      setAddress(contextOrg.address || "");
+      setInvoiceFooterNote(contextOrg.profile?.invoiceFooterNote || "");
+      setExpenseFooterNote(contextOrg.profile?.expenseFooterNote || "");
+      setDateFormat(contextOrg.dateFormat || "dd-MMM-yy");
+      setMasterCurrency(contextOrg.masterCurrency || "USD");
+      setInvoiceTemplate(contextOrg.profile?.invoiceTemplate || "soseki-modern");
+      setExpenseTemplate(contextOrg.profile?.expenseTemplate || "soseki-modern");
+      
+      const counts = contextOrg._count;
+      if (counts && (counts.invoices > 0 || counts.expenses > 0)) {
+        setHasTransactions(true);
       }
-    };
-    fetchOrganization();
-  }, []);
+      setIsLoading(false);
+    }
+  }, [contextOrg]);
 
   const handleSaveGeneral = async (e) => {
     e.preventDefault();
@@ -132,6 +128,7 @@ export default function WorkspaceSettingsPage() {
 
   const handleRequestTemplate = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!requestDescription.trim()) return toast.error("Please provide a description");
 
     setIsSubmittingRequest(true);
@@ -198,8 +195,6 @@ export default function WorkspaceSettingsPage() {
       </div>
     );
   }
-
-  const currencies = ["USD", "EUR", "GBP", "INR", "CAD", "AUD", "JPY"];
 
   return (
     <div className="p-8 max-w-4xl flex flex-col gap-8 pb-20">
@@ -319,16 +314,13 @@ export default function WorkspaceSettingsPage() {
                 <div className="space-y-2">
                     <div className="font-semibold text-sm">Master Currency</div>
                     <div className="text-xs text-muted-foreground mb-2">Your system-wide base currency for reporting.</div>
-                    <Select value={masterCurrency} onValueChange={setMasterCurrency} disabled={isSavingCurrency || hasTransactions}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select Currency" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {currencies.map(currency => (
-                                <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="mt-2">
+                        <CurrencyGrid 
+                          value={masterCurrency} 
+                          onChange={setMasterCurrency} 
+                          disabled={isSavingCurrency || hasTransactions} 
+                        />
+                    </div>
                     {hasTransactions && (
                         <p className="text-xs text-amber-600 font-medium">
                             Currency is locked because you have existing financial transactions.
@@ -374,8 +366,8 @@ export default function WorkspaceSettingsPage() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="invoice">Invoice</SelectItem>
-                            <SelectItem value="expense">Expense Receipt</SelectItem>
+                            <SelectItem value="Invoice">Invoice</SelectItem>
+                            <SelectItem value="Expense">Expense Receipt</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

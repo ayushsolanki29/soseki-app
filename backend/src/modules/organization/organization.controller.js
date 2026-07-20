@@ -83,6 +83,38 @@ class OrganizationController {
       next(error);
     }
   }
+
+  async exportOrganizationData(req, res, next) {
+    try {
+      const data = await organizationService.exportOrganizationData(req.user.organizationId);
+      res.setHeader('Content-disposition', 'attachment; filename=soseki_export.json');
+      res.setHeader('Content-type', 'application/json');
+      return res.status(200).send(JSON.stringify(data, null, 2));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteOrganization(req, res, next) {
+    try {
+      await organizationService.deleteOrganization(req.user.organizationId);
+
+      // Clear cookies
+      const cookieOptions = {
+        httpOnly: true,
+        secure: serverConfig.env === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+      };
+
+      res.clearCookie("accessToken", cookieOptions);
+      res.clearCookie("refreshToken", cookieOptions);
+
+      return res.status(200).json({ success: true, message: "Organization deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new OrganizationController();

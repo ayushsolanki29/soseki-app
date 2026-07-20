@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter } from "next/navigation";
+import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 
 export function ProjectsTable({ projects, isLoading }) {
   const router = useRouter();
@@ -41,7 +42,10 @@ export function ProjectsTable({ projects, isLoading }) {
                 projects?.map((project) => (
                     <TableRow key={project.id} className="group cursor-pointer" onClick={() => router.push(`/dashboard/projects/${project.id}`)}>
                         <TableCell className="font-medium group-hover:text-primary transition-colors">
-                            {project.title}
+                            <div className="flex items-center gap-3">
+                                <DynamicAvatar type="project" seed={project.title} size={32} />
+                                <span>{project.title}</span>
+                            </div>
                         </TableCell>
                         <TableCell>{formatDate(project.startDate)}</TableCell>
                         <TableCell>{project.estimatedEndDate ? formatDate(project.estimatedEndDate) : "-"}</TableCell>

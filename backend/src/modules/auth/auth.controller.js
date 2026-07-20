@@ -3,8 +3,8 @@ const authService = require("./auth.service");
 class AuthController {
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const result = await authService.login(email, password);
+      const { email, password, termsAccepted } = req.body;
+      const result = await authService.login(email, password, termsAccepted);
 
       // Set cookies
       const cookieOptions = {

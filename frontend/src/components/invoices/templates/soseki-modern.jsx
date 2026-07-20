@@ -100,19 +100,19 @@ export function SosekiModernInvoice({ invoice, masterCurrency = "INR", organizat
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Payment Details</p>
               <div className="grid grid-cols-[100px_1fr] gap-y-2 text-sm">
                 <span className="text-slate-500">Bank:</span>
-                <span className="font-medium text-slate-900">{organization.profile.bankName}</span>
+                <span className="font-medium text-slate-900 whitespace-nowrap">{organization.profile.bankName}</span>
                 <span className="text-slate-500">Account No:</span>
-                <span className="font-medium text-slate-900">{organization.profile.accountNumber}</span>
+                <span className="font-medium text-slate-900 whitespace-nowrap">{organization.profile.accountNumber}</span>
                 {organization.profile.routingNumber && (
                   <>
                     <span className="text-slate-500">{masterCurrency === "INR" ? "IFSC Code:" : "Routing No:"}</span>
-                    <span className="font-medium text-slate-900">{organization.profile.routingNumber}</span>
+                    <span className="font-medium text-slate-900 whitespace-nowrap">{organization.profile.routingNumber}</span>
                   </>
                 )}
                 {organization.profile.branch && (
                   <>
                     <span className="text-slate-500">Branch:</span>
-                    <span className="font-medium text-slate-900">{organization.profile.branch}</span>
+                    <span className="font-medium text-slate-900 whitespace-nowrap">{organization.profile.branch}</span>
                   </>
                 )}
               </div>

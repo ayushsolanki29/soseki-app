@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogoIcon } from "@/components/logo";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/lib/api";
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [errors, setErrors] = useState({});
 
@@ -37,6 +38,9 @@ export default function LoginPage() {
         const res = await API.post("/auth/check-email", { email: cleanEmail });
         if (res.data.exists) {
           setStep("password");
+          if (res.data.termsAcceptedAt) {
+            setTermsAccepted(true);
+          }
         } else {
           if (res.data.inWaitlist) {
             setErrors({ 
@@ -73,7 +77,7 @@ export default function LoginPage() {
       
       setIsLoading(true);
       try {
-        const res = await API.post("/auth/login", { email, password });
+        const res = await API.post("/auth/login", { email, password, termsAccepted });
         if (res.data.user) {
           toast.success("Successfully logged in!", {
             description: "Welcome back to your dashboard.",
@@ -195,8 +199,15 @@ export default function LoginPage() {
                 </div>
 
                 <div className="flex items-start gap-2 pt-1 animate-in fade-in duration-300">
-                  <input type="checkbox" id="terms" className="mt-0.5 size-4 rounded-sm border-input bg-transparent accent-primary shrink-0" required />
-                  <label htmlFor="terms" className="text-[13px] text-muted-foreground leading-snug">
+                  <input 
+                    type="checkbox" 
+                    id="terms" 
+                    className="mt-0.5 size-4 rounded-sm border-input bg-transparent accent-primary shrink-0 cursor-pointer" 
+                    required 
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                  />
+                  <label htmlFor="terms" className="text-[13px] text-muted-foreground leading-snug cursor-pointer">
                     By signing in, you agree to our <Link href="#" className="text-foreground hover:underline">Terms</Link> and <Link href="#" className="text-foreground hover:underline">Privacy Policy</Link>.
                   </label>
                 </div>
@@ -204,7 +215,8 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" className="w-full h-10 mt-6 shadow-none font-medium rounded-md" size="default" disabled={isLoading}>
-              {step === "email" ? "Continue" : (isLoading ? "Signing in..." : "Sign in")}
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {step === "email" ? (isLoading ? "Verifying..." : "Continue") : (isLoading ? "Signing in..." : "Sign in")}
             </Button>
           </form>
 

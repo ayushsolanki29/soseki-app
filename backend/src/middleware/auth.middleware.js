@@ -45,6 +45,7 @@ const authMiddleware = async (req, res, next) => {
       }
 
       req.user = user;
+      req.superAdminId = admin.id;
       return next();
     }
 

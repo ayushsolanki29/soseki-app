@@ -37,9 +37,11 @@ import {
 import { RecordPaymentDialog } from "@/components/invoices/record-payment-dialog";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function InvoicesPage() {
   const router = useRouter();
+  const { organization } = useOrganization();
   const [invoices, setInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [paymentInvoice, setPaymentInvoice] = useState(null);
@@ -47,24 +49,15 @@ export default function InvoicesPage() {
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [masterCurrency, setMasterCurrency] = useState("INR");
-  const [organization, setOrganization] = useState(null);
-  
-  // Filters
   const [statusFilter, setStatusFilter] = useState("All");
+
+  const masterCurrency = organization?.masterCurrency || "USD";
 
   const fetchInvoices = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
-          API.get("/invoices", { params: { status: statusFilter !== "All" ? statusFilter : undefined } }),
-          API.get("/organization")
-      ]);
+      const res = await API.get("/invoices", { params: { status: statusFilter !== "All" ? statusFilter : undefined } });
       setInvoices(res.data.invoices || []);
-      if (orgRes.data.organization?.masterCurrency) {
-          setMasterCurrency(orgRes.data.organization.masterCurrency);
-      }
-      setOrganization(orgRes.data.organization);
     } catch (error) {
       toast.error("Failed to load invoices");
     } finally {
@@ -248,9 +241,9 @@ export default function InvoicesPage() {
                   <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                   <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                   <TableCell>
-                      <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)}</div>
-                      {invoice.currency !== masterCurrency && (
-                          <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount, invoice.currency)})</div>
+                      <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount, invoice.currency || masterCurrency)}</div>
+                      {(invoice.currency && invoice.currency !== masterCurrency) && (
+                          <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)})</div>
                       )}
                   </TableCell>
                   <TableCell>

@@ -11,7 +11,7 @@ export default function MigrationPage() {
   const [parsedData, setParsedData] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [importStatus, setImportStatus] = useState({ clients: 0, projects: 0, invoices: 0, payments: 0 });
-  
+
   const [promptData, setPromptData] = useState({ prompt: "", template: null });
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
 
@@ -97,14 +97,42 @@ export default function MigrationPage() {
       {/* Step 1: Tutorial Placeholders */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">1</span> 
+          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">1</span>
           How it works
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-video bg-accent/50 rounded-lg border border-dashed flex items-center justify-center relative overflow-hidden group">
-               <div className="absolute inset-0 opacity-10 bg-[url('https://api.dicebear.com/10.x/glass/svg?seed=placeholder')] bg-cover" />
-               <p className="text-muted-foreground text-sm relative z-10 font-medium">GIF Placeholder {i}</p>
+          {[
+            {
+              url: "https://res.cloudinary.com/wo3jj3yk/video/upload/v1784461309/2026-07-19_15-30-39_gzeukf.webm",
+              instruction: "1. Download the template using the Download JSON template button."
+            },
+            {
+              url: "https://res.cloudinary.com/wo3jj3yk/video/upload/v1784461276/2026-07-19_15-30-39_1_fi8rh5.webm",
+              instruction: "2. Go to any AI like Gemini, ChatGPT, or Claude (we suggest Claude)."
+            },
+            {
+              url: "https://res.cloudinary.com/wo3jj3yk/video/upload/v1784461276/2026-07-19_15-30-39_2_qxank0.webm",
+              instruction: "3. Provide the AI prompt and your data source (PDF, Word, Excel, raw data)."
+            },
+            {
+              url: "https://res.cloudinary.com/wo3jj3yk/video/upload/v1784461670/2026-07-19_15-30-39_3_kv7oap.webm",
+              instruction: "4. The AI will output JSON data. Save it as a .json file and upload here."
+            }
+          ].map((step, i) => (
+            <div key={i} className="relative group rounded-xl overflow-hidden border border-border/50 bg-gray-100 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 cursor-default">
+              <video
+                src={step.url}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full aspect-video object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+              />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <p className="text-white/90 text-sm font-medium leading-snug transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  {step.instruction}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -113,13 +141,13 @@ export default function MigrationPage() {
       {/* Step 2: Download & Copy */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">2</span> 
+          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">2</span>
           Prepare AI Instructions
         </h2>
         {isLoadingPrompt ? (
           <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed rounded-lg bg-accent/20">
-             <Loader2 className="size-6 text-primary animate-spin mb-2" />
-             <p className="text-sm font-medium text-muted-foreground">We are cooking, just a moment...</p>
+            <Loader2 className="size-6 text-primary animate-spin mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">We are cooking, just a moment...</p>
           </div>
         ) : (
           <>
@@ -143,15 +171,15 @@ export default function MigrationPage() {
       {/* Step 3: Upload */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">3</span> 
+          <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">3</span>
           Upload Generated Data
         </h2>
         <div className="border-2 border-dashed rounded-lg p-10 text-center hover:bg-accent/30 transition-colors">
-          <input 
-            type="file" 
-            id="json-upload" 
-            accept=".json" 
-            className="hidden" 
+          <input
+            type="file"
+            id="json-upload"
+            accept=".json"
+            className="hidden"
             onChange={handleFileUpload}
           />
           <label htmlFor="json-upload" className="cursor-pointer flex flex-col items-center gap-3">
@@ -167,10 +195,10 @@ export default function MigrationPage() {
       {parsedData && (
         <section className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">4</span> 
+            <span className="bg-primary text-primary-foreground size-6 rounded-full flex items-center justify-center text-sm">4</span>
             Review & Import
           </h2>
-          
+
           <div className="border rounded-lg p-6 bg-card">
             <h3 className="font-medium mb-4">I found this data:</h3>
             <ul className="space-y-3 mb-6 text-sm">
@@ -192,9 +220,9 @@ export default function MigrationPage() {
               </li>
             </ul>
 
-            <Button 
-              className="w-full h-12 gap-2" 
-              onClick={handleImportAll} 
+            <Button
+              className="w-full h-12 gap-2"
+              onClick={handleImportAll}
               disabled={isImporting}
             >
               {isImporting ? "Importing..." : "Import All Data"}

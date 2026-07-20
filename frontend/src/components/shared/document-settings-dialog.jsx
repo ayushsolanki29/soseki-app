@@ -16,7 +16,8 @@ export function DocumentSettingsDialog({
     organization, 
     onOrganizationUpdate,
     documentType = "invoice",
-    masterCurrency = "INR"
+    masterCurrency = "INR",
+    trigger
 }) {
     const [isOpen, setIsOpen] = useState(false);
     
@@ -42,6 +43,7 @@ export function DocumentSettingsDialog({
         bankName: profile.bankName || "",
         routingNumber: profile.routingNumber || "",
         branch: profile.branch || "",
+        upiId: profile.upiId || "",
         termsAndConditions: profile.termsAndConditions || "",
         invoiceFooterNote: profile.invoiceFooterNote || "",
         expenseFooterNote: profile.expenseFooterNote || "",
@@ -61,6 +63,7 @@ export function DocumentSettingsDialog({
                 bankName: organization.profile.bankName || "",
                 routingNumber: organization.profile.routingNumber || "",
                 branch: organization.profile.branch || "",
+                upiId: organization.profile.upiId || "",
                 termsAndConditions: organization.profile.termsAndConditions || "",
                 invoiceFooterNote: organization.profile.invoiceFooterNote || "",
                 expenseFooterNote: organization.profile.expenseFooterNote || "",
@@ -98,9 +101,15 @@ export function DocumentSettingsDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger render={<Button variant="outline" className="px-2" />}>
-                <SettingsIcon className="size-4" />
-            </DialogTrigger>
+            {trigger ? (
+                <DialogTrigger render={trigger}>
+                    <SettingsIcon className="size-4" />
+                </DialogTrigger>
+            ) : (
+                <DialogTrigger render={<Button variant="outline" className="px-2" />}>
+                    <SettingsIcon className="size-4" />
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-hidden flex flex-col p-0">
                 <form onSubmit={handleSaveSettings} className="flex flex-col h-full overflow-hidden">
                     <DialogHeader className="p-6 pb-4 border-b shrink-0">
@@ -164,6 +173,12 @@ export function DocumentSettingsDialog({
                                     <Label>Branch</Label>
                                     <Input value={formData.branch} onChange={handleInputChange('branch')} />
                                 </div>
+                                {isIndia && (
+                                    <div className="space-y-2">
+                                        <Label>UPI ID</Label>
+                                        <Input value={formData.upiId} onChange={handleInputChange('upiId')} placeholder="e.g. business@upi" />
+                                    </div>
+                                )}
                             </TabsContent>
 
                             <TabsContent value="template" className="space-y-4">

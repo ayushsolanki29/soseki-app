@@ -24,6 +24,7 @@ model User {
   supportMessages  SupportTicketMessage[]
   sessions         Session[]
   emailPreferences EmailPreference[]
+  termsAcceptedAt  DateTime?
 
   @@index([organizationId])
 }
@@ -52,7 +53,7 @@ model Organization {
 model Client {
   id             String       @id @default(uuid())
   name           String
-  email          String       @unique
+  email          String
   phone          String?
   status         String       @default("Active") // Active, Inactive, Lead
   organizationId String
@@ -67,6 +68,7 @@ model Client {
   questionnaireResponses QuestionnaireResponse[]
 
   @@index([organizationId])
+  @@unique([email, organizationId])
 }
 
 model Project {
@@ -333,12 +335,14 @@ model SupportTicketMessage {
 }
 
 model SuperUser {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  name         String?
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  name               String?
+  passwordHash       String
+  isTwoFactorEnabled Boolean  @default(false)
+  twoFactorSecret    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model EmailPreference {
@@ -406,6 +410,7 @@ model OrganizationProfile {
   bankName      String?
   routingNumber String? // Generic (e.g. IFSC, Sort Code, Routing Number)
   branch        String?
+  upiId         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

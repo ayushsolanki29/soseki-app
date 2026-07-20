@@ -24,11 +24,16 @@ class ExpensesService {
       select: {
         id: true,
         amount: true,
+        currency: true,
+        exchangeRate: true,
         date: true,
         description: true,
         category: true,
         status: true,
         createdAt: true,
+        clientId: true,
+        projectId: true,
+        invoiceId: true,
         client: {
           select: { id: true, name: true }
         },
@@ -39,7 +44,7 @@ class ExpensesService {
           select: { id: true, invoiceNumber: true }
         }
       },
-      orderBy: { date: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return {

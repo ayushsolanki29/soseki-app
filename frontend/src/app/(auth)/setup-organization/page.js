@@ -8,15 +8,9 @@ import { LogoIcon } from "@/components/logo";
 import { toast } from "sonner";
 import API from "@/lib/api";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
-import { CheckCircle2Icon, CheckIcon } from "lucide-react";
+import { CheckCircle2Icon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const CURRENCIES = [
-  { code: "USD", symbol: "$", country: "us" },
-  { code: "EUR", symbol: "€", country: "eu" },
-  { code: "GBP", symbol: "£", country: "gb" },
-  { code: "INR", symbol: "₹", country: "in" },
-];
+import { CurrencyGrid } from "@/components/ui/currency-grid";
 
 export default function SetupOrganizationPage() {
   const router = useRouter();
@@ -159,44 +153,11 @@ export default function SetupOrganizationPage() {
                 <label className="text-[15px] font-medium text-muted-foreground pl-1">
                   Choose your base currency
                 </label>
-                <div className="grid grid-cols-2 gap-4">
-                  {CURRENCIES.map((currency) => (
-                    <button
-                      key={currency.code}
-                      type="button"
-                      onClick={() => setMasterCurrency(currency.code)}
-                      disabled={isLoading}
-                      className={cn(
-                        "relative flex items-center justify-start gap-3 h-14 px-3 rounded-2xl border transition-all outline-none focus-visible:ring-4 focus-visible:ring-primary/10 group",
-                        masterCurrency === currency.code
-                          ? "border-primary ring-1 ring-primary shadow-sm bg-primary/5"
-                          : "border-muted-foreground/20 hover:border-primary/40 bg-transparent"
-                      )}
-                    >
-                      {/* Round Flag Icon */}
-                      <div className="shrink-0 size-10 rounded-full overflow-hidden border border-muted/50 shadow-sm bg-muted/20">
-                        <img 
-                          src={`https://flagcdn.com/w80/${currency.country}.png`} 
-                          alt={currency.code}
-                          className="w-full h-full object-cover" 
-                        />
-                      </div>
-                      
-                      {/* Content */}
-                      <div className="flex flex-col items-start justify-center">
-                        <span className="font-semibold text-[15px] leading-tight text-foreground">{currency.code}</span>
-                        <span className="text-xs font-medium text-muted-foreground leading-tight mt-0.5">{currency.symbol}</span>
-                      </div>
-                      
-                      {/* Active Indicator */}
-                      {masterCurrency === currency.code && (
-                        <div className="absolute top-0 right-0 -mt-1.5 -mr-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background">
-                          <CheckIcon className="size-3" strokeWidth={3} />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                <CurrencyGrid 
+                  value={masterCurrency} 
+                  onChange={setMasterCurrency} 
+                  disabled={isLoading} 
+                />
                 <p className="text-xs text-muted-foreground pt-1">
                   This will be the default currency for all your projects and invoices.
                 </p>

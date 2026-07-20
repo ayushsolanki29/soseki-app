@@ -14,8 +14,6 @@ export async function serverFetch(endpoint, options = {}) {
     ...(allCookies ? { Cookie: allCookies } : {}),
     ...(options.headers || {})
   };
-
-  console.log(`[serverFetch] hitting: ${API_BASE_URL}${endpoint}`);
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,

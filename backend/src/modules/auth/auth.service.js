@@ -6,9 +6,9 @@ const prisma = require("../../database/prisma");
 
 const { auth: authConfig } = require("../../config/app.config");
 class AuthService {
-  async login(email, password) {
+  async login(email, password, termsAccepted) {
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
@@ -24,6 +24,13 @@ class AuthService {
       const error = new Error("Invalid email or password");
       error.status = 401;
       throw error;
+    }
+
+    if (termsAccepted && !user.termsAcceptedAt) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { termsAcceptedAt: new Date() }
+      });
     }
 
     // Generate accessToken
@@ -82,7 +89,7 @@ class AuthService {
     });
 
     if (user) {
-      return { exists: true };
+      return { exists: true, termsAcceptedAt: user.termsAcceptedAt };
     } else {
       const waitlist = await prisma.waitlistLead.findUnique({
         where: { email: normalizedEmail },

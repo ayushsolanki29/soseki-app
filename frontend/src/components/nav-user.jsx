@@ -20,23 +20,20 @@ import { useRouter } from "next/navigation";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 
 
 export function NavUser() {
     const router = useRouter();
-    const [orgName, setOrgName] = useState("Loading...");
+    const { organization } = useOrganization();
+    const orgName = organization?.name || "Soseki Workspace";
     const [user, setUser] = useState({ name: "Loading...", email: "" });
 
     useEffect(() => {
-        Promise.all([
-            API.get("/organization"),
-            API.get("/auth/me")
-        ]).then(([orgRes, userRes]) => {
-            setOrgName(orgRes.data.organization.name);
+        API.get("/auth/me").then((userRes) => {
             setUser(userRes.data.user);
         }).catch(() => {
-            setOrgName("Soseki Workspace");
             setUser({ name: "User", email: "" });
         });
     }, []);

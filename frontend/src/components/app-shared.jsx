@@ -73,6 +73,7 @@ export const navGroups = [
 				icon: <SettingsIcon />,
 				subItems: [
 					{ title: "General Settings", path: "/dashboard/workspace/settings" },
+					{ title: "System", path: "/dashboard/workspace/system" },
 				],
 			},
 			{
@@ -85,11 +86,13 @@ export const navGroups = [
 				path: "/dashboard/support",
 				icon: <HelpCircleIcon />,
 			},
+			
 			{
 				title: "Data Migration",
 				path: "/dashboard/migration",
 				icon: <UploadCloudIcon />,
 			},
+		
 		],
 	},
 ];

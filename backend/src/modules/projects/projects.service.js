@@ -82,7 +82,18 @@ class ProjectsService {
 
     const project = await prisma.project.findUnique({
       where: { id },
-      include: { client: true },
+      include: { 
+        client: true,
+        invoices: {
+          orderBy: { issueDate: "desc" },
+          include: {
+            payments: true,
+          },
+        },
+        expenses: {
+          orderBy: { date: "desc" },
+        },
+      },
     });
 
     if (!project || project.organizationId !== organizationId) {

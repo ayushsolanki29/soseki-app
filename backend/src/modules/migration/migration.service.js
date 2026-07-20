@@ -46,21 +46,31 @@ class MigrationService {
     // 1. Import Clients
     for (const c of clients) {
       const emailToUse = c.email !== "this-is-blank" ? c.email : `import-${Date.now()}@temp.com`;
-      const created = await prisma.client.upsert({
-        where: { email: emailToUse },
-        update: {
-          name: c.name || "Unknown Client",
-          phone: c.phone !== "this-is-blank" ? c.phone : null,
-          status: c.status || "Active",
-        },
-        create: {
-          organizationId,
-          name: c.name || "Unknown Client",
-          email: emailToUse,
-          phone: c.phone !== "this-is-blank" ? c.phone : null,
-          status: c.status || "Active",
-        },
+      const existingClient = await prisma.client.findFirst({
+        where: { email: emailToUse, organizationId }
       });
+
+      let created;
+      if (existingClient) {
+        created = await prisma.client.update({
+          where: { id: existingClient.id },
+          data: {
+            name: c.name || "Unknown Client",
+            phone: c.phone !== "this-is-blank" ? c.phone : null,
+            status: c.status || "Active",
+          },
+        });
+      } else {
+        created = await prisma.client.create({
+          data: {
+            organizationId,
+            name: c.name || "Unknown Client",
+            email: emailToUse,
+            phone: c.phone !== "this-is-blank" ? c.phone : null,
+            status: c.status || "Active",
+          },
+        });
+      }
       idMap.clients[c.id] = created.id;
       importStats.clients++;
     }

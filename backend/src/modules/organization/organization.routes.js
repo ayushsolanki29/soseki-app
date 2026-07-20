@@ -10,5 +10,7 @@ router.patch("/", authMiddleware, validate(organizationValidation.updateOrganiza
 router.post("/setup", authMiddleware, validate(organizationValidation.setupOrganizationValidation), organizationController.setupOrganization);
 router.post("/template-requests", authMiddleware, validate(organizationValidation.createTemplateRequestValidation), organizationController.createTemplateRequest);
 router.get("/template-requests", authMiddleware, organizationController.getTemplateRequests);
+router.get("/export", authMiddleware, organizationController.exportOrganizationData);
+router.delete("/", authMiddleware, organizationController.deleteOrganization);
 
 module.exports = router;

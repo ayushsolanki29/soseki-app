@@ -19,25 +19,22 @@ import Link from "next/link";
 import { RecordExpenseDialog } from "@/components/expenses/record-expense-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function ExpensesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { organization } = useOrganization();
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecordExpenseOpen, setIsRecordExpenseOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
-  const [organization, setOrganization] = useState(null);
 
   const fetchExpenses = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
-        API.get("/expenses"),
-        API.get("/organization")
-      ]);
+      const res = await API.get("/expenses");
       setExpenses(res.data.expenses || []);
-      setOrganization(orgRes.data.organization);
     } catch (error) {
       toast.error("Failed to load expenses");
     } finally {
@@ -143,7 +140,14 @@ export default function ExpensesPage() {
                     ) : '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-destructive">
-                    -{formatCurrency(expense.amount, expense.currency || expense.invoice?.currency || organization?.masterCurrency || "USD")}
+                    <div className="flex flex-col items-end gap-1">
+                      <span>-{formatCurrency(expense.amount, expense.currency || organization?.masterCurrency || "USD")}</span>
+                      {(expense.currency && organization?.masterCurrency && expense.currency !== organization.masterCurrency) && (
+                        <span className="text-xs text-muted-foreground font-normal">
+                          -{formatCurrency(expense.amount * (expense.exchangeRate || 1.0), organization.masterCurrency)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

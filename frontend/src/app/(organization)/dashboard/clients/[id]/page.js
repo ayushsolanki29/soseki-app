@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIcon, FileTextIcon, DollarSignIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, TrashIcon, MailIcon, PhoneIcon, BriefcaseIcon, FileTextIcon, DollarSignIcon, LinkIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
@@ -30,6 +30,7 @@ import {
 import { ClientForm } from "@/components/forms/client-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { PortalLinkWithSettings } from "@/components/shared/portal-link-with-settings";
 
 export default function ClientDetailsPage() {
   const { id } = useParams();
@@ -38,16 +39,21 @@ export default function ClientDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [masterCurrency, setMasterCurrency] = useState("USD");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [organization, setOrganization] = useState(null);
 
   const fetchClient = async () => {
     setIsLoading(true);
     try {
-      const [res, orgRes] = await Promise.all([
+      const [res, orgRes, userRes] = await Promise.all([
           API.get(`/clients/${id}`),
-          API.get(`/organization`)
+          API.get(`/organization`),
+          API.get(`/auth/me`)
       ]);
       setClient(res.data.client);
       setMasterCurrency(orgRes.data.organization.masterCurrency);
+      setOrganization(orgRes.data.organization);
+      setCurrentUser(userRes.data.user);
     } catch (error) {
       toast.error("Failed to load client details");
       router.push("/dashboard/clients");
@@ -71,6 +77,12 @@ export default function ClientDetailsPage() {
     } catch (error) {
       toast.error("Failed to update client status");
     }
+  };
+
+  const copyPortalLink = () => {
+    const url = `${window.location.origin}/c/${client.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Client Portal Link copied to clipboard!");
   };
 
   if (isLoading) {
@@ -178,21 +190,36 @@ export default function ClientDetailsPage() {
                 </Badge>
               </div>
               <div className="flex items-center gap-4 mt-1 text-muted-foreground text-sm">
-                <div className="flex items-center gap-1.5">
-                    <MailIcon className="size-4" />
-                    {client.email}
-                </div>
+                {client.email && (
+                  <a 
+                    href={`mailto:${client.email}?subject=Update regarding your account&body=${encodeURIComponent(`Hi ${client.name},\n\n\n\n---\nBest regards,\n${currentUser?.name || ''}\n${organization?.name || ''}`)}`}
+                    className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                  >
+                      <MailIcon className="size-4" />
+                      {client.email}
+                  </a>
+                )}
                 {client.phone && (
-                    <div className="flex items-center gap-1.5">
+                    <a 
+                      href={`tel:${client.phone}`}
+                      className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                    >
                         <PhoneIcon className="size-4" />
                         {client.phone}
-                    </div>
+                    </a>
                 )}
               </div>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-3">
+            <PortalLinkWithSettings 
+                portalLink={`${window.location.origin}/c/${client.id}`}
+                organization={organization}
+                onOrganizationUpdate={() => fetchClient()}
+                documentType="invoice"
+                masterCurrency={masterCurrency}
+            />
             <Button variant="outline" onClick={() => setIsEditSheetOpen(true)}>
                 <PencilIcon className="size-4 mr-2" />
                 Edit Client

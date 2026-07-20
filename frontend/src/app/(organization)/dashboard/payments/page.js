@@ -18,8 +18,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { GlobalRecordPaymentDialog } from "@/components/invoices/global-record-payment-dialog";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+import { useOrganization } from "@/components/providers/organization-provider";
 
 export default function PaymentsPage() {
+  const { organization } = useOrganization();
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
@@ -102,7 +104,14 @@ export default function PaymentsPage() {
                     {payment.reference || '-'}
                   </TableCell>
                   <TableCell className="text-right font-medium text-emerald-600">
-                    +{formatCurrency(payment.amount, payment.invoice.currency)}
+                    <div className="flex flex-col items-end gap-1">
+                      <span>+{formatCurrency(payment.amount, payment.invoice.currency || organization?.masterCurrency || "USD")}</span>
+                      {(payment.invoice.currency && organization?.masterCurrency && payment.invoice.currency !== organization.masterCurrency) && (
+                        <span className="text-xs text-muted-foreground font-normal">
+                          +{formatCurrency(payment.amount * (payment.invoice.exchangeRate || 1.0), organization.masterCurrency)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

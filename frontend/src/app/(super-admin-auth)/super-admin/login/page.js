@@ -17,6 +17,9 @@ export default function SuperAdminLoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [tempToken, setTempToken] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -33,14 +36,46 @@ export default function SuperAdminLoginPage() {
     setIsLoading(true);
     try {
       const res = await API.post("/super-admin/auth/login", { email, password });
-      if (res.data.user) {
-        toast.success("Successfully logged in as Super Admin!", {
-          description: "Welcome back to the Soseki Administration panel.",
-        });
+      
+      if (res.data.requires2FA) {
+        setRequires2FA(true);
+        setTempToken(res.data.tempToken);
+        setErrors({});
+        toast.info("Two-Factor Authentication required.");
+      } else if (res.data.user) {
+        toast.success("Successfully logged in as Super Admin!");
         window.location.href = "/super-admin/dashboard";
       }
     } catch (error) {
-      setErrors({ password: error.response?.data?.error || "Invalid credentials. Please try again." });
+      setErrors({ password: error.response?.data?.message || "Invalid credentials. Please try again." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e) => {
+    if (e) e.preventDefault();
+    
+    // We use the current state twoFactorCode by default, but we can also accept a parameter
+    const codeToVerify = typeof e === "string" ? e : twoFactorCode;
+
+    if (!codeToVerify || codeToVerify.length !== 6) {
+      setErrors({ twoFactorCode: "Please enter a valid 6-digit code." });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await API.post("/super-admin/auth/login/verify", {
+        tempToken,
+        token: codeToVerify,
+      });
+      if (res.data.user) {
+        toast.success("Successfully logged in as Super Admin!");
+        window.location.href = "/super-admin/dashboard";
+      }
+    } catch (error) {
+      setErrors({ twoFactorCode: error.response?.data?.message || "Invalid code." });
     } finally {
       setIsLoading(false);
     }
@@ -83,71 +118,146 @@ export default function SuperAdminLoginPage() {
             </Link>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Soseki Administration</h1>
             <p className="text-sm text-muted-foreground">
-              Super Admin Login. Enter your highly secure credentials below.
+              {requires2FA ? "Enter the 6-digit code from your authenticator app." : "Super Admin Login. Enter your highly secure credentials below."}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 pt-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="email">
-                Email
-              </label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="admin@soseki.com" 
-                className={cn(
-                  "h-10 shadow-none bg-transparent rounded-md transition-colors",
-                  errors.email && "border-red-500 focus-visible:ring-red-500/20 focus-visible:border-red-500"
-                )}
-                required 
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((prev) => ({ ...prev, email: "" }));
-                }}
-                disabled={isLoading}
-              />
-              {errors.email && <p className="text-sm text-red-500 font-medium animate-in fade-in slide-in-from-top-1">{errors.email}</p>}
-            </div>
-            
-            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-foreground" htmlFor="password">
-                  Password
+          {!requires2FA ? (
+            <form onSubmit={handleSubmit} className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground" htmlFor="email">
+                  Email
                 </label>
-              </div>
-              <div className="relative">
                 <Input 
-                  id="password" 
-                  type={showPassword ? "text" : "password"} 
+                  id="email" 
+                  type="email" 
+                  placeholder="Enter your email" 
                   className={cn(
-                    "h-10 shadow-none bg-transparent rounded-md transition-colors pr-10",
-                    errors.password && "border-red-500 focus-visible:ring-red-500/20 focus-visible:border-red-500"
+                    "h-10 shadow-none bg-transparent rounded-md transition-colors",
+                    errors.email && "border-destructive focus-visible:ring-destructive"
                   )}
-                  required 
-                  value={password}
+                  value={email}
                   onChange={(e) => {
-                    setPassword(e.target.value);
-                    setErrors((prev) => ({ ...prev, password: "" }));
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: "" });
                   }}
                   disabled={isLoading}
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-0 focus:outline-none"
+                {errors.email && <p className="text-[13px] text-destructive">{errors.email}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-foreground" htmlFor="password">
+                    Password
+                  </label>
+                </div>
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password" 
+                    className={cn(
+                      "h-10 pr-10 shadow-none bg-transparent rounded-md transition-colors",
+                      errors.password && "border-destructive focus-visible:ring-destructive"
+                    )}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password) setErrors({ ...errors, password: "" });
+                    }}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-[13px] text-destructive">{errors.password}</p>}
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-10 bg-red-700 hover:bg-red-800 text-white transition-all shadow-sm active:scale-[0.98]"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Authenticating...
+                  </div>
+                ) : (
+                  "Access Secure Area"
+                )}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerify2FA} className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground" htmlFor="twoFactorCode">
+                  Two-Factor Authentication Code
+                </label>
+                <Input 
+                  id="twoFactorCode" 
+                  type="text" 
+                  placeholder="123456" 
+                  maxLength={6}
+                  className={cn(
+                    "h-10 shadow-none bg-transparent rounded-md transition-colors font-mono tracking-widest text-center",
+                    errors.twoFactorCode && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={twoFactorCode}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setTwoFactorCode(val);
+                    if (errors.twoFactorCode) setErrors({ ...errors, twoFactorCode: "" });
+                    
+                    if (val.length === 6) {
+                      handleVerify2FA(val);
+                    }
+                  }}
+                  disabled={isLoading}
+                />
+                {errors.twoFactorCode && <p className="text-[13px] text-destructive text-center">{errors.twoFactorCode}</p>}
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-10 bg-red-700 hover:bg-red-800 text-white transition-all shadow-sm active:scale-[0.98]"
+                disabled={isLoading || twoFactorCode.length < 6}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Verifying...
+                  </div>
+                ) : (
+                  "Verify & Login"
+                )}
+              </Button>
+              
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setRequires2FA(false);
+                    setTempToken("");
+                    setTwoFactorCode("");
+                    setErrors({});
+                  }}
                 >
-                  {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                  Back to login
                 </button>
               </div>
-              {errors.password && <p className="text-sm text-red-500 font-medium animate-in fade-in slide-in-from-top-1">{errors.password}</p>}
-            </div>
+            </form>
+          )}
 
-            <Button type="submit" variant="destructive" className="w-full h-10 mt-6 shadow-none font-medium rounded-md" size="default" disabled={isLoading}>
-              {isLoading ? "Authenticating..." : "Sign in to Admin Console"}
-            </Button>
-          </form>
+          <div className="text-center">
+          </div>
         </div>
       </div>
     </div>
