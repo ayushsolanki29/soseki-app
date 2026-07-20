@@ -2,14 +2,18 @@
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { useScroll } from "@/hooks/use-scroll";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { MobileNav } from "@/components/mobile-nav";
 import Link from "next/link";
 
 export const navLinks = [
 	{
 		label: "Features",
-		href: "#",
+		href: "/features",
+	},
+	{
+		label: "My Data",
+		href: "/my-data",
 	},
 	{
 		label: "Pricing",
@@ -17,7 +21,15 @@ export const navLinks = [
 	},
 	{
 		label: "About",
-		href: "#",
+		href: "/about",
+	},
+	{
+		label: "Community",
+		href: "/community",
+	},
+	{
+		label: "Careers",
+		href: "/careers",
 	},
 ];
 

@@ -8,7 +8,7 @@ export default async function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // Paths that do not require authentication for normal users
-  const publicPaths = ['/login', '/signup', '/request-access', '/status', '/api/leads', '/api/auth/login', '/api/auth/refresh', '/api/auth/check-email'];
+  const publicPaths = ['/login', '/signup', '/request-access', '/status', '/api/leads', '/api/auth/login', '/api/auth/refresh', '/api/auth/check-email', '/features', '/pricing', '/about', '/careers', '/community', '/my-data', '/contact', '/privacy-policy', '/terms', '/docs', '/blog', '/help-center', '/security', '/brand-assets'];
   
   // Super admin paths
   const isSuperAdminPath = pathname.startsWith('/super-admin') || pathname.startsWith('/api/super-admin');

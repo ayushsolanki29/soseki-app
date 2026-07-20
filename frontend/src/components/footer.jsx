@@ -66,61 +66,65 @@ export function Footer() {
 
 const company = [
 	{
+		title: "Contact Us",
+		href: "/contact",
+	},
+	{
 		title: "About Us",
-		href: "#",
+		href: "/about",
 	},
 	{
 		title: "Careers",
-		href: "#",
+		href: "/careers",
 	},
 	{
 		title: "Brand assets",
-		href: "#",
+		href: "/brand-assets",
 	},
 	{
 		title: "Privacy Policy",
-		href: "#",
+		href: "/privacy-policy",
 	},
 	{
 		title: "Terms of Service",
-		href: "#",
+		href: "/terms",
 	},
 ];
 
 const resources = [
 	{
 		title: "Blog",
-		href: "#",
+		href: "/blog",
 	},
 	{
 		title: "Help Center",
-		href: "#",
+		href: "/help-center",
 	},
 	{
 		title: "Contact Support",
-		href: "#",
+		href: "/contact",
 	},
 	{
 		title: "Community",
-		href: "#",
+		href: "/community",
 	},
 	{
 		title: "Security",
-		href: "#",
+		href: "/security",
 	},
 ];
 
 const socialLinks = [
 	{
 		icon: <GithubIcon />,
-		link: "#",
+		link: "https://github.com/ayushsolanki29/soseki",
 	},
 	{
 		icon: <InstagramIcon />,
-		link: "#",
+		link: "https://instagram.com",
 	},
 	{
 		icon: <XIcon />,
-		link: "#",
+		link: "https://x.com",
 	},
 ];
