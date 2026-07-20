@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { SosekiModernInvoice } from "@/components/invoices/templates/soseki-modern";
 import { TaxInvoice } from "@/components/invoices/templates/tax-invoice";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientPortalInvoice({ params }) {
   const { clientId, invoiceId } = use(params);
@@ -31,7 +32,30 @@ export default function ClientPortalInvoice({ params }) {
   }, [clientId, invoiceId]);
 
   if (isLoading) {
-    return <div className="py-20 text-center text-slate-500">Loading invoice...</div>;
+    return (
+      <div className="max-w-5xl mx-auto space-y-8 animate-pulse">
+        <Skeleton className="h-4 w-32" />
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1">
+            <Skeleton className="w-full h-[800px] rounded-lg" />
+          </div>
+          <div className="w-full lg:w-[320px] shrink-0 space-y-6">
+            <Card>
+              <CardHeader className="pb-3 border-b">
+                <Skeleton className="h-6 w-1/2" />
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <div className="pt-4 border-t space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error || !invoice) {
@@ -85,10 +109,11 @@ export default function ClientPortalInvoice({ params }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Invoice Document */}
-        <div className="lg:col-span-2">
-          <Card className="border-slate-200 shadow-xl shadow-black/5 overflow-hidden relative bg-white">
-            <div className="w-full flex justify-center py-6">
-              <div className="w-full max-w-[210mm] bg-white pointer-events-none">
+        <div className="lg:col-span-2 overflow-x-auto pb-4 lg:pb-0">
+          <div className="min-w-[800px] lg:min-w-0">
+            <Card className="border-slate-200 shadow-xl shadow-black/5 overflow-hidden relative bg-white">
+              <div className="w-full flex justify-center py-6">
+                <div className="w-[800px] lg:w-full max-w-[210mm] bg-white pointer-events-none">
                 {template === "soseki-modern" && (
                     <SosekiModernInvoice invoice={invoice} organization={invoice.organization} masterCurrency={masterCurrency} />
                 )}
@@ -98,10 +123,11 @@ export default function ClientPortalInvoice({ params }) {
               </div>
             </div>
           </Card>
+          </div>
         </div>
 
-        {/* Payment Mockup Sidebar */}
-        <div className="space-y-6">
+        {/* Payment Mockup Sidebar (Desktop) */}
+        <div className="hidden lg:block space-y-6">
           <Card className="border-slate-200 shadow-sm border-t-4 border-t-blue-600">
             <CardHeader className="bg-slate-50/50 pb-4">
               <CardTitle className="text-lg">Payment Details</CardTitle>
@@ -136,9 +162,28 @@ export default function ClientPortalInvoice({ params }) {
               )}
             </CardContent>
           </Card>
-
-
         </div>
+      </div>
+
+      {/* Mobile Sticky Payment Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 z-50 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+        {isPaid ? (
+          <div className="flex items-center text-green-600 font-medium">
+            <CheckCircle2 className="w-5 h-5 mr-2" /> Payment Complete
+          </div>
+        ) : (
+          <>
+            <div>
+              <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Amount Due</div>
+              <div className="text-lg font-bold text-slate-900">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+            </div>
+            <Link href={`/c/${clientId}/i/${invoiceId}/pay`}>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                <CreditCard className="w-4 h-4 mr-2" /> Pay Now
+              </Button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

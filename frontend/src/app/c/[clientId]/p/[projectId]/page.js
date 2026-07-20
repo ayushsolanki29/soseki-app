@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { format } from "date-fns";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientPortalProject({ params }) {
   const { clientId, projectId } = use(params);
@@ -29,7 +30,33 @@ export default function ClientPortalProject({ params }) {
   }, [clientId, projectId]);
 
   if (isLoading) {
-    return <div className="py-20 text-center text-slate-500">Loading project...</div>;
+    return (
+      <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+        <div>
+          <Skeleton className="h-4 w-32 mb-6" />
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-16 w-16 rounded-2xl shrink-0" />
+              <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-40" />
+              </div>
+            </div>
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </div>
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (error || !project) {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatId } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -240,18 +240,66 @@ export default function InvoiceDetailsPage() {
                     />
                 </div>
                 {invoice.status === "Processing" ? (
-                    <Button onClick={async () => {
-                        try {
-                            await API.post(`/invoices/${invoice.id}/verify-payment`);
-                            toast.success("Payment verified and invoice marked as Paid");
-                            fetchInvoice();
-                        } catch (error) {
-                            toast.error("Failed to verify payment");
-                        }
-                    }} className="gap-2 bg-amber-600 hover:bg-amber-700 text-white shadow-sm">
-                        <CheckCircle2Icon className="size-4" />
-                        Verify Payment
-                    </Button>
+                    <Dialog>
+                        <DialogTrigger render={<Button className="bg-amber-600 hover:bg-amber-700 text-white gap-2" />}>
+                            <CheckCircle2Icon className="size-4" /> Verify Payment
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Verify Payment</DialogTitle>
+                                <DialogDescription>
+                                    Please verify the payment details provided by the client before confirming.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="py-2 space-y-4">
+                                {(() => {
+                                    const pendingPayment = [...(invoice.payments || [])].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                                    if (!pendingPayment) return <p className="text-slate-500 text-sm">No pending payment details found.</p>;
+                                    return (
+                                        <div className="bg-slate-50 p-4 rounded-lg space-y-3">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Method</span>
+                                                <span className="font-medium text-slate-900">{pendingPayment.method}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Reference Number</span>
+                                                <span className="font-mono font-medium text-slate-900">{pendingPayment.reference || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Amount Paid</span>
+                                                <span className="font-bold text-emerald-600">{formatCurrency(pendingPayment.amount, invoice.currency)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Date</span>
+                                                <span className="font-medium text-slate-900">{formatDate(pendingPayment.date)}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                            <DialogFooter>
+                                <DialogClose render={<Button variant="outline" />}>
+                                    Cancel
+                                </DialogClose>
+                                <DialogClose render={
+                                    <Button 
+                                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                                        onClick={async () => {
+                                            try {
+                                                await API.post(`/invoices/${invoice.id}/verify-payment`);
+                                                toast.success("Payment verified and invoice marked as Paid");
+                                                fetchInvoice();
+                                            } catch (error) {
+                                                toast.error("Failed to verify payment");
+                                            }
+                                        }}
+                                    />
+                                }>
+                                    Confirm Verification
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 ) : (
                     <Button onClick={handleRecordPayment} className="gap-2">
                         <CreditCardIcon className="size-4" />
@@ -416,7 +464,7 @@ export default function InvoiceDetailsPage() {
                                   </TableRow>
                               </TableHeader>
                               <TableBody>
-                                  {invoice.payments.map(payment => (
+                                  {[...(invoice.payments || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).map((payment) => (
                                       <TableRow key={payment.id}>
                                           <TableCell>{formatDate(payment.date)}</TableCell>
                                           <TableCell>{payment.method}</TableCell>

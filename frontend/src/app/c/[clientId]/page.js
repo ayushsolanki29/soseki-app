@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ExternalLink, User, Mail, Phone, MapPin, Building, ArrowRight, FileText } from "lucide-react";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ClientPortalContext } from "./layout";
 
 export default function ClientPortalDashboard({ params }) {
@@ -39,7 +40,69 @@ export default function ClientPortalDashboard({ params }) {
   }, [clientId]);
 
   if (isLoading || isProfileLoading) {
-    return <div className="py-20 text-center text-slate-500">Loading portal...</div>;
+    return (
+      <div className="space-y-12 pb-12 relative z-10 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="text-center flex flex-col items-center pt-8">
+          <Skeleton className="h-16 w-16 rounded-full mb-6" />
+          <Skeleton className="h-4 w-24 mb-4" />
+          <Skeleton className="h-12 w-64 sm:w-96 mb-4" />
+          <Skeleton className="h-6 w-full max-w-2xl" />
+        </div>
+
+        {/* Profile Details Skeleton */}
+        <div className="mt-8">
+          <Card className="border-border/40 shadow-xl shadow-black/5 rounded-3xl bg-card/60 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/40">
+                <div className="p-5 sm:p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-xl shrink-0" />
+                    <Skeleton className="h-6 w-32" />
+                  </div>
+                  <div className="space-y-4">
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-8 w-1/2" />
+                  </div>
+                </div>
+                <div className="p-5 sm:p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-xl shrink-0" />
+                    <Skeleton className="h-6 w-48" />
+                  </div>
+                  <div className="space-y-4">
+                    <Skeleton className="h-8 w-1/3" />
+                    <Skeleton className="h-8 w-2/3" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Projects Skeleton */}
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-40" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="flex flex-col">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start gap-3 mb-2">
+                    <Skeleton className="h-10 w-10 rounded-xl" />
+                    <Skeleton className="h-5 w-16 ml-auto" />
+                  </div>
+                  <Skeleton className="h-5 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full" />
+                </CardHeader>
+                <CardContent className="mt-auto pb-4">
+                  <Skeleton className="h-4 w-1/2" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error || profileError || !profile) {
@@ -73,10 +136,10 @@ export default function ClientPortalDashboard({ params }) {
             {profile.organization?.name}
           </p>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground mb-4 px-4">
           Welcome, {profile.name}
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
           Here is an overview of your projects and invoices with {profile.organization.name}.
         </p>
       </div>
@@ -88,23 +151,23 @@ export default function ClientPortalDashboard({ params }) {
           <CardContent className="p-0">
             <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/40">
               {/* Client Info */}
-              <div className="p-8 space-y-6">
+              <div className="p-5 sm:p-8 space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-primary/10 rounded-xl">
+                  <div className="p-2.5 bg-primary/10 rounded-xl shrink-0">
                     <User className="h-5 w-5 text-primary" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">Your Profile</h3>
                 </div>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 text-muted-foreground group">
-                    <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground group">
+                    <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors shrink-0">
                       <Mail className="h-4 w-4" />
                     </div>
-                    <span className="font-medium text-foreground/80">{profile.email}</span>
+                    <span className="font-medium text-foreground/80 break-all">{profile.email}</span>
                   </div>
                   {profile.phone && (
-                    <div className="flex items-center gap-4 text-muted-foreground group">
-                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors">
+                    <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground group">
+                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors shrink-0">
                         <Phone className="h-4 w-4" />
                       </div>
                       <span className="font-medium text-foreground/80">{profile.phone}</span>
@@ -114,28 +177,28 @@ export default function ClientPortalDashboard({ params }) {
               </div>
 
               {/* Org Info */}
-              <div className="p-8 space-y-6">
+              <div className="p-5 sm:p-8 space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-primary/10 rounded-xl">
+                  <div className="p-2.5 bg-primary/10 rounded-xl shrink-0">
                     <Building className="h-5 w-5 text-primary" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">Organization Contact</h3>
                 </div>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 text-muted-foreground">
+                  <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground">
                      <span className="font-semibold text-foreground tracking-tight">{profile.organization.name}</span>
                   </div>
                   {profile.organization.profile?.email && (
-                    <div className="flex items-center gap-4 text-muted-foreground group">
-                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors">
+                    <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground group">
+                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors shrink-0">
                         <Mail className="h-4 w-4" />
                       </div>
-                      <span className="font-medium text-foreground/80">{profile.organization.profile.email}</span>
+                      <span className="font-medium text-foreground/80 break-all">{profile.organization.profile.email}</span>
                     </div>
                   )}
                   {profile.organization.profile?.phone && (
-                    <div className="flex items-center gap-4 text-muted-foreground group">
-                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors">
+                    <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground group">
+                      <div className="p-2 bg-background rounded-lg border border-border/50 group-hover:border-primary/30 transition-colors shrink-0">
                         <Phone className="h-4 w-4" />
                       </div>
                       <span className="font-medium text-foreground/80">{profile.organization.profile.phone}</span>
@@ -205,7 +268,7 @@ export default function ClientPortalDashboard({ params }) {
           <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/60 backdrop-blur-md overflow-hidden rounded-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="text-xs text-muted-foreground uppercase bg-muted/30 border-b border-border/50">
+                <thead className="text-xs text-muted-foreground uppercase bg-muted/30 border-b border-border/50 whitespace-nowrap">
                   <tr>
                     <th className="px-6 py-4 font-semibold tracking-wider">Invoice Number</th>
                     <th className="px-6 py-4 font-semibold tracking-wider">Status</th>
@@ -221,19 +284,19 @@ export default function ClientPortalDashboard({ params }) {
                       onClick={() => router.push(`/c/${clientId}/i/${invoice.id}`)}
                       className="group hover:bg-muted/30 transition-colors cursor-pointer"
                     >
-                      <td className="px-6 py-4 font-medium text-foreground flex items-center gap-3">
+                      <td className="px-6 py-4 font-medium text-foreground flex items-center gap-3 whitespace-nowrap">
                         <DynamicAvatar type="invoice" seed={invoice.invoiceNumber} size={32} className="rounded-lg shadow-sm" />
                         {invoice.invoiceNumber}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <Badge variant={invoice.status === "Paid" ? "success" : invoice.status === "Overdue" ? "destructive" : "secondary"} className="shadow-sm">
                           {invoice.status}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 text-muted-foreground">
+                      <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                         {format(new Date(invoice.dueDate), "MMM d, yyyy")}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right whitespace-nowrap">
                         {invoice.status === "Paid" || invoice.paidAmount >= invoice.totalAmount ? (
                           <div className="flex flex-col items-end gap-1">
                             <span className="text-muted-foreground line-through text-xs">
@@ -252,8 +315,8 @@ export default function ClientPortalDashboard({ params }) {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0" render={<Link href={`/c/${clientId}/i/${invoice.id}`} />}>
+                      <td className="px-6 py-4 text-center whitespace-nowrap">
+                        <Button variant="ghost" size="sm" className="md:opacity-0 md:group-hover:opacity-100 transition-opacity md:translate-x-2 md:group-hover:translate-x-0" render={<Link href={`/c/${clientId}/i/${invoice.id}`} />}>
                             View <ExternalLink className="h-3 w-3 ml-1.5" />
                         </Button>
                       </td>
