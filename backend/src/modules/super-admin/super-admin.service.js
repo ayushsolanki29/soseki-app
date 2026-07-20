@@ -3,6 +3,8 @@ const prisma = require("../../database/prisma");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const speakeasy = require("speakeasy");
+const QRCode = require("qrcode");
 
 const { auth: authConfig, server: serverConfig } = require("../../config/app.config");
 class SuperAdminService {
@@ -25,6 +27,16 @@ class SuperAdminService {
       throw error;
     }
 
+    // If 2FA is enabled, do not generate accessToken yet
+    if (user.isTwoFactorEnabled) {
+      const tempPayload = { userId: user.id, type: "superadmin-temp" };
+      const tempToken = jwt.sign(tempPayload, authConfig.jwtSecret, { expiresIn: '15m' });
+      return {
+        requires2FA: true,
+        tempToken,
+      };
+    }
+
     // Generate accessToken
     const payload = {
       userId: user.id,
@@ -41,6 +53,152 @@ class SuperAdminService {
         name: user.name,
       },
     };
+  }
+
+  async verify2FALogin(tempToken, token) {
+    let payload;
+    try {
+      payload = jwt.verify(tempToken, authConfig.jwtSecret);
+    } catch (err) {
+      const error = new Error("Invalid or expired temporary token");
+      error.status = 401;
+      throw error;
+    }
+
+    if (payload.type !== "superadmin-temp") {
+      const error = new Error("Invalid token type");
+      error.status = 401;
+      throw error;
+    }
+
+    const user = await prisma.superUser.findUnique({ where: { id: payload.userId } });
+    if (!user || !user.isTwoFactorEnabled || !user.twoFactorSecret) {
+      const error = new Error("2FA is not enabled for this user");
+      error.status = 400;
+      throw error;
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: "base32",
+      token: token,
+      window: 1, // allow 1 step before/after
+    });
+
+    if (!verified) {
+      const error = new Error("Invalid 2FA code");
+      error.status = 401;
+      throw error;
+    }
+
+    const newPayload = {
+      userId: user.id,
+      type: "superadmin",
+    };
+    const accessToken = jwt.sign(newPayload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    };
+  }
+
+  async getSuperAdminDetails(id) {
+    const admin = await prisma.superUser.findUnique({
+      where: { id },
+      select: { id: true, email: true, name: true, isTwoFactorEnabled: true }
+    });
+    return admin;
+  }
+
+  async generate2FA(id) {
+    const admin = await prisma.superUser.findUnique({ where: { id } });
+    if (!admin) throw new Error("Admin not found");
+
+    const secret = speakeasy.generateSecret({
+      name: `Soseki SuperAdmin (${admin.email})`
+    });
+
+    await prisma.superUser.update({
+      where: { id },
+      data: { twoFactorSecret: secret.base32 }
+    });
+
+    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
+
+    return {
+      secret: secret.base32,
+      qrCodeUrl
+    };
+  }
+
+  async verify2FASetup(id, token) {
+    const admin = await prisma.superUser.findUnique({ where: { id } });
+    if (!admin || !admin.twoFactorSecret) throw new Error("No 2FA setup in progress");
+
+    const verified = speakeasy.totp.verify({
+      secret: admin.twoFactorSecret,
+      encoding: "base32",
+      token: token,
+      window: 1,
+    });
+
+    if (!verified) {
+      const error = new Error("Invalid 2FA code");
+      error.status = 400;
+      throw error;
+    }
+
+    await prisma.superUser.update({
+      where: { id },
+      data: { isTwoFactorEnabled: true }
+    });
+
+    return { success: true };
+  }
+
+  async disable2FA(id, token) {
+    const admin = await prisma.superUser.findUnique({ where: { id } });
+    if (!admin || !admin.isTwoFactorEnabled) throw new Error("2FA is not enabled");
+
+    const verified = speakeasy.totp.verify({
+      secret: admin.twoFactorSecret,
+      encoding: "base32",
+      token: token,
+      window: 1,
+    });
+
+    if (!verified) {
+      const error = new Error("Invalid 2FA code");
+      error.status = 400;
+      throw error;
+    }
+
+    await prisma.superUser.update({
+      where: { id },
+      data: { isTwoFactorEnabled: false, twoFactorSecret: null }
+    });
+
+    return { success: true };
+  }
+
+  async updateSettings(id, data) {
+    const { name, email, password } = data;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (password) {
+      updateData.passwordHash = await bcrypt.hash(password, authConfig.bcryptSaltRounds || 10);
+    }
+    
+    return prisma.superUser.update({
+      where: { id },
+      data: updateData,
+      select: { id: true, email: true, name: true }
+    });
   }
 
   async getCharts() {
@@ -357,7 +515,39 @@ class SuperAdminService {
         },
       },
     });
-    return organizations;
+
+    const orphanUsers = await prisma.user.findMany({
+      where: { organizationId: null },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      }
+    });
+
+    const formattedOrphans = orphanUsers.map(user => ({
+      id: `orphan-${user.id}`,
+      isOrphanUser: true,
+      name: "Not created yet",
+      masterCurrency: "-",
+      status: "Active",
+      createdAt: user.createdAt,
+      _count: {
+        users: 1,
+        projects: 0,
+        clients: 0,
+        invoices: 0,
+      },
+      users: [{
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }]
+    }));
+
+    return [...organizations, ...formattedOrphans];
   }
 
   async getOrganizationDetails(id) {
@@ -372,6 +562,7 @@ class SuperAdminService {
             invoices: true,
           },
         },
+        profile: true,
         users: {
           select: {
             id: true,
@@ -410,19 +601,62 @@ class SuperAdminService {
   }
 
   async updateOrganization(id, data) {
-    const { name, masterCurrency, address, invoiceFooterNote, expenseFooterNote, dateFormat } = data;
+    const { 
+      name, masterCurrency, address, dateFormat, 
+      invoiceFooterNote, expenseFooterNote, 
+      invoiceTemplate, expenseTemplate, termsAndConditions 
+    } = data;
+    
     const organization = await prisma.organization.update({
       where: { id },
       data: {
         name,
         masterCurrency,
         address,
-        invoiceFooterNote,
-        expenseFooterNote,
         dateFormat,
+        profile: {
+          upsert: {
+            create: {
+              invoiceFooterNote,
+              expenseFooterNote,
+              invoiceTemplate: invoiceTemplate || "soseki-modern",
+              expenseTemplate: expenseTemplate || "soseki-modern",
+              termsAndConditions
+            },
+            update: {
+              invoiceFooterNote,
+              expenseFooterNote,
+              invoiceTemplate,
+              expenseTemplate,
+              termsAndConditions
+            }
+          }
+        }
       },
     });
     return organization;
+  }
+
+  async updateUser(id, data) {
+    const { name, email, password } = data;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (password) {
+      const bcrypt = require("bcryptjs");
+      updateData.passwordHash = await bcrypt.hash(password, 10);
+    }
+    
+    return prisma.user.update({
+      where: { id },
+      data: updateData
+    });
+  }
+
+  async deleteUser(id) {
+    return prisma.user.delete({
+      where: { id }
+    });
   }
 
   async updateOrganizationStatus(id, status) {
@@ -431,11 +665,16 @@ class SuperAdminService {
       error.status = 400;
       throw error;
     }
-    const organization = await prisma.organization.update({
+    return prisma.organization.update({
       where: { id },
-      data: { status },
+      data: { status }
     });
-    return organization;
+  }
+
+  async deleteOrganization(id) {
+    return prisma.organization.delete({
+      where: { id }
+    });
   }
 
   async changeOrgAdminPassword(id, newPassword) {
