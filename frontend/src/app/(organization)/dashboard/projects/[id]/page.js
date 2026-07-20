@@ -31,7 +31,7 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const { organization, fetchOrganization } = useOrganization();
+  const { organization, refetch: fetchOrganization } = useOrganization();
 
   const fetchProject = async () => {
     setIsLoading(true);
