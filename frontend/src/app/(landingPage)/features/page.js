@@ -6,11 +6,25 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronRight, Calculator, FileText, CreditCard, Users, Briefcase, FileJson, Sparkles, LineChart, Search, Building2, MessageSquare, Code, Server, ShieldCheck, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
-import { CurrencyIntegration } from "@/components/currency-integration";
-import { InvoiceWidget, ExpenseWidget, PaymentWidget } from "@/components/landing/financial-widgets";
-import { ClientPortalWidget, ClientManagementWidget, ProjectManagementWidget } from "@/components/landing/client-widgets";
-import { AiMigrationWidget, AiFormWidget } from "@/components/landing/ai-widgets";
-import { DashboardWidget, SearchWidget } from "@/components/landing/insight-widgets";
+import dynamic from "next/dynamic";
+import { WidgetSkeleton, HeroWidgetSkeleton } from "@/components/landing/widget-skeleton";
+import { CallToAction } from "@/components/cta";
+
+const CurrencyIntegration = dynamic(() => import("@/components/currency-integration").then(mod => mod.CurrencyIntegration), { loading: () => <HeroWidgetSkeleton />, ssr: false });
+
+const InvoiceWidget = dynamic(() => import("@/components/landing/financial-widgets").then(mod => mod.InvoiceWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const ExpenseWidget = dynamic(() => import("@/components/landing/financial-widgets").then(mod => mod.ExpenseWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const PaymentWidget = dynamic(() => import("@/components/landing/financial-widgets").then(mod => mod.PaymentWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+
+const ClientPortalWidget = dynamic(() => import("@/components/landing/client-widgets").then(mod => mod.ClientPortalWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const ClientManagementWidget = dynamic(() => import("@/components/landing/client-widgets").then(mod => mod.ClientManagementWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const ProjectManagementWidget = dynamic(() => import("@/components/landing/client-widgets").then(mod => mod.ProjectManagementWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+
+const AiMigrationWidget = dynamic(() => import("@/components/landing/ai-widgets").then(mod => mod.AiMigrationWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const AiFormWidget = dynamic(() => import("@/components/landing/ai-widgets").then(mod => mod.AiFormWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+
+const DashboardWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.DashboardWidget), { loading: () => <WidgetSkeleton />, ssr: false });
+const SearchWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.SearchWidget), { loading: () => <WidgetSkeleton />, ssr: false });
 
 export default function FeaturesPage() {
   return (
@@ -149,60 +163,93 @@ export default function FeaturesPage() {
               }
             ]}
           />
-
-    
-
         </div>
       </section>
 
-      {/* Why Choose Soseki */}
-      <section className="py-24 bg-slate-50 border-y border-slate-100">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">Why Choose Soseki</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Join modern teams that have switched to Soseki for a better way to work.
+      {/* Why Choose Soseki - Bento Grid */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-50/50 via-transparent to-transparent pointer-events-none" />
+
+        <div className="mx-auto max-w-5xl px-6 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-bold tracking-tight text-slate-900 mb-4">Why modern teams choose Soseki</h2>
+            <p className="text-[17px] text-slate-600 max-w-2xl mx-auto">
+              Everything you need to run your service business, packaged into one beautiful, open-source platform.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
-            {[
-              "Replace multiple SaaS subscriptions",
-              "Save operational costs",
-              "Own your data",
-              "AI-powered workflows",
-              "Built for freelancers and agencies",
-              "Open-source flexibility",
-              "Modern technology stack",
-              "Scalable architecture",
-              "Beautiful user experience",
-              "Fast performance"
-            ].map((reason, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                <span className="text-slate-700 font-medium">{reason}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Bento Card 1: All in one */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0 }}
+              className="md:col-span-2 bg-slate-50 border border-slate-100 rounded-3xl p-8 relative overflow-hidden group hover:border-blue-200 transition-colors"
+            >
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl group-hover:bg-blue-200 transition-colors" />
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-6">
+                <Building2 className="w-6 h-6 text-blue-600" />
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Replace multiple SaaS subscriptions</h3>
+              <p className="text-slate-600 max-w-sm">Stop paying for separate invoicing, CRM, project management, and form tools. Soseki unites them all.</p>
+            </motion.div>
+
+            {/* Bento Card 2: Open Source */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] opacity-20" />
+              <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-6 relative z-10">
+                <Code className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 relative z-10">Open-source flexibility</h3>
+              <p className="text-slate-400 relative z-10 text-sm">Host it yourself, own your data forever, and customize the codebase to your exact needs.</p>
+            </motion.div>
+
+            {/* Bento Card 3: Performance */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-emerald-50 border border-emerald-100 rounded-3xl p-8 relative overflow-hidden group hover:border-emerald-200 transition-colors"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-white border border-emerald-100 shadow-sm flex items-center justify-center mb-6">
+                <Sparkles className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-bold text-emerald-950 mb-2">Lightning fast performance</h3>
+              <p className="text-emerald-700/80 text-sm">Built on a modern tech stack designed for speed, ensuring your workflow is never interrupted.</p>
+            </motion.div>
+
+            {/* Bento Card 4: AI Powered */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="md:col-span-2 bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-3xl p-8 relative overflow-hidden group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-white border border-purple-100 shadow-sm flex items-center justify-center mb-6">
+                <Server className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-purple-950 mb-2">Automated & AI-powered workflows</h3>
+              <p className="text-purple-800/70 max-w-sm">From smart data migration to generative client questionnaires, let AI handle the busywork.</p>
+            </motion.div>
+
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-white px-6">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-slate-900 mb-6">Ready to Simplify Your Business?</h2>
-          <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-            Join freelancers, agencies, and growing businesses using Soseki to manage clients, projects, finances, and workflows—all from one powerful open-source platform.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/login" className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium py-3 px-8 rounded-lg shadow-sm transition-colors text-[17px] w-full sm:w-auto text-center">
-              Get Started
-            </Link>
-            <Link href="/docs" className="bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium py-3 px-8 rounded-lg transition-colors text-[17px] w-full sm:w-auto text-center">
-              View Documentation
-            </Link>
-          </div>
-        </div>
+      <section className="bg-white py-12 px-6">
+        <CallToAction />
       </section>
 
       <Footer />
@@ -216,7 +263,13 @@ function FeatureCategory({ title, badge, icon, badgeColor, blocks, reverse }) {
       <div className={cn("flex flex-col md:flex-row gap-12 lg:gap-24", reverse && "md:flex-row-reverse")}>
 
         {/* Category Header (Sticky Sidebar style) */}
-        <div className="w-full md:w-1/3 flex-shrink-0">
+        <motion.div 
+          initial={{ opacity: 0, x: reverse ? 30 : -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full md:w-1/3 flex-shrink-0"
+        >
           <div className="sticky top-24">
             <div className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-4 border", badgeColor)}>
               {icon}
@@ -224,7 +277,7 @@ function FeatureCategory({ title, badge, icon, badgeColor, blocks, reverse }) {
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">{title}</h2>
           </div>
-        </div>
+        </motion.div>
 
         {/* Feature Blocks */}
         <div className="w-full md:w-2/3 space-y-8">
