@@ -8,9 +8,9 @@ export function DynamicTime({ offsetMinutes = 10 }) {
   return (
     <span suppressHydrationWarning>
       {timeData.hour}
-      <span className="animate-pulse">:</span>
+      <span className="animate-pulse">{timeData.separator || ":"}</span>
       {timeData.minute}
-      {timeData.meridiem}
+      {timeData.meridiem ? <span className="ml-1">{timeData.meridiem}</span> : null}
     </span>
   );
 }
