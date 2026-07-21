@@ -32,8 +32,8 @@ Import data from older systems, spreadsheets, PDFs, CSVs, or exported files usin
 ### 📝 AI-Assisted Questionnaires
 Build shareable public forms for onboarding, discovery, feedback, and structured client intake. Use the drag-and-drop builder, or paste questions into ChatGPT for AI-generated forms.
 
-### 🔓 Zero Lock-In Architecture
-Self-hostable, open-source, and designed so your data stays in your own PostgreSQL database. No SaaS lock-in, no per-seat pricing surprises, and no API dependency on a third party for core features.
+### 💳 Client Portal & Payments
+Give your clients a seamless, professional experience. Soseki includes a dedicated client portal where your customers can log in, view their outstanding invoices, and pay you directly through the platform.
 
 ---
 

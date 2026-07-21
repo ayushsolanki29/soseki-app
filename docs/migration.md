@@ -7,7 +7,7 @@
 
 ## ★ Why This Matters
 
-Most business tools trap your data. Moving to a new platform means hours of manual re-entry, CSV wrestling, or expensive consultants. Soseki solves this with **AI-Assisted Data Migration** — a zero-lock-in feature that lets users import their entire history from any previous tool, in any format, in minutes.
+Most business tools trap your data. Moving to a new platform means hours of manual re-entry, CSV wrestling, or expensive consultants. Soseki solves this with **AI-Assisted Data Migration** — a powerful feature that lets users import their entire history from any previous tool, in any format, in minutes.
 
 It doesn't matter if your old data is:
 - A messy Excel spreadsheet of clients and invoices

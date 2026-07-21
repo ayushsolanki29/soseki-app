@@ -1,17 +1,17 @@
 <div align="center">
   <h1>Welcome to Soseki Docs</h1>
-  <p><strong>The modern, open-source operating system for freelancers, agencies, and small teams.</strong></p>
+  <p><strong>The modern, open-source business operating system for freelancers, agencies, and small teams.</strong></p>
 </div>
 
 ---
 
 ## 🌟 What is Soseki?
 
-Say goodbye to the chaos of scattered spreadsheets, bloated SaaS subscriptions, and manual client tracking. **Soseki** is a unified, open-source business management platform that covers the entire lifecycle of your client work—from the initial handshake to the final payment.
+Say goodbye to the chaos of scattered spreadsheets, fragmented SaaS subscriptions, and manual client tracking. **Soseki** is a unified, open-source business management platform that covers the entire lifecycle of your client work—from the initial handshake to the final payment.
 
 Named after the Japanese novelist Natsume Soseki, known for his precise and uncluttered writing, our platform embodies the same philosophy: **Zero bloat, zero friction, and absolute clarity.** We give you exactly what you need to run a profitable service business without the unnecessary complexity. 
 
-Best of all? It's **100% self-hostable and open-source**. You own your data.
+Best of all? **You own your data**. With our comprehensive export features and seamless integrations, your business records are always yours to control.
 
 ---
 
@@ -40,8 +40,8 @@ Collect structured data seamlessly with our built-in, shareable form builder. Wh
 
 *Deep dive:* [Questionnaires](./questionnaires.md)
 
-### 4. Zero Lock-In Architecture
-Your business is yours. Soseki guarantees no SaaS lock-in, no per-seat pricing traps, and no reliance on third-party APIs for core functionalities. All of your vital business data lives securely in your own PostgreSQL database. 
+### 4. Client Portal & Payments
+Give your clients a seamless, professional experience. Soseki includes a dedicated client portal where your customers can log in, view their outstanding invoices, and pay you directly through the platform.
 
 ---
 
