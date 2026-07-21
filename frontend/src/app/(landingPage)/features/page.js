@@ -7,6 +7,10 @@ import { ArrowRight, CheckCircle2, ChevronRight, Calculator, FileText, CreditCar
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import { CurrencyIntegration } from "@/components/currency-integration";
+import { InvoiceWidget, ExpenseWidget, PaymentWidget } from "@/components/landing/financial-widgets";
+import { ClientPortalWidget, ClientManagementWidget, ProjectManagementWidget } from "@/components/landing/client-widgets";
+import { AiMigrationWidget, AiFormWidget } from "@/components/landing/ai-widgets";
+import { DashboardWidget, SearchWidget } from "@/components/landing/insight-widgets";
 
 export default function FeaturesPage() {
   return (
@@ -25,7 +29,7 @@ export default function FeaturesPage() {
           <p className="text-[17px] text-slate-600 mb-16 max-w-3xl mx-auto">
             Multi-currency invoicing, automatic live exchange rates, and accurate reporting for your service business.
           </p>
-          
+
           <CurrencyIntegration />
         </div>
       </section>
@@ -44,18 +48,21 @@ export default function FeaturesPage() {
               {
                 title: "Multi-Currency Invoicing",
                 description: "Create invoices in multiple currencies while Soseki automatically fetches live exchange rates and keeps every financial metric synchronized with your workspace's base currency.",
+                visual: <InvoiceWidget />,
                 features: ["Live exchange rates", "Multi-currency invoices", "Automatic conversion", "Tax support", "Professional PDF invoices", "Payment tracking"],
                 icon: <FileText className="w-6 h-6 text-emerald-500" />
               },
               {
                 title: "Expense Management",
                 description: "Track every business expense and associate it with clients, projects, or invoices while maintaining complete financial visibility.",
+                visual: <ExpenseWidget />,
                 features: ["Expense tracking", "Printable receipts", "Multi-currency expenses", "Expense categories", "Financial reports"],
                 icon: <Calculator className="w-6 h-6 text-emerald-500" />
               },
               {
                 title: "Payment Management",
                 description: "Keep a complete history of every payment received and monitor outstanding balances across your organization.",
+                visual: <PaymentWidget />,
                 features: ["Payment history", "Outstanding invoices", "Payment timeline", "Financial ledger"],
                 icon: <CreditCard className="w-6 h-6 text-emerald-500" />
               }
@@ -71,14 +78,23 @@ export default function FeaturesPage() {
             reverse
             blocks={[
               {
+                title: "Direct Client Portal",
+                description: "Give your clients a secure portal where they can pay you directly—with zero middleman platform fees.",
+                visual: <ClientPortalWidget />,
+                features: ["Zero middleman fees", "Direct payments", "Secure portal", "Invoice history"],
+                icon: <ShieldCheck className="w-6 h-6 text-blue-500" />
+              },
+              {
                 title: "Client Management",
                 description: "Manage every client relationship from the first conversation to the final invoice inside one centralized workspace.",
+                visual: <ClientManagementWidget />,
                 features: ["Client profiles", "Contact information", "Activity history", "Client timeline", "Linked invoices", "Linked projects"],
                 icon: <Users className="w-6 h-6 text-blue-500" />
               },
               {
                 title: "Project Management",
                 description: "Organize projects, monitor progress, manage deadlines, and connect every project with invoices, expenses, and questionnaires.",
+                visual: <ProjectManagementWidget />,
                 features: ["Project tracking", "Status management", "Deadlines", "Timeline", "Linked financial records"],
                 icon: <Briefcase className="w-6 h-6 text-blue-500" />
               }
@@ -95,21 +111,23 @@ export default function FeaturesPage() {
               {
                 title: "AI Data Migration",
                 description: "Move your existing business data from spreadsheets, PDFs, QuickBooks, CSV files, or Excel with AI-assisted migration.",
+                visual: <AiMigrationWidget />,
                 features: ["PDF import", "CSV import", "Excel import", "AI JSON conversion", "Bulk migration"],
                 icon: <FileJson className="w-6 h-6 text-purple-500" />
               },
               {
                 title: "AI Questionnaire Builder",
                 description: "Generate professional client onboarding forms, project briefs, and surveys using AI or the built-in drag-and-drop builder.",
+                visual: <AiFormWidget />,
                 features: ["AI form generation", "Drag & Drop Builder", "Public forms", "Response collection", "Export responses"],
                 icon: <Sparkles className="w-6 h-6 text-purple-500" />
               }
             ]}
           />
 
-          {/* 4. Business Intelligence */}
+          {/* 4. Insights & Navigation */}
           <FeatureCategory
-            title="Business Intelligence"
+            title="Insights & Navigation"
             badge="Analytics"
             icon={<LineChart className="w-5 h-5 text-orange-600" />}
             badgeColor="text-orange-700 bg-orange-50 border-orange-100"
@@ -118,68 +136,21 @@ export default function FeaturesPage() {
               {
                 title: "Dashboard & Analytics",
                 description: "Monitor the health of your business with real-time insights and financial analytics.",
+                visual: <DashboardWidget />,
                 features: ["Revenue overview", "Expense analytics", "Profit tracking", "KPI cards", "Charts", "Business metrics"],
                 icon: <LineChart className="w-6 h-6 text-orange-500" />
               },
               {
                 title: "Global Search",
                 description: "Find clients, invoices, projects, payments, expenses, and more instantly from one universal search.",
+                visual: <SearchWidget />,
                 features: ["Instant search", "Keyboard shortcut", "Smart filtering", "Fast results"],
                 icon: <Search className="w-6 h-6 text-orange-500" />
               }
             ]}
           />
 
-          {/* 5. Collaboration */}
-          <FeatureCategory
-            title="Collaboration"
-            badge="Team"
-            icon={<Building2 className="w-5 h-5 text-indigo-600" />}
-            badgeColor="text-indigo-700 bg-indigo-50 border-indigo-100"
-            blocks={[
-              {
-                title: "Team Workspace",
-                description: "Invite your team and manage your organization from one secure workspace.",
-                features: ["Multiple users", "Workspace settings", "Organization management", "Shared workspace"],
-                icon: <Building2 className="w-6 h-6 text-indigo-500" />
-              },
-              {
-                title: "Support Center",
-                description: "Communicate directly with the Soseki team using the built-in support system.",
-                features: ["Support tickets", "Conversation threads", "Status updates", "Ticket history"],
-                icon: <MessageSquare className="w-6 h-6 text-indigo-500" />
-              }
-            ]}
-          />
-
-          {/* 6. Security & Ownership */}
-          <FeatureCategory
-            title="Security & Ownership"
-            badge="Trust"
-            icon={<ShieldCheck className="w-5 h-5 text-slate-600" />}
-            badgeColor="text-slate-700 bg-slate-100 border-slate-200"
-            reverse
-            blocks={[
-              {
-                title: "Open Source",
-                description: "Soseki is fully open-source, giving you complete transparency and freedom.",
-                features: ["Open source", "Community driven", "Transparent development", "No vendor lock-in"],
-                icon: <Code className="w-6 h-6 text-slate-500" />
-              },
-              {
-                title: "Self Hosted",
-                description: "Deploy Soseki on your own infrastructure and maintain complete ownership of your business data.",
-                features: ["Self hosting", "PostgreSQL database", "Unlimited users", "Complete data ownership"],
-                icon: <Server className="w-6 h-6 text-slate-500" />
-              },
-              {
-                title: "Secure Authentication",
-                description: "Enterprise-ready authentication built with modern security practices.",
-                features: ["JWT authentication", "httpOnly cookies", "Secure sessions", "Protected routes"],
-                icon: <ShieldCheck className="w-6 h-6 text-slate-500" />
-              }
-            ]}
-          />
+    
 
         </div>
       </section>
@@ -264,7 +235,7 @@ function FeatureCategory({ title, badge, icon, badgeColor, blocks, reverse }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow group"
+              className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -277,14 +248,22 @@ function FeatureCategory({ title, badge, icon, badgeColor, blocks, reverse }) {
                 {block.description}
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {block.features.map((feature, j) => (
-                  <div key={j} className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span className="font-medium">{feature}</span>
-                  </div>
-                ))}
-              </div>
+              {block.visual && (
+                <div className="mt-2 mb-4 w-full flex items-center justify-center">
+                  {block.visual}
+                </div>
+              )}
+
+              {!block.visual && block.features && block.features.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
+                  {block.features.map((feature, j) => (
+                    <div key={j} className="flex items-center gap-2 text-sm text-slate-600">
+                      <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                      <span className="font-medium">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

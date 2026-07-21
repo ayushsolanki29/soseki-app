@@ -34,6 +34,7 @@ export function CurrencyIntegration() {
               src="/currency/dollor.webp"
               alt="Master Currency (USD)"
               fill
+              sizes="(max-width: 768px) 100vw, 400px"
               className="object-contain"
               priority
             />
@@ -67,7 +68,9 @@ export function CurrencyIntegration() {
               src={bill.src}
               alt={bill.alt}
               fill
+              sizes="(max-width: 768px) 100vw, 400px"
               className="object-contain"
+              priority
             />
           </div>
         </motion.div>
@@ -100,7 +103,9 @@ export function CurrencyIntegration() {
               src={bill.src}
               alt={bill.alt}
               fill
+              sizes="(max-width: 768px) 100vw, 400px"
               className="object-contain"
+              priority
             />
           </div>
         </motion.div>
