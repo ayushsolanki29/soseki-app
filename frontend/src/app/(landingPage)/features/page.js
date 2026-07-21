@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronRight, Calculator, FileText, CreditCard, Users, Briefcase, FileJson, Sparkles, LineChart, Search, Building2, MessageSquare, Code, Server, ShieldCheck, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
+import { CurrencyIntegration } from "@/components/currency-integration";
 
 export default function FeaturesPage() {
   return (
@@ -17,18 +18,15 @@ export default function FeaturesPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white pointer-events-none" />
 
         <div className="mx-auto max-w-5xl px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[13px] font-medium text-blue-600 mb-6 border border-blue-100/50">
-            <Sparkles className="w-3.5 h-3.5" />
-            Complete Business Workspace
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-[1.1]">
-            Everything You Need to Run Your Service Business
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4 max-w-4xl mx-auto">
+            Global billing with <span className="text-[#2563eb]">zero friction</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Soseki brings together clients, projects, invoices, payments, expenses, AI automation, and business analytics into one powerful open-source workspace. Replace scattered tools with a single platform built for freelancers, agencies, and growing service businesses.
+          <p className="text-[17px] text-slate-600 mb-16 max-w-3xl mx-auto">
+            Multi-currency invoicing, automatic live exchange rates, and accurate reporting for your service business.
           </p>
+          
+          <CurrencyIntegration />
         </div>
       </section>
 

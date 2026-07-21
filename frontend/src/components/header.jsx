@@ -12,10 +12,6 @@ export const navLinks = [
 		href: "/features",
 	},
 	{
-		label: "My Data",
-		href: "/my-data",
-	},
-	{
 		label: "Pricing",
 		href: "/pricing",
 	},
@@ -23,14 +19,7 @@ export const navLinks = [
 		label: "About",
 		href: "/about",
 	},
-	{
-		label: "Community",
-		href: "/community",
-	},
-	{
-		label: "Careers",
-		href: "/careers",
-	},
+
 ];
 
 export function Header() {

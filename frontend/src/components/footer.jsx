@@ -73,14 +73,8 @@ const company = [
 		title: "About Us",
 		href: "/about",
 	},
-	{
-		title: "Careers",
-		href: "/careers",
-	},
-	{
-		title: "Brand assets",
-		href: "/brand-assets",
-	},
+
+
 	{
 		title: "Privacy Policy",
 		href: "/privacy-policy",
@@ -98,20 +92,9 @@ const resources = [
 	},
 	{
 		title: "Help Center",
-		href: "/help-center",
-	},
-	{
-		title: "Contact Support",
 		href: "/contact",
 	},
-	{
-		title: "Community",
-		href: "/community",
-	},
-	{
-		title: "Security",
-		href: "/security",
-	},
+	
 ];
 
 const socialLinks = [

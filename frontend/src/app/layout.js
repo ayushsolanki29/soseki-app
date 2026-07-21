@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
       className={`${plusJakartaSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="t-page-fade min-h-full flex flex-col">
+      <body className="t-page-fade min-h-full flex flex-col overflow-x-hidden">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster richColors position="bottom-right" />
         <Suspense fallback={null}>
