@@ -1,0 +1,13 @@
+/* TEAM */
+  Developer: Ayush Solanki
+  Contact: ayushsolanki2901@gmail.com
+  Twitter: @ayushsolanki29
+  From: Ahmedabad, Gujarat
+
+/* SITE */
+  Last update: 2026-07-21
+  Standards: HTML5, CSS3, JS, React, Next.js, Node.js, PostgreSQL, Tailwind CSS
+  Infrastructure: Cloudflare, AWS, Vercel
+  Security: JWT
+  Components: UI, SaaS
+  Software: VS Code, Cursor, Antigravity, ChatGPT, Gemini

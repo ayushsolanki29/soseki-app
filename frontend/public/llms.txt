@@ -1,0 +1,26 @@
+# Soseki App
+
+Soseki is an all-in-one business operating platform designed for freelancers, consultants, and small agencies. It magically simplifies business operations by providing a single workspace for managing clients, projects, invoices, payments, and expenses.
+
+## Core Features
+- Client Management (CRM)
+- Project & Task Tracking
+- Invoicing & Payments
+- Expense Management
+- Waitlist & Beta Access
+
+## Target Audience
+Freelancers, independent consultants, and small agency owners who want to set up their business operations quickly (in 10 minutes) and get back to building.
+
+## Legal & Compliance
+Soseki provides enterprise-grade security and full compliance with EEA regulations through Google Consent Mode V2.
+
+- Privacy Policy: https://soseki.app/privacy-policy
+- Terms of Service: https://soseki.app/terms
+- Data Handling: https://soseki.app/my-data
+
+## Organization
+The platform is open-source (under the MIT license) and allows users to quickly manage multiple clients and projects seamlessly.
+
+Homepage: https://soseki.app
+Contact: https://soseki.app/contact

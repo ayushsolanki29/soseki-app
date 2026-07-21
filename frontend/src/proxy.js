@@ -46,6 +46,15 @@ const publicPaths = [
 
   // Error Pages
   '/forbidden',
+
+  // SEO & Meta endpoints
+  '/sitemap.xml',
+  '/robots.txt',
+  '/llms.txt',
+  '/humans.txt',
+  '/.well-known/security.txt',
+  '/manifest.webmanifest',
+  '/opengraph-image',
 ];
   // Super admin paths
   const isSuperAdminPath = pathname.startsWith('/super-admin') || pathname.startsWith('/api/super-admin');

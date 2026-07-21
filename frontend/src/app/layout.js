@@ -13,14 +13,57 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "Soseki",
-  description: "All-in-one business operating platform for freelancers, consultants, and small agencies.",
+  metadataBase: new URL('https://soseki.app'),
+  title: {
+    default: "Soseki - All-in-one business operating platform",
+    template: "%s | Soseki"
+  },
+  description: "The open-source platform for freelancers and agencies to magically simplify business operations. One workspace for clients, projects, invoices, payments, and expenses.",
+  keywords: ["freelancer platform", "agency management", "open-source crm", "client portal", "project management", "invoicing software"],
+  authors: [{ name: "Soseki" }],
+  creator: "Soseki",
+  publisher: "Soseki",
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "Soseki - All-in-one business operating platform",
+    description: "The open-source platform for freelancers and agencies. Manage clients, projects, invoices, and payments in one workspace.",
+    url: "https://soseki.app",
+    siteName: "Soseki",
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Soseki - All-in-one business operating platform",
+    description: "The open-source platform for freelancers and agencies. Manage clients, projects, invoices, and payments in one workspace.",
+  },
   verification: {
     google: "g2zd7qYHgqu2qzAwP8FGpj_t3XsNuHH-VcKgmBfK9aU",
   },
 };
 
 export default function RootLayout({ children }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Soseki',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD'
+    },
+    description: 'All-in-one business operating platform for freelancers, consultants, and small agencies.',
+    url: 'https://soseki.app',
+    creator: {
+      '@type': 'Organization',
+      name: 'Soseki'
+    }
+  };
+
   return (
     <html
       lang="en"
@@ -28,6 +71,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
