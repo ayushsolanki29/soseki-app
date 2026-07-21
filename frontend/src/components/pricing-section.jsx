@@ -72,9 +72,9 @@ export function PricingSection() {
             				<Button
                                 className="w-full"
                                 variant="outline"
-                                asChild
+                                render={<a href="/login" />}
                             >
-                                <a href="/login">Start for Free</a>
+                                Start for Free
                             </Button>
             			</div>
                         <div className="space-y-3 text-muted-foreground text-sm">
@@ -110,9 +110,9 @@ export function PricingSection() {
             				<Button
                                 className="w-full"
                                 variant="default"
-                                asChild
+                                render={<a href="/checkout" />}
                             >
-                                <a href="/checkout">Purchase Credits</a>
+                                Purchase Credits
                             </Button>
             			</div>
                         <div className="space-y-3 text-muted-foreground text-sm">

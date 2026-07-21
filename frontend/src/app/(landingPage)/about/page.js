@@ -15,7 +15,6 @@ import {
   LayoutGrid,
   Search,
   ShieldCheck,
-  Sparkles,
   Users,
   Workflow,
   KeyRound,
@@ -38,40 +37,35 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { FeatureSection } from "@/components/feature-section";
 
 const missionPoints = [
-  "Simplify business management",
-  "Eliminate SaaS bloat",
-  "Give users full data ownership",
-  "Build powerful open source software",
+  {
+    title: "Simplify business management",
+    desc: "Unifying your workflow into a single, cohesive platform without the friction.",
+    icon: <Workflow className="h-6 w-6 text-slate-700" />
+  },
+  {
+    title: "Eliminate SaaS bloat",
+    desc: "Stop paying for five different subscriptions when one thoughtfully designed tool will do.",
+    icon: <LayoutGrid className="h-6 w-6 text-slate-700" />
+  },
+  {
+    title: "Full data ownership",
+    desc: "Your clients, your finances, your data. No vendor lock-in, ever.",
+    icon: <Database className="h-6 w-6 text-slate-700" />
+  },
+  {
+    title: "Open source software",
+    desc: "Built in the open, community-driven, and completely transparent development.",
+    icon: <Code2 className="h-6 w-6 text-slate-700" />
+  },
 ];
 
-const differenceCards = [
-  {
-    icon: <CircleDollarSign className="h-4 w-4 text-blue-600" />,
-    title: "Multi-currency financials",
-    desc: "Create invoices and manage expenses globally with automatic exchange rates.",
-  },
-  {
-    icon: <Bot className="h-4 w-4 text-blue-600" />,
-    title: "AI productivity",
-    desc: "Generate questionnaires and migrate existing business data with AI assistance.",
-  },
-  {
-    icon: <LayoutGrid className="h-4 w-4 text-blue-600" />,
-    title: "Complete business workspace",
-    desc: "Clients, projects, invoices, payments, expenses, dashboards, and reporting in one place.",
-  },
-  {
-    icon: <ShieldCheck className="h-4 w-4 text-blue-600" />,
-    title: "Open source freedom",
-    desc: "Self-host your workspace, own your data, and avoid vendor lock-in forever.",
-  },
-];
 
 const principles = [
   {
-    icon: <Sparkles className="h-4 w-4 text-blue-600" />,
+    icon: <CheckCircle2 className="h-4 w-4 text-blue-600" />,
     title: "Zero bloat",
     desc: "Only meaningful features that improve productivity.",
   },
@@ -194,8 +188,8 @@ const visualGallery = [
 function SectionHeading({ eyebrow, title, desc, align = "left" }) {
   return (
     <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center")}>
-      <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12px] font-medium text-blue-600 shadow-sm">
-        <Sparkles className="h-3.5 w-3.5" />
+      <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12px] font-bold tracking-wide text-blue-600 uppercase shadow-sm">
+        <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
         {eyebrow}
       </div>
       <h2 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -288,7 +282,7 @@ export default function AboutPage() {
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4">
               <div className="w-16 h-16 rounded-full bg-slate-200 border-2 border-white shadow-md overflow-hidden relative">
-                <Image src="/ayush-solanki.webp" alt="Ayush Solanki" fill className="object-cover" />
+                <Image src="/ayush-solanki.webp" alt="Ayush Solanki" fill sizes="64px" className="object-cover" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-lg">Ayush Solanki</h3>
@@ -313,59 +307,108 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-slate-100 bg-white px-6 py-24">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Why We Built Soseki"
-              title="A cleaner way to run a service business"
-              desc="Running a service business should not require five different SaaS products, endless spreadsheets, or hours of manual administration. Soseki was created to replace that fragmented workflow with a single, beautifully designed platform that manages the complete client lifecycle."
-            />
-            <div className="mt-8 rounded-[24px] border border-slate-100 bg-slate-50/70 p-6 shadow-sm">
-              <p className="text-sm leading-7 text-slate-600">
-                Named after the Japanese novelist Natsume Soseki, the platform follows the same
-                philosophy: simple, clear, purposeful. No unnecessary features. No vendor lock-in.
-                No clutter. Just the tools you actually need.
-              </p>
-            </div>
-          </Reveal>
+      <section className="border-b border-slate-100 bg-white py-32 overflow-hidden relative">
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-gradient-to-b from-blue-50/50 to-transparent rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            <Reveal>
+              <div className="max-w-xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] font-bold tracking-wide text-slate-600 uppercase mb-6 shadow-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                  Why We Built Soseki
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6 leading-[1.1]">
+                  A cleaner way to run your <span className="text-blue-600">service business</span>
+                </h2>
+                <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
+                  <p>
+                    Running a service business should not require five different SaaS products, endless spreadsheets, or hours of manual administration.
+                  </p>
+                  <p>
+                    <strong>Soseki</strong> was created to replace that fragmented workflow with a single, beautifully designed platform that manages the complete client lifecycle from the initial handshake to the final payment.
+                  </p>
+                </div>
+                
+                <div className="mt-10 p-6 bg-slate-50 border border-slate-100 rounded-2xl relative">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-blue-600 rounded-l-2xl" />
+                  <p className="text-slate-700 font-medium">
+                    Named after the Japanese novelist Natsume Soseki, known for his precise and uncluttered writing, our platform embodies the same philosophy: <strong>Zero bloat, zero friction, and absolute clarity.</strong>
+                  </p>
+                </div>
+              </div>
+            </Reveal>
 
-          <Reveal delay={0.1}>
-            <div className="grid gap-4">
-              {[
-                {
-                  icon: <BookOpen className="h-4 w-4 text-blue-600" />,
-                  title: "Simple",
-                  desc: "Less friction, fewer tabs, and a tighter workflow.",
-                },
-                {
-                  icon: <Workflow className="h-4 w-4 text-blue-600" />,
-                  title: "Clear",
-                  desc: "Every module is organized around real operational work.",
-                },
-                {
-                  icon: <Heart className="h-4 w-4 text-blue-600" />,
-                  title: "Purposeful",
-                  desc: "Features exist because they solve a concrete problem.",
-                },
-              ].map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-[20px] border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition-transform duration-300 hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
+            <Reveal delay={0.2}>
+              <div className="grid gap-6">
+                {[
+                  {
+                    icon: <Layers3 className="h-5 w-5 text-blue-600" />,
+                    title: "Simple & Unified",
+                    desc: "Less friction, fewer tabs, and a tighter workflow. Everything you need without the unnecessary complexity.",
+                  },
+                  {
+                    icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
+                    title: "Clear Operations",
+                    desc: "Every module is organized around real operational work. Your business data stays perfectly organized automatically.",
+                  },
+                  {
+                    icon: <ShieldCheck className="h-5 w-5 text-indigo-600" />,
+                    title: "Purposeful Design",
+                    desc: "Features exist because they solve a concrete problem. No vendor lock-in. No clutter. Just exactly what you need.",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.title}
+                    className="group relative bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(37,99,235,0.08)] hover:border-blue-100 transition-all duration-300 flex gap-5 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 group-hover:bg-white group-hover:border-blue-100 group-hover:scale-110 transition-all duration-300">
                       {item.icon}
                     </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-                      <p className="text-sm text-slate-600">{item.desc}</p>
+                    <div className="relative z-10">
+                      <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
+                      <p className="text-slate-600 leading-relaxed text-[15px]">{item.desc}</p>
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-6 py-32 border-b border-slate-100">
+        <div className="mx-auto max-w-5xl">
+          <div className="grid lg:grid-cols-[1fr_1fr] gap-20 items-start">
+            <Reveal>
+              <div className="lg:sticky lg:top-32">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-6">
+                  Ownership, transparency, and less operational noise.
+                </h2>
+                <p className="text-lg text-slate-500 leading-relaxed">
+                  We want freelancers, agencies, and service businesses to own their business operations through a modern open-source platform that is powerful, transparent, and easy to use.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="flex flex-col gap-12">
+              {missionPoints.map((item, index) => (
+                <Reveal key={item.title} delay={index * 0.1}>
+                  <div className="flex gap-6">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-50 border border-slate-200">
+                      {item.icon}
+                    </div>
+                    <div className="pt-1.5">
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
+                      <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 
@@ -373,49 +416,14 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeading
-              eyebrow="Our Mission"
-              title="Ownership, transparency, and less operational noise"
-              desc="We want freelancers, agencies, and service businesses to own their business operations through a modern open-source platform that is powerful, transparent, and easy to use."
-              align="center"
-            />
-          </Reveal>
-
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {missionPoints.map((item, index) => (
-              <Reveal key={item} delay={index * 0.05}>
-                <div className="rounded-[20px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-sm font-semibold text-blue-600">
-                    0{index + 1}
-                  </div>
-                  <h3 className="text-base font-semibold text-slate-900">{item}</h3>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-slate-100 bg-white px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
               eyebrow="What Makes Soseki Different"
               title="Designed around real business workflows"
               desc="Every major surface in Soseki is built to reduce context switching and keep the business moving."
+              align="center"
             />
           </Reveal>
-          <div className="mt-12 grid gap-4 lg:grid-cols-2">
-            {differenceCards.map((card, index) => (
-              <Reveal key={card.title} delay={index * 0.05}>
-                <div className="rounded-[22px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(37,99,235,0.08)]">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
-                    {card.icon}
-                  </div>
-                  <h3 className="mt-4 text-lg font-semibold text-slate-900">{card.title}</h3>
-                  <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600">{card.desc}</p>
-                </div>
-              </Reveal>
-            ))}
+          <div className="mt-16 flex justify-center">
+            <FeatureSection />
           </div>
         </div>
       </section>
