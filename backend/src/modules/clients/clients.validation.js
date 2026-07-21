@@ -12,6 +12,8 @@ const createClientValidation = Joi.object({
     "any.required": "Valid email is required",
   }),
   phone: Joi.string().trim().allow("").optional(),
+  country: Joi.string().trim().allow("").optional(),
+  timezone: Joi.string().trim().allow("").optional(),
   status: Joi.string().valid("Active", "Inactive", "Lead").optional(),
 });
 
@@ -19,6 +21,8 @@ const updateClientValidation = Joi.object({
   name: Joi.string().trim().min(1).optional(),
   email: Joi.string().trim().email().optional(),
   phone: Joi.string().trim().allow("").optional(),
+  country: Joi.string().trim().allow("").optional(),
+  timezone: Joi.string().trim().allow("").optional(),
   status: Joi.string().valid("Active", "Inactive", "Lead").optional(),
 });
 

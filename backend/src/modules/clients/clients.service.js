@@ -51,7 +51,7 @@ class ClientsService {
       throw error;
     }
 
-    const { name, email, phone, status } = data;
+    const { name, email, phone, country, timezone, status } = data;
 
     const existingClient = await prisma.client.findFirst({
       where: {
@@ -72,6 +72,8 @@ class ClientsService {
         name: name.trim(),
         email: email.trim().toLowerCase(),
         phone: phone?.trim() || null,
+        country: country?.trim() || null,
+        timezone: timezone?.trim() || null,
         status: status || "Active",
         organizationId,
       },
@@ -124,7 +126,7 @@ class ClientsService {
       throw error;
     }
 
-    const { name, email, phone, status } = data;
+    const { name, email, phone, country, timezone, status } = data;
 
     const existingClient = await prisma.client.findFirst({
       where: {
@@ -159,6 +161,8 @@ class ClientsService {
     if (name !== undefined) updateData.name = name.trim();
     if (email !== undefined) updateData.email = email.trim().toLowerCase();
     if (phone !== undefined) updateData.phone = phone?.trim() || null;
+    if (country !== undefined) updateData.country = country?.trim() || null;
+    if (timezone !== undefined) updateData.timezone = timezone?.trim() || null;
     if (status !== undefined) updateData.status = status;
 
     const updatedClient = await prisma.client.update({

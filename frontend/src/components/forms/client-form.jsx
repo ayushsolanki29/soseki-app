@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ct from "countries-and-timezones";
 
 export function ClientForm({ onSuccess, onCancel, initialData = null }) {
   const router = useRouter();
@@ -14,8 +16,15 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
     name: initialData?.name || "",
     email: initialData?.email || "",
     phone: initialData?.phone || "",
+    country: initialData?.country || "",
+    timezone: initialData?.timezone || "",
     status: initialData?.status || "Active",
   });
+  
+  const allCountries = Object.values(ct.getAllCountries()).sort((a, b) => a.name.localeCompare(b.name));
+  const availableTimezones = formData.country 
+    ? ct.getTimezonesForCountry(formData.country) || [] 
+    : [];
   
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +112,42 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
             disabled={isLoading}
             className="w-full h-11"
           />
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <label className="text-sm font-semibold text-foreground">Country (Optional)</label>
+          <Select 
+            value={formData.country} 
+            onValueChange={(val) => setFormData({ ...formData, country: val, timezone: "" })}
+            disabled={isLoading}
+          >
+            <SelectTrigger className="w-full h-11">
+              <SelectValue placeholder="Select a country" />
+            </SelectTrigger>
+            <SelectContent>
+              {allCountries.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <label className="text-sm font-semibold text-foreground">Timezone (Optional)</label>
+          <Select 
+            value={formData.timezone} 
+            onValueChange={(val) => setFormData({ ...formData, timezone: val })}
+            disabled={isLoading || !formData.country || availableTimezones.length === 0}
+          >
+            <SelectTrigger className="w-full h-11">
+              <SelectValue placeholder={!formData.country ? "Select a country first" : "Select a timezone"} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableTimezones.map((tz) => (
+                <SelectItem key={tz.name} value={tz.name}>{tz.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex flex-col gap-3">

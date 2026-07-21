@@ -36,12 +36,75 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, EyeIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, EyeIcon, InfoIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import ct from "countries-and-timezones";
 import API from "@/lib/api";
 import { ClientForm } from "@/components/forms/client-form";
 import { toast } from "sonner";
 import Link from "next/link";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
+
+function ClientLocalTime({ timezone, country }) {
+  const [time, setTime] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!timezone) return;
+    
+    const updateTime = () => {
+      try {
+        const formatter = new Intl.DateTimeFormat(navigator.language || undefined, {
+          timeZone: timezone,
+          hour: 'numeric',
+          minute: '2-digit'
+        });
+        setTime(formatter.format(new Date()));
+      } catch (e) {
+        setTime("Invalid TZ");
+      }
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 60000);
+    return () => clearInterval(interval);
+  }, [timezone]);
+
+  if (!mounted) return <span className="text-muted-foreground">...</span>;
+  
+  if (!timezone) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center gap-1.5 cursor-help w-max">
+            <InfoIcon className="size-4 text-muted-foreground" />
+            <span className="text-muted-foreground">N/A</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>No time zone selected</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  const countryName = country ? ct.getCountry(country)?.name || country : "Unknown location";
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="flex items-center gap-1.5 cursor-help w-max">
+          <InfoIcon className="size-4 text-muted-foreground" />
+          <span>{time}</span>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{countryName} - {timezone}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -154,6 +217,7 @@ export default function ClientsPage() {
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Phone</TableHead>
+              <TableHead>Local Time</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Added On</TableHead>
               <TableHead className="w-[50px]"></TableHead>
@@ -161,10 +225,10 @@ export default function ClientsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <SkeletonHelper type="table" rows={5} columns={6} />
+              <SkeletonHelper type="table" rows={5} columns={7} />
             ) : clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                   No clients found.
                 </TableCell>
               </TableRow>
@@ -179,6 +243,7 @@ export default function ClientsPage() {
                   </TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.phone || "-"}</TableCell>
+                  <TableCell><ClientLocalTime timezone={client.timezone} country={client.country} /></TableCell>
                   <TableCell>
                     <Badge variant={client.status === "Active" ? "default" : client.status === "Lead" ? "secondary" : "outline"}>
                       {client.status}

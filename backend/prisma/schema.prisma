@@ -55,6 +55,8 @@ model Client {
   name           String
   email          String
   phone          String?
+  country        String?
+  timezone       String?
   status         String       @default("Active") // Active, Inactive, Lead
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
