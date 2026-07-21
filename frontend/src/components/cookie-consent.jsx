@@ -24,8 +24,18 @@ export function CookieConsent() {
     setShow(false);
     
     // Push event to GTM
-    if (typeof window !== "undefined" && window.dataLayer) {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: "cookie_consent_granted" });
+      
+      // Google Consent Mode v2 Update
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted'
+      });
     }
   };
 
@@ -34,8 +44,18 @@ export function CookieConsent() {
     setShow(false);
     
     // Push event to GTM
-    if (typeof window !== "undefined" && window.dataLayer) {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: "cookie_consent_denied" });
+      
+      // Google Consent Mode v2 Update
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
     }
   };
 
