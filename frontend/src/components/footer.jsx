@@ -105,6 +105,6 @@ const socialLinks = [
 	},
 	{
 		icon: <XIcon />,
-		link: "https://x.com",
+		link: "https://x.com/sosekiapp",
 	},
 ];

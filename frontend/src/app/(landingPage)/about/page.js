@@ -38,6 +38,7 @@ import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { FeatureSection } from "@/components/feature-section";
+import { CallToAction } from "@/components/cta";
 
 const missionPoints = [
   {
@@ -65,45 +66,45 @@ const missionPoints = [
 
 const principles = [
   {
-    icon: <CheckCircle2 className="h-4 w-4 text-blue-600" />,
-    title: "Zero bloat",
-    desc: "Only meaningful features that improve productivity.",
+    icon: <Search className="h-6 w-6 text-slate-700" />,
+    title: "Purposeful Design",
+    desc: "Every screen is crafted to reduce cognitive load, so you can focus on the actual work.",
   },
   {
-    icon: <ShieldCheck className="h-4 w-4 text-blue-600" />,
-    title: "Complete ownership",
-    desc: "Your business data always belongs to you.",
+    icon: <LineChart className="h-6 w-6 text-slate-700" />,
+    title: "Financial Precision",
+    desc: "Math has to be right. We handle global exchange rates and strict ledgers without mental overhead.",
   },
   {
-    icon: <Gauge className="h-4 w-4 text-blue-600" />,
-    title: "Modern experience",
-    desc: "Fast, intuitive, responsive, and enjoyable software.",
+    icon: <CheckCircle2 className="h-6 w-6 text-slate-700" />,
+    title: "Quiet Reliability",
+    desc: "No aggressive notifications or gamified tricks. A tool that waits for you, then gets out of your way.",
   },
   {
-    icon: <Code2 className="h-4 w-4 text-blue-600" />,
-    title: "Open by default",
-    desc: "Transparent development powered by open source.",
+    icon: <Users className="h-6 w-6 text-slate-700" />,
+    title: "Shared Truth",
+    desc: "Both you and your clients see the same data. Shared portals mean no more confusing email threads.",
   },
 ];
 
 const audiences = [
   {
-    icon: <Users className="h-4 w-4 text-blue-600" />,
+    icon: <Users className="h-5 w-5 text-slate-600 transition-colors group-hover:text-blue-600" />,
     title: "Freelancers",
     desc: "Manage clients, invoices, and projects from one place.",
   },
   {
-    icon: <Workflow className="h-4 w-4 text-blue-600" />,
+    icon: <Workflow className="h-5 w-5 text-slate-600 transition-colors group-hover:text-blue-600" />,
     title: "Agencies",
     desc: "Collaborate with teams while handling multiple clients across currencies.",
   },
   {
-    icon: <Building2 className="h-4 w-4 text-blue-600" />,
+    icon: <Building2 className="h-5 w-5 text-slate-600 transition-colors group-hover:text-blue-600" />,
     title: "Consultants",
     desc: "Simplify client onboarding, billing, and reporting.",
   },
   {
-    icon: <Layers3 className="h-4 w-4 text-blue-600" />,
+    icon: <Layers3 className="h-5 w-5 text-slate-600 transition-colors group-hover:text-blue-600" />,
     title: "Growing businesses",
     desc: "Scale operations without buying dozens of SaaS subscriptions.",
   },
@@ -121,68 +122,6 @@ const platformModules = [
   "Support Tickets",
   "Workspace Settings",
   "Global Search",
-];
-
-const technologyStacks = [
-  {
-    label: "Frontend",
-    items: ["Next.js", "React", "Tailwind CSS"],
-    icon: <LayoutGrid className="h-4 w-4 text-blue-600" />,
-  },
-  {
-    label: "Backend",
-    items: ["Node.js", "Express"],
-    icon: <Workflow className="h-4 w-4 text-blue-600" />,
-  },
-  {
-    label: "Database",
-    items: ["PostgreSQL", "Prisma ORM"],
-    icon: <Database className="h-4 w-4 text-blue-600" />,
-  },
-  {
-    label: "Authentication",
-    items: ["JWT", "Secure sessions"],
-    icon: <KeyRound className="h-4 w-4 text-blue-600" />,
-  },
-  {
-    label: "Other",
-    items: ["Recharts", "DiceBear", "HTML PDF rendering"],
-    icon: <LineChart className="h-4 w-4 text-blue-600" />,
-  },
-  {
-    label: "Support tools",
-    items: ["Search", "Tickets", "Reports"],
-    icon: <Search className="h-4 w-4 text-blue-600" />,
-  },
-];
-
-const openSourceBullets = [
-  "100% open source",
-  "Self hosted",
-  "Own your data",
-  "Community driven",
-  "Transparent development",
-];
-
-const visualGallery = [
-  {
-    src: "/dashboard.png",
-    alt: "Soseki dashboard preview",
-    title: "Daily operations",
-    desc: "The center of the workspace, where the numbers and work live together.",
-  },
-  {
-    src: "/banner.jpeg",
-    alt: "Soseki product banner",
-    title: "Public-facing polish",
-    desc: "A premium visual language that carries through the marketing experience.",
-  },
-  {
-    src: "/login-banner.jpeg",
-    alt: "Soseki login banner",
-    title: "Focused entry points",
-    desc: "Clean, calm surfaces that make first contact feel intentional.",
-  },
 ];
 
 function SectionHeading({ eyebrow, title, desc, align = "left" }) {
@@ -292,7 +231,7 @@ export default function AboutPage() {
                 <Link href="https://www.ayushsolanki.site/" target="_blank" className="p-2 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-colors shadow-sm" aria-label="Website">
                   <Globe className="w-4 h-4" />
                 </Link>
-                <Link href="https://x.com/ayushsolanki29" target="_blank" className="p-2 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-colors shadow-sm" aria-label="X (Twitter)">
+                <Link href="https://x.com/sosekiapp" target="_blank" className="p-2 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-colors shadow-sm" aria-label="X (Twitter)">
                   <XIcon className="w-4 h-4" />
                 </Link>
                 <Link href="https://github.com/ayushsolanki29" target="_blank" className="p-2 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-colors shadow-sm" aria-label="GitHub">
@@ -428,122 +367,30 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-slate-100 bg-slate-50/50 px-6 py-24">
-        <div className="mx-auto max-w-6xl">
+      <section className="bg-slate-50 px-6 py-32 border-b border-slate-100">
+        <div className="mx-auto max-w-5xl">
           <Reveal>
-            <SectionHeading
-              eyebrow="Core Principles"
-              title="Everything we build follows four rules"
-              desc="The product should feel calm, capable, and trustworthy. These principles keep the work focused."
-              align="center"
-            />
+            <div className="max-w-3xl mb-16">
+              <h2 className="text-sm font-bold tracking-widest text-blue-600 uppercase mb-4">Core Principles</h2>
+              <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-6">
+                Everything we build follows four rules
+              </h3>
+              <p className="text-lg text-slate-500 leading-relaxed">
+                The product should feel calm, capable, and trustworthy. These principles keep the work focused.
+              </p>
+            </div>
           </Reveal>
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+          <div className="grid md:grid-cols-2 gap-x-12 gap-y-16 mt-12">
             {principles.map((item, index) => (
-              <Reveal key={item.title} delay={index * 0.05}>
-                <div className="rounded-[20px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
+              <Reveal key={item.title} delay={index * 0.1}>
+                <div className="flex items-start gap-6">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-slate-200 shadow-sm">
                     {item.icon}
                   </div>
-                  <h3 className="mt-4 text-base font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">{item.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-slate-100 bg-white px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Who It Is For"
-              title="Built for modern service businesses"
-              desc="The product is aimed at teams that need structure without losing speed."
-            />
-          </Reveal>
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {audiences.map((item, index) => (
-              <Reveal key={item.title} delay={index * 0.05}>
-                <div className="rounded-[20px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition-transform duration-300 hover:-translate-y-0.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
-                    {item.icon}
-                  </div>
-                  <h3 className="mt-4 text-base font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">{item.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-slate-100 bg-slate-50/50 px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Platform Overview"
-              title="Everything connected"
-              desc="The modules do not live in isolation. They work together as one operating system for the whole client lifecycle."
-              align="center"
-            />
-          </Reveal>
-          <Reveal delay={0.1} className="mt-12 rounded-[28px] border border-slate-100 bg-white p-8 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-            <div className="flex flex-wrap gap-3">
-              {platformModules.map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700"
-                >
-                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
-                  {item}
-                </span>
-              ))}
-            </div>
-            <div className="mt-8 grid gap-4 lg:grid-cols-3">
-              {[
-                "The dashboard surfaces the numbers that matter.",
-                "Clients, projects, invoices, and payments move in one flow.",
-                "Search, settings, support, and reporting stay close at hand.",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[20px] border border-slate-100 bg-slate-50/70 p-5 text-sm leading-7 text-slate-600"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="border-b border-slate-100 bg-white px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Visual Story"
-              title="A product that looks as thoughtful as it feels"
-              desc="The screenshots, banners, and brand assets are part of the experience. They should all feel like the same product family."
-              align="center"
-            />
-          </Reveal>
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
-            {visualGallery.map((item, index) => (
-              <Reveal key={item.title} delay={index * 0.06}>
-                <div className="overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-transform duration-300 hover:-translate-y-1">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      className="object-cover transition-transform duration-700 hover:scale-[1.03]"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-base font-semibold text-slate-900">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-slate-600">{item.desc}</p>
+                  <div className="pt-1.5">
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
+                    <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </Reveal>
@@ -552,138 +399,137 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-slate-100 bg-white px-6 py-24">
+      <section className="bg-white px-6 py-32 border-b border-slate-100 overflow-hidden">
         <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Technology"
-              title="Built with modern tools"
-              desc="The stack is practical, familiar, and easy to maintain for teams that want to deploy and move fast."
-            />
-          </Reveal>
-          <div className="mt-12 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            {technologyStacks.map((stack, index) => (
-              <Reveal key={stack.label} delay={index * 0.05}>
-                <div className="rounded-[20px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
-                      {stack.icon}
-                    </div>
-                    <h3 className="text-base font-semibold text-slate-900">{stack.label}</h3>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {stack.items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
+          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-16 lg:gap-24 items-center">
+            
+            {/* Left side: Text & Audiences */}
+            <div>
+              <Reveal>
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12px] font-bold tracking-wide text-blue-600 uppercase mb-8 shadow-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Who It's For
                 </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 leading-[1.1] mb-6">
+                  Built for modern <br className="hidden sm:block" /> service businesses.
+                </h2>
+                <p className="text-lg text-slate-500 leading-relaxed mb-10">
+                  Whether you're a solo freelancer or a growing agency, Soseki provides the structure you need without slowing you down.
+                </p>
               </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      <section className="border-b border-slate-100 bg-slate-50/50 px-6 py-24">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <Reveal>
-            <SectionHeading
-              eyebrow="Open Source Commitment"
-              title="Open source. Self hosted. Yours."
-              desc="Businesses should own their software and their data. Deploy Soseki on your own infrastructure, customize it to your workflow, contribute to the project, and never worry about vendor lock-in or per-seat pricing."
-            />
-            <div className="mt-8 flex flex-wrap gap-3">
-              {openSourceBullets.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <div className="rounded-[28px] border border-slate-100 bg-white p-8 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-100 bg-blue-50">
-                  <Globe className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    Community first
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    Transparent development, open contribution paths, and full data control.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                {[
-                  {
-                    icon: <FileText className="h-4 w-4 text-blue-600" />,
-                    title: "Docs",
-                    desc: "Clear implementation guidance and product notes.",
-                  },
-                  {
-                    icon: <Ticket className="h-4 w-4 text-blue-600" />,
-                    title: "Issues",
-                    desc: "Track bugs, ideas, and improvements in the open.",
-                  },
-                  {
-                    icon: <Settings2 className="h-4 w-4 text-blue-600" />,
-                    title: "Customization",
-                    desc: "Adapt the platform to your workflow and branding.",
-                  },
-                  {
-                    icon: <Receipt className="h-4 w-4 text-blue-600" />,
-                    title: "Data export",
-                    desc: "Move your records without asking for permission.",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="rounded-[18px] border border-slate-100 bg-slate-50/70 p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 bg-blue-50">
+              <div className="flex flex-col gap-6">
+                {audiences.map((item, index) => (
+                  <Reveal key={item.title} delay={index * 0.1}>
+                    <div className="group flex items-start gap-4 p-4 -ml-4 rounded-2xl transition-all hover:bg-slate-50 cursor-default">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm group-hover:border-blue-200 transition-colors">
                         {item.icon}
                       </div>
-                      <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
+                      <div className="pt-1">
+                        <h3 className="text-base font-bold text-slate-900 mb-1">{item.title}</h3>
+                        <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                      </div>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">{item.desc}</p>
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             </div>
-          </Reveal>
+
+            {/* Right side: Mockup/Graphic */}
+            <Reveal delay={0.2}>
+              <div className="relative aspect-square lg:aspect-auto lg:h-[600px] w-full rounded-3xl bg-slate-50 border border-slate-100 p-8 overflow-hidden flex items-center justify-center">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 blur-3xl rounded-full" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/10 blur-3xl rounded-full" />
+                
+                <div className="relative w-[140%] sm:w-[110%] lg:w-[130%] translate-x-12 translate-y-12 lg:translate-x-16 lg:translate-y-16 rounded-2xl overflow-hidden shadow-2xl bg-white border border-slate-200 shadow-blue-900/5 group-hover:shadow-blue-900/10 transition-shadow">
+                  <Image 
+                    src="https://storage.efferd.com/screen/dashboard-light.webp"
+                    alt="Soseki Dashboard Interface"
+                    width={1200}
+                    height={800}
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/5 pointer-events-none" />
+                </div>
+              </div>
+            </Reveal>
+
+          </div>
         </div>
       </section>
 
-      <section className="relative border-b border-slate-100 px-6 py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-blue-50/60 via-white to-white pointer-events-none" />
-        <div className="relative mx-auto max-w-5xl text-center">
+      <section className="bg-slate-50 border-b border-slate-100 px-6 py-32 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-blue-100/50 to-transparent rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="mx-auto max-w-6xl relative z-10">
           <Reveal>
-            <h2 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-              Join the future of business management
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-[21px]">
-              Whether you are an independent freelancer or a growing agency, Soseki gives you
-              everything you need to manage your business with clarity, ownership, and confidence.
-            </p>
-            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-              <Link href="/login" className={cn(buttonVariants({ size: "lg" }), "bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-6")}>
-                Get Started Free
-              </Link>
-              <Link href="/pricing" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-slate-200 bg-white px-6 text-slate-700 hover:bg-slate-50")}>
-                View Pricing
-              </Link>
+            <div className="max-w-3xl mb-16">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[12px] font-bold tracking-wide text-blue-600 uppercase mb-6 shadow-sm">
+                The Soseki Ecosystem
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6 leading-[1.1]">
+                A Unified Operations Engine
+              </h2>
+              <p className="text-xl text-slate-500 leading-relaxed">
+                Stop wrestling with fragmented tools. Soseki connects every phase of your business—from the first client handshake to the final payment—in one seamless, frictionless environment.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.1} className="mt-12 rounded-[32px] border border-slate-200 bg-white/60 backdrop-blur-xl p-10 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <div className="flex flex-wrap gap-3 mb-12">
+              {platformModules.map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-300 hover:text-blue-600 cursor-default"
+                >
+                  <Workflow className="h-3.5 w-3.5 text-blue-500" />
+                  {item}
+                </span>
+              ))}
+            </div>
+            
+            <div className="grid gap-12 lg:gap-8 lg:grid-cols-3">
+              <div className="space-y-4">
+                <div className="h-12 w-12 flex items-center justify-center bg-blue-50 border border-blue-100 text-blue-600 rounded-xl">
+                  <Layers3 className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Fluid Data Architecture</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Data moves automatically across the platform. Convert a project into a multi-currency invoice instantly—no manual data entry required.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="h-12 w-12 flex items-center justify-center bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl">
+                  <LineChart className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Real-Time Intelligence</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Financial metrics, client activity, and project statuses are aggregated instantly into your master dashboard, giving absolute clarity at a glance.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="h-12 w-12 flex items-center justify-center bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl">
+                  <Search className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Zero-Friction Context</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  With features like Global Command Search and unified settings, every module is accessible instantly without ever breaking your workflow.
+                </p>
+              </div>
             </div>
           </Reveal>
         </div>
       </section>
+
+      <div className="py-24 px-6">
+        <CallToAction 
+          title="Join the future of business management" 
+          description="Whether you are an independent freelancer or a growing agency, Soseki gives you everything you need to manage your business with clarity, ownership, and confidence." 
+        />
+      </div>
 
       <Footer />
     </main>
