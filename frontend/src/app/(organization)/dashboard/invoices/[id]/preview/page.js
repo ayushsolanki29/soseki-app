@@ -26,6 +26,12 @@ export default function InvoicePreviewPage() {
     const success = await generatePDF('invoice-print-area', `Invoice-${invoice.invoiceNumber}.pdf`);
     if (success) {
       toast.success('PDF downloaded successfully');
+      // Track download silently in the background
+      try {
+        await API.post(`/invoices/${id}/track-download`);
+      } catch (err) {
+        // Silent fail
+      }
     } else {
       toast.error('Failed to generate PDF');
     }

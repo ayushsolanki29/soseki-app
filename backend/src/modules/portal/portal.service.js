@@ -263,3 +263,25 @@ exports.recordClientPayment = async (clientId, invoiceId, method, reference) => 
 
   return result;
 };
+
+/**
+ * Track invoice PDF download by client
+ */
+exports.trackInvoiceDownload = async (clientId, invoiceId) => {
+  const invoicesService = require("../invoices/invoices.service");
+  
+  // Verify relationship
+  const invoice = await prisma.invoice.findFirst({
+    where: { 
+      id: invoiceId,
+      clientId: clientId 
+    }
+  });
+
+  if (!invoice) {
+    throw new ApiError(404, "Invoice not found");
+  }
+
+  // Delegate to invoices service
+  return invoicesService.trackDownload(invoice.organizationId, invoiceId, true);
+};

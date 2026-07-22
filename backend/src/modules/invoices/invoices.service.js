@@ -357,6 +357,37 @@ class InvoicesService {
 
     return updatedInvoice;
   }
+  async trackDownload(organizationId, invoiceId, isClient = false) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId, organizationId }
+    });
+
+    if (!invoice) {
+      const error = new Error("Invoice not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        activities: {
+          create: {
+            type: "DOWNLOADED",
+            description: `Invoice PDF downloaded by ${isClient ? 'client' : 'organization member'}`
+          }
+        }
+      }
+    });
+
+    return updatedInvoice;
+  }
 }
 
 module.exports = new InvoicesService();

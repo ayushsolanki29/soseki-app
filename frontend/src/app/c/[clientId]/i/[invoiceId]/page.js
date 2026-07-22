@@ -27,6 +27,12 @@ export default function ClientPortalInvoice({ params }) {
     const success = await generatePDF('invoice-print-area', `Invoice-${invoice.invoiceNumber}.pdf`);
     if (success) {
       toast.success('PDF downloaded successfully');
+      // Track download silently in the background
+      try {
+        await API.post(`/portal/client/${clientId}/invoices/${invoiceId}/track-download`);
+      } catch (err) {
+        // Silent fail
+      }
     } else {
       toast.error('Failed to generate PDF');
     }

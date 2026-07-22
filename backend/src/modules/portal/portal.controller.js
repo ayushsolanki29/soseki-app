@@ -78,3 +78,16 @@ exports.recordClientPayment = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Track invoice PDF download by Client
+ */
+exports.trackInvoiceDownload = async (req, res, next) => {
+  try {
+    const { clientId, invoiceId } = req.params;
+    await portalService.trackInvoiceDownload(clientId, invoiceId);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};

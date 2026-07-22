@@ -14,5 +14,6 @@ router.post("/:id/payments", invoicesController.recordPayment);
 router.post("/:id/verify-payment", invoicesController.verifyPayment);
 router.patch("/:id", validate(invoicesValidation.updateInvoiceValidation), invoicesController.updateInvoice);
 router.delete("/:id", invoicesController.deleteInvoice);
+router.post("/:id/track-download", invoicesController.trackDownload);
 
 module.exports = router;
