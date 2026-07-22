@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { APP_EMAILS } from "@/lib/constants";
 
 const TermsOfUsePage = () => {
   const router = useRouter();
@@ -279,7 +280,7 @@ const TermsOfUsePage = () => {
                 <strong>9.1 Commercial Cloud Subscriptions:</strong> We offer a 14-day refund policy for new subscriptions, provided no extensive platform abuse has occurred. You may cancel your subscription at any time to prevent future billing.
               </p>
               <p className="text-sm">
-                <strong>9.2 Process:</strong> You can request a cancellation directly inside your workspace billing dashboard or by contacting <strong>hello@soseki.app</strong>. Upon cancellation, your workspace data will remain accessible until the end of your current billing cycle.
+                <strong>9.2 Process:</strong> You can request a cancellation directly inside your workspace billing dashboard or by contacting <strong>{APP_EMAILS[0]?.value}</strong>. Upon cancellation, your workspace data will remain accessible until the end of your current billing cycle.
               </p>
             </Section>
 
@@ -342,10 +343,10 @@ const TermsOfUsePage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <p className="flex items-center gap-3 text-sm font-semibold text-gray-900 dark:text-white">
-                    <Mail className="w-4 h-4 text-primary" /> hello@soseki.app
+                    <Mail className="w-4 h-4 text-primary" /> {APP_EMAILS[0]?.value}
                   </p>
                   <p className="flex items-center gap-3 text-sm font-semibold text-gray-900 dark:text-white">
-                    <Mail className="w-4 h-4 text-primary" /> help@soseki.app
+                    <Mail className="w-4 h-4 text-primary" /> {APP_EMAILS[1]?.value}
                   </p>
                 </div>
                 <div className="space-y-4">

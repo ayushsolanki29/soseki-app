@@ -18,3 +18,8 @@ export const LEGAL_PAGES = [
   { name: "Terms of Service", url: "/terms" },
   { name: "Report Abuse", url: "/report-abuse" },
 ];
+
+export const APP_EMAILS = [
+  { label: "Email", value: "hello@soseki.app" },
+  { label: "Support", value: "help@soseki.app" },
+];

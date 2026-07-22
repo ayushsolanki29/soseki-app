@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { APP_EMAILS } from "@/lib/constants";
 
 const MyDataPage = () => {
   const router = useRouter();
@@ -155,7 +156,7 @@ const MyDataPage = () => {
                 <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-widest mb-2 text-blue-600">
                   Method 2: Contact Support
                 </p>
-                <p className="text-sm">If you prefer, you can use our <a href="/contact" className="text-blue-600 hover:underline">Contact Form</a> or email us directly at <a href="mailto:hello@soseki.app" className="text-blue-600 hover:underline">hello@soseki.app</a> with your deletion request.</p>
+                <p className="text-sm">If you prefer, you can use our <a href="/contact" className="text-blue-600 hover:underline">Contact Form</a> or email us directly at <a href={`mailto:${APP_EMAILS[0]?.value}`} className="text-blue-600 hover:underline">{APP_EMAILS[0]?.value}</a> with your deletion request.</p>
               </div>
             </div>
 

@@ -38,7 +38,7 @@ const processQueue = async () => {
     for (const email of emails) {
       try {
         const mailOptions = {
-          from: `"${mailConfig.fromName}" <${mailConfig.user}>`,
+          from: `"${mailConfig.fromName}" <${mailConfig.resendFromEmail}>`,
           to: email.to,
           subject: email.subject,
           html: email.htmlBody,

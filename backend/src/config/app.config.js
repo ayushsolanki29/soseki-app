@@ -14,11 +14,8 @@ module.exports = {
     bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10,
   },
   mail: {
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT) || 465,
-    secure: process.env.SMTP_SECURE === "false" ? false : true,
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    resendApiKey: process.env.RESEND_API_KEY,
+    resendFromEmail: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
     fromName: process.env.MAIL_FROM_NAME || "Soseki App",
   },
   admin: {

@@ -18,20 +18,17 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { APP_EMAILS } from "@/lib/constants";
 
 const contactCards = [
-  {
-    icon: <Mail className="h-4 w-4 text-blue-600" />,
-    title: "Email",
-    desc: "hello@soseki.app",
-    href: "mailto:hello@soseki.app",
-  },
-  {
-    icon: <LifeBuoy className="h-4 w-4 text-blue-600" />,
-    title: "Support",
-    desc: "help@soseki.app",
-    href: "mailto:help@soseki.app",
-  },
+  ...APP_EMAILS.map((email) => ({
+    icon: email.label.toLowerCase().includes('support') 
+      ? <LifeBuoy className="h-4 w-4 text-blue-600" /> 
+      : <Mail className="h-4 w-4 text-blue-600" />,
+    title: email.label,
+    desc: email.value,
+    href: `mailto:${email.value}`,
+  })),
   {
     icon: <MessageSquare className="h-4 w-4 text-blue-600" />,
     title: "Community",
@@ -110,7 +107,7 @@ export default function ContactPage() {
               we&apos;d love to hear from you.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link href="mailto:hello@soseki.app?subject=Hello%20Soseki" className={cn(buttonVariants({ size: "lg" }), "bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-6")}>
+              <Link href={`mailto:${APP_EMAILS[0]?.value}?subject=Hello%20Soseki`} className={cn(buttonVariants({ size: "lg" }), "bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-6")}>
                 Send a Message
               </Link>
               <Link href="/community" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-slate-200 bg-white px-6 text-slate-700 hover:bg-slate-50")}>
@@ -119,8 +116,7 @@ export default function ContactPage() {
             </div>
             <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
               {[
-                { label: "Email", value: "hello@soseki.app" },
-                { label: "Support", value: "help@soseki.app" },
+                ...APP_EMAILS,
                 { label: "Response", value: "Usually within a day" },
               ].map((item) => (
                 <div key={item.label} className="rounded-[18px] border border-slate-100 bg-white/90 px-4 py-3 shadow-[0_8px_30px_rgba(15,23,42,0.04)] backdrop-blur">
@@ -234,7 +230,7 @@ export default function ContactPage() {
               We&apos;re always happy to hear from people who care about the product and the people using it.
             </p>
             <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-              <Link href="mailto:hello@soseki.app?subject=Hello%20Soseki" className={cn(buttonVariants({ size: "lg" }), "bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-6")}>
+              <Link href={`mailto:${APP_EMAILS[0]?.value}?subject=Hello%20Soseki`} className={cn(buttonVariants({ size: "lg" }), "bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-6")}>
                 Send Your Message
               </Link>
               <Link href="/community" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-slate-200 bg-white px-6 text-slate-700 hover:bg-slate-50")}>

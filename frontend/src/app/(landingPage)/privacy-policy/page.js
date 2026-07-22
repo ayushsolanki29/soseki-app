@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { APP_EMAILS } from "@/lib/constants";
 
 const PrivacyPolicyPage = () => {
   const router = useRouter();
@@ -108,7 +109,7 @@ const PrivacyPolicyPage = () => {
               </div>
               <div className="space-y-4">
                 <Subtitle>Grievance & Support Officer</Subtitle>
-                <p className="text-sm font-bold text-primary">hello@soseki.app</p>
+                <p className="text-sm font-bold text-primary">{APP_EMAILS[1]?.value}</p>
                 <p className="text-xs text-muted-foreground">Standard Response Time: Within 72 hours</p>
               </div>
             </div>
