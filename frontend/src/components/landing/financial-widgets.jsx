@@ -18,8 +18,8 @@ export function ExpenseWidget() {
 
   const items = [
     { title: "Software Subscriptions", date: "Oct 12" },
-    { title: "Delaware franchise tax", date: "Oct 15" },
-    { title: "Federal & state income tax", date: "Apr 15" },
+    { title: "Adobe Subscription", date: "Oct 14" },
+    { title: "Contractor Payment", date: "Oct 15" },
   ];
 
   return (
@@ -108,12 +108,11 @@ export function InvoiceWidget() {
           </div>
           
           <motion.div 
-            animate={{ x: [0, 4, 0] }} 
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex flex-col items-center justify-center text-slate-300"
+            animate={{ opacity: [1, 0.7, 1] }} 
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex flex-col items-center justify-center text-slate-400"
           >
-            <span className="text-[10px] font-semibold text-blue-500 mb-0.5">1.10 Rate</span>
-            <ArrowRight className="w-4 h-4 text-blue-500" />
+            <span className="text-[10px] font-semibold text-blue-500 mb-0.5">1 EUR = 1.10 USD</span>
           </motion.div>
 
           <div className="text-right">

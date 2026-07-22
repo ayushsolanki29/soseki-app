@@ -37,11 +37,11 @@ export default function FeaturesPage() {
 
         <div className="mx-auto max-w-5xl px-6 text-center relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4 max-w-4xl mx-auto">
-            Global billing with <span className="text-[#2563eb]">zero friction</span>
+            Bill in whatever currency your <span className="text-[#2563eb]">client actually pays in</span>
           </h1>
 
           <p className="text-[17px] text-slate-600 mb-16 max-w-3xl mx-auto">
-            Multi-currency invoicing, automatic live exchange rates, and accurate reporting for your service business.
+            If your clients are in Berlin, London, and New York, you should not have to do the exchange rate math yourself.
           </p>
 
           <CurrencyIntegration />
@@ -61,21 +61,21 @@ export default function FeaturesPage() {
             blocks={[
               {
                 title: "Multi-Currency Invoicing",
-                description: "Create invoices in multiple currencies while Soseki automatically fetches live exchange rates and keeps every financial metric synchronized with your workspace's base currency.",
+                description: "Send invoices in whatever currency your client pays in. Soseki pulls live exchange rates automatically and keeps your dashboard synced to your home currency, so the numbers always add up.",
                 visual: <InvoiceWidget />,
                 features: ["Live exchange rates", "Multi-currency invoices", "Automatic conversion", "Tax support", "Professional PDF invoices", "Payment tracking"],
                 icon: <FileText className="w-6 h-6 text-emerald-500" />
               },
               {
                 title: "Expense Management",
-                description: "Track every business expense and associate it with clients, projects, or invoices while maintaining complete financial visibility.",
+                description: "Track what you spend and tie each expense to a client, a project, or an invoice, so you always know where the money went.",
                 visual: <ExpenseWidget />,
                 features: ["Expense tracking", "Printable receipts", "Multi-currency expenses", "Expense categories", "Financial reports"],
                 icon: <Calculator className="w-6 h-6 text-emerald-500" />
               },
               {
                 title: "Payment Management",
-                description: "Keep a complete history of every payment received and monitor outstanding balances across your organization.",
+                description: "See every payment that's come in and what's still outstanding, all in one place.",
                 visual: <PaymentWidget />,
                 features: ["Payment history", "Outstanding invoices", "Payment timeline", "Financial ledger"],
                 icon: <CreditCard className="w-6 h-6 text-emerald-500" />
@@ -100,14 +100,14 @@ export default function FeaturesPage() {
               },
               {
                 title: "Client Management",
-                description: "Manage every client relationship from the first conversation to the final invoice inside one centralized workspace.",
+                description: "Keep track of every client detail, from contact info to their entire billing history, without digging through old emails.",
                 visual: <ClientManagementWidget />,
                 features: ["Client profiles", "Contact information", "Activity history", "Client timeline", "Linked invoices", "Linked projects"],
                 icon: <Users className="w-6 h-6 text-blue-500" />
               },
               {
                 title: "Project Management",
-                description: "Organize projects, monitor progress, manage deadlines, and connect every project with invoices, expenses, and questionnaires.",
+                description: "Track deadlines and attach invoices, expenses, and forms directly to the project they belong to.",
                 visual: <ProjectManagementWidget />,
                 features: ["Project tracking", "Status management", "Deadlines", "Timeline", "Linked financial records"],
                 icon: <Briefcase className="w-6 h-6 text-blue-500" />
@@ -124,14 +124,14 @@ export default function FeaturesPage() {
             blocks={[
               {
                 title: "AI Data Migration",
-                description: "Move your existing business data from spreadsheets, PDFs, QuickBooks, CSV files, or Excel with AI-assisted migration.",
+                description: "Stop wasting days on manual data entry. Paste your old spreadsheets or PDFs into the AI tool to bring your clients and projects over instantly.",
                 visual: <AiMigrationWidget />,
                 features: ["PDF import", "CSV import", "Excel import", "AI JSON conversion", "Bulk migration"],
                 icon: <FileJson className="w-6 h-6 text-purple-500" />
               },
               {
                 title: "AI Questionnaire Builder",
-                description: "Generate professional client onboarding forms, project briefs, and surveys using AI or the built-in drag-and-drop builder.",
+                description: "Use the drag and drop builder to make public forms, or just paste your questions into ChatGPT and let it build the form for you.",
                 visual: <AiFormWidget />,
                 features: ["AI form generation", "Drag & Drop Builder", "Public forms", "Response collection", "Export responses"],
                 icon: <Sparkles className="w-6 h-6 text-purple-500" />
@@ -149,14 +149,14 @@ export default function FeaturesPage() {
             blocks={[
               {
                 title: "Dashboard & Analytics",
-                description: "Monitor the health of your business with real-time insights and financial analytics.",
+                description: "See your actual revenue, expenses, and profit at a glance without having to maintain a separate spreadsheet.",
                 visual: <DashboardWidget />,
                 features: ["Revenue overview", "Expense analytics", "Profit tracking", "KPI cards", "Charts", "Business metrics"],
                 icon: <LineChart className="w-6 h-6 text-orange-500" />
               },
               {
                 title: "Global Search",
-                description: "Find clients, invoices, projects, payments, expenses, and more instantly from one universal search.",
+                description: "Hit a keyboard shortcut and find any invoice, client, or project instantly, no matter where you are in the app.",
                 visual: <SearchWidget />,
                 features: ["Instant search", "Keyboard shortcut", "Smart filtering", "Fast results"],
                 icon: <Search className="w-6 h-6 text-orange-500" />
@@ -193,8 +193,8 @@ export default function FeaturesPage() {
               <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-6">
                 <Building2 className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Replace multiple SaaS subscriptions</h3>
-              <p className="text-slate-600 max-w-sm">Stop paying for separate invoicing, CRM, project management, and form tools. Soseki unites them all.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Replace multiple subscriptions</h3>
+              <p className="text-slate-600 max-w-sm">Stop juggling separate invoicing, CRM, and project tools. Soseki puts them in one place.</p>
             </motion.div>
 
             {/* Bento Card 2: Open Source */}
@@ -209,8 +209,8 @@ export default function FeaturesPage() {
               <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-6 relative z-10">
                 <Code className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2 relative z-10">Open-source flexibility</h3>
-              <p className="text-slate-400 relative z-10 text-sm">Host it yourself, own your data forever, and customize the codebase to your exact needs.</p>
+              <h3 className="text-xl font-bold text-white mb-2 relative z-10">Open source freedom</h3>
+              <p className="text-slate-400 relative z-10 text-sm">Own your data forever and read or contribute to the exact codebase running your business.</p>
             </motion.div>
 
             {/* Bento Card 3: Performance */}
@@ -225,7 +225,7 @@ export default function FeaturesPage() {
                 <Sparkles className="w-6 h-6 text-emerald-600" />
               </div>
               <h3 className="text-xl font-bold text-emerald-950 mb-2">Lightning fast performance</h3>
-              <p className="text-emerald-700/80 text-sm">Built on a modern tech stack designed for speed, ensuring your workflow is never interrupted.</p>
+              <p className="text-emerald-700/80 text-sm">Built to be fast so you can get in, do what you need to do, and get back to your real work.</p>
             </motion.div>
 
             {/* Bento Card 4: AI Powered */}
@@ -239,8 +239,8 @@ export default function FeaturesPage() {
               <div className="w-12 h-12 rounded-2xl bg-white border border-purple-100 shadow-sm flex items-center justify-center mb-6">
                 <Server className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold text-purple-950 mb-2">Automated & AI-powered workflows</h3>
-              <p className="text-purple-800/70 max-w-sm">From smart data migration to generative client questionnaires, let AI handle the busywork.</p>
+              <h3 className="text-xl font-bold text-purple-950 mb-2">Automated workflows</h3>
+              <p className="text-purple-800/70 max-w-sm">Let AI handle the boring data entry and form building so you can focus on billable hours.</p>
             </motion.div>
 
           </div>
