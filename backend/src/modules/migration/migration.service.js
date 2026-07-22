@@ -138,6 +138,12 @@ class MigrationService {
               total: (item.quantity || 1) * (item.unitPrice || 0) * (1 + (item.taxRate || 0) / 100),
             })),
           },
+          activities: {
+            create: [{
+              type: "CREATED",
+              description: "Created this invoice via data migration"
+            }]
+          }
         },
       });
       idMap.invoices[i.id] = created.id;
@@ -149,21 +155,31 @@ class MigrationService {
       const realInvoiceId = idMap.invoices[p.invoiceId];
       if (!realInvoiceId) continue;
 
+      const amount = parseFloat(p.amount) || 0;
+      const date = p.date && p.date !== "this-is-blank" ? new Date(p.date) : new Date();
+      const method = p.method !== "this-is-blank" ? p.method : "Bank Transfer";
+
       await prisma.payment.create({
         data: {
           invoiceId: realInvoiceId,
-          amount: parseFloat(p.amount) || 0,
-          date: p.date && p.date !== "this-is-blank" ? new Date(p.date) : new Date(),
-          method: p.method !== "this-is-blank" ? p.method : "Bank Transfer",
+          amount,
+          date,
+          method,
           reference: p.reference !== "this-is-blank" ? p.reference : null,
         },
       });
 
-      // Update invoice paidAmount
+      // Update invoice paidAmount and add activity
       await prisma.invoice.update({
         where: { id: realInvoiceId },
         data: {
-          paidAmount: { increment: parseFloat(p.amount) || 0 },
+          paidAmount: { increment: amount },
+          activities: {
+            create: {
+              type: "UPDATED",
+              description: `Payment of ${amount.toFixed(2)} collected via ${method} on ${date.toISOString().split('T')[0]}`
+            }
+          }
         },
       });
 
