@@ -104,9 +104,6 @@ class ClientsService {
             payments: true,
           },
         },
-        expenses: {
-          orderBy: { date: "desc" },
-        },
       },
     });
 
@@ -115,6 +112,43 @@ class ClientsService {
       error.status = 404;
       throw error;
     }
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        organizationId,
+        OR: [
+          { clientId: id },
+          { project: { clientId: id } },
+          { invoice: { clientId: id } }
+        ]
+      },
+      include: {
+        project: { select: { id: true, title: true } },
+        invoice: { select: { id: true, invoiceNumber: true } }
+      },
+      orderBy: { date: "desc" }
+    });
+
+    client.expenses = expenses;
+
+    let totalEarnings = 0;
+    if (client.invoices) {
+      client.invoices.forEach(inv => {
+        totalEarnings += Number(inv.paidAmount || 0) * Number(inv.exchangeRate || 1.0);
+      });
+    }
+
+    let totalExpenses = 0;
+    expenses.forEach(exp => {
+      totalExpenses += Number(exp.amount || 0) * Number(exp.exchangeRate || 1.0);
+    });
+
+    client.summary = {
+      totalProjects: client.projects ? client.projects.length : 0,
+      totalEarnings,
+      totalExpenses,
+      netProfit: totalEarnings - totalExpenses
+    };
 
     return client;
   }

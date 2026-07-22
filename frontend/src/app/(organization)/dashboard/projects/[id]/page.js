@@ -5,10 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon, LinkIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, UserIcon, PencilIcon, TrashIcon, FileTextIcon, DollarSignIcon, LinkIcon, TrendingUp, TrendingDown } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
-import { formatDate, formatId } from "@/lib/utils";
+import { formatDate, formatId, formatCurrency } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import {
   Sheet,
@@ -203,6 +203,38 @@ export default function ProjectDetailsPage() {
             </Button>
         </div>
       </div>
+
+      {project.summary && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Earnings</CardTitle>
+              <TrendingUp className="size-4 text-emerald-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(project.summary.totalEarnings, organization?.masterCurrency || "USD")}</div>
+            </CardContent>
+          </Card>
+          <Card className="border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Expenses</CardTitle>
+              <TrendingDown className="size-4 text-destructive" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(project.summary.totalExpenses, organization?.masterCurrency || "USD")}</div>
+            </CardContent>
+          </Card>
+          <Card className="border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+              <DollarSignIcon className="size-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(project.summary.netProfit, organization?.masterCurrency || "USD")}</div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">

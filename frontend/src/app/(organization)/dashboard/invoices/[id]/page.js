@@ -44,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ExpensesTable } from "@/components/shared/expenses-table";
 
 
 export default function InvoiceDetailsPage() {
@@ -405,6 +406,12 @@ export default function InvoiceDetailsPage() {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'activity' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted'}`}
           >
               Activity
+          </button>
+          <button 
+            onClick={() => setActiveTab('expenses')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'expenses' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted'}`}
+          >
+              Expenses
           </button>
       </div>
 

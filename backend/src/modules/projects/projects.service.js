@@ -90,9 +90,6 @@ class ProjectsService {
             payments: true,
           },
         },
-        expenses: {
-          orderBy: { date: "desc" },
-        },
       },
     });
 
@@ -101,6 +98,40 @@ class ProjectsService {
       error.status = 404;
       throw error;
     }
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        organizationId,
+        OR: [
+          { projectId: id },
+          { invoice: { projectId: id } }
+        ]
+      },
+      include: {
+        invoice: { select: { id: true, invoiceNumber: true } }
+      },
+      orderBy: { date: "desc" }
+    });
+
+    project.expenses = expenses;
+
+    let totalEarnings = 0;
+    if (project.invoices) {
+      project.invoices.forEach(inv => {
+        totalEarnings += Number(inv.paidAmount || 0) * Number(inv.exchangeRate || 1.0);
+      });
+    }
+
+    let totalExpenses = 0;
+    expenses.forEach(exp => {
+      totalExpenses += Number(exp.amount || 0) * Number(exp.exchangeRate || 1.0);
+    });
+
+    project.summary = {
+      totalEarnings,
+      totalExpenses,
+      netProfit: totalEarnings - totalExpenses
+    };
 
     return project;
   }
