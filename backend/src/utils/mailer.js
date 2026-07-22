@@ -37,6 +37,7 @@ const transporter = {
     if (isAdminEmail) {
       console.log(`[MAILER] Routing admin email to ${mailOptions.to} via Nodemailer`);
       mailOptions.from = `"${mailConfig.fromName}" <${mailConfig.user}>`;
+      mailOptions.replyTo = adminConfig.email; // Added replyTo
       return await smtpTransporter.sendMail(mailOptions);
     }
 
@@ -45,6 +46,7 @@ const transporter = {
       if (mailConfig.user) {
         console.log(`[MAILER] Resend unconfigured. Falling back to Nodemailer for ${mailOptions.to}`);
         mailOptions.from = `"${mailConfig.fromName}" <${mailConfig.user}>`;
+        mailOptions.replyTo = adminConfig.email; // Added replyTo
         return await smtpTransporter.sendMail(mailOptions);
       } else {
         console.log("---------------------------------------------------------");
@@ -60,6 +62,7 @@ const transporter = {
     try {
       const { data, error } = await resend.emails.send({
         from: mailOptions.from,
+        reply_to: adminConfig.email, // Replies go directly to your personal/support inbox
         to: mailOptions.to,
         subject: mailOptions.subject,
         html: mailOptions.html,
@@ -74,6 +77,7 @@ const transporter = {
       console.error(`[MAILER] Resend failed (${error.message}). Falling back to Nodemailer for ${mailOptions.to}`);
       if (mailConfig.user) {
         mailOptions.from = `"${mailConfig.fromName}" <${mailConfig.user}>`;
+        mailOptions.replyTo = adminConfig.email; // Added replyTo
         return await smtpTransporter.sendMail(mailOptions);
       }
       throw error;

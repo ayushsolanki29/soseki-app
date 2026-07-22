@@ -20,6 +20,6 @@ export const LEGAL_PAGES = [
 ];
 
 export const APP_EMAILS = [
-  { label: "Email", value: "hello@soseki.app" },
-  { label: "Support", value: "help@soseki.app" },
+  { label: "Email", value: "hello.soseki.app@gmail.com" },
+  { label: "Support", value: "hello.soseki.app@gmail.com" },
 ];
