@@ -13,9 +13,11 @@ class InvoicesService {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 25));
     const skip = (pageNum - 1) * limitNum;
 
-    const where = { organizationId };
-    if (clientId && clientId !== "All") where.clientId = clientId;
-    if (projectId && projectId !== "All") where.projectId = projectId;
+    const baseWhere = { organizationId };
+    if (clientId && clientId !== "All") baseWhere.clientId = clientId;
+    if (projectId && projectId !== "All") baseWhere.projectId = projectId;
+    
+    const where = { ...baseWhere };
     if (status && status !== "All") where.status = status;
 
     const totalCount = await prisma.invoice.count({ where });
@@ -45,8 +47,24 @@ class InvoicesService {
       orderBy: { createdAt: "desc" },
     });
 
+    const allInvoices = await prisma.invoice.findMany({
+      where: baseWhere,
+      select: { totalAmount: true, paidAmount: true, exchangeRate: true, status: true, dueDate: true }
+    });
+
+    const summary = {
+      totalInvoiced: allInvoices.reduce((acc, inv) => acc + (Number(inv.totalAmount) * Number(inv.exchangeRate || 1.0)), 0),
+      totalPaid: allInvoices.reduce((acc, inv) => acc + (Math.min(Number(inv.paidAmount || 0), Number(inv.totalAmount)) * Number(inv.exchangeRate || 1.0)), 0),
+      overdueCount: allInvoices.filter(inv => {
+        const isOverdue = inv.status === "Overdue" || (new Date(inv.dueDate) < new Date() && Number(inv.paidAmount || 0) < Number(inv.totalAmount));
+        return isOverdue && inv.status !== 'Draft' && inv.status !== 'Cancelled' && inv.status !== 'Paid';
+      }).length
+    };
+    summary.totalOutstanding = Math.max(0, summary.totalInvoiced - summary.totalPaid);
+
     return {
       invoices,
+      summary,
       pagination: {
         total: totalCount,
         page: pageNum,

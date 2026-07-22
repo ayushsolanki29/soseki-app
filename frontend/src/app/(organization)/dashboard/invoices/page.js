@@ -43,6 +43,12 @@ export default function InvoicesPage() {
   const router = useRouter();
   const { organization } = useOrganization();
   const [invoices, setInvoices] = useState([]);
+  const [summary, setSummary] = useState({
+    totalInvoiced: 0,
+    totalPaid: 0,
+    totalOutstanding: 0,
+    overdueCount: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [paymentInvoice, setPaymentInvoice] = useState(null);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
@@ -58,6 +64,9 @@ export default function InvoicesPage() {
     try {
       const res = await API.get("/invoices", { params: { status: statusFilter !== "All" ? statusFilter : undefined } });
       setInvoices(res.data.invoices || []);
+      if (res.data.summary) {
+        setSummary(res.data.summary);
+      }
     } catch (error) {
       toast.error("Failed to load invoices");
     } finally {
@@ -121,11 +130,7 @@ export default function InvoicesPage() {
   }
 
   // Summary KPIs in Master Currency
-  const totalInvoiced = invoices.reduce((acc, inv) => acc + (inv.totalAmount * (inv.exchangeRate || 1.0)), 0);
-  // Cap the paid amount at the total amount to prevent dummy data or overpayments from drastically distorting KPIs
-  const totalPaid = invoices.reduce((acc, inv) => acc + (Math.min(inv.paidAmount || 0, inv.totalAmount) * (inv.exchangeRate || 1.0)), 0);
-  const totalOutstanding = Math.max(0, totalInvoiced - totalPaid);
-  const overdueCount = invoices.filter(inv => inv.status === 'Overdue').length;
+  const { totalInvoiced, totalPaid, totalOutstanding, overdueCount } = summary;
 
   return (
     <div className="p-8 h-full flex flex-col gap-6">
@@ -250,14 +255,28 @@ export default function InvoicesPage() {
                         {invoice.invoiceNumber}
                     </div>
                   </TableCell>
-                  <TableCell>{invoice.client?.name || "-"}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span>{invoice.client?.name || "-"}</span>
+                      {invoice.project && (
+                        <span className="text-xs text-muted-foreground">{invoice.project.title}</span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                   <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                   <TableCell>
-                      <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount, invoice.currency || masterCurrency)}</div>
-                      {(invoice.currency && invoice.currency !== masterCurrency) && (
-                          <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)})</div>
-                      )}
+                      <div className="flex flex-col gap-0.5">
+                        <div className="font-semibold text-gray-900">{formatCurrency(invoice.totalAmount, invoice.currency || masterCurrency)}</div>
+                        {(invoice.currency && invoice.currency !== masterCurrency) && (
+                            <div className="text-xs text-muted-foreground">({formatCurrency(invoice.totalAmount * (invoice.exchangeRate || 1.0), masterCurrency)})</div>
+                        )}
+                        {invoice.paidAmount > 0 && (
+                          <div className="text-xs text-emerald-600 font-medium mt-1">
+                            Paid: {formatCurrency(invoice.paidAmount, invoice.currency || masterCurrency)}
+                          </div>
+                        )}
+                      </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadge(invoice.status)}>

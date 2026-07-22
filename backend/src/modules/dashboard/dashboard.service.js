@@ -47,13 +47,13 @@ class DashboardService {
     ] = await Promise.all([
       prisma.organization.findUnique({ where: { id: organizationId }, select: { masterCurrency: true } }),
       
-      prisma.payment.aggregate({ _sum: { amount: true }, where: { invoice: { organizationId } } }),
-      prisma.payment.aggregate({ _sum: { amount: true }, where: { invoice: { organizationId }, date: { gte: thirtyDaysAgo } } }),
-      prisma.payment.aggregate({ _sum: { amount: true }, where: { invoice: { organizationId }, date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+      prisma.payment.findMany({ where: { invoice: { organizationId } }, select: { amount: true, invoice: { select: { exchangeRate: true } } } }),
+      prisma.payment.findMany({ where: { invoice: { organizationId }, date: { gte: thirtyDaysAgo } }, select: { amount: true, invoice: { select: { exchangeRate: true } } } }),
+      prisma.payment.findMany({ where: { invoice: { organizationId }, date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } }, select: { amount: true, invoice: { select: { exchangeRate: true } } } }),
       
       prisma.invoice.findMany({
         where: { organizationId, status: { notIn: ["Draft", "Cancelled", "Paid"] } },
-        select: { totalAmount: true, paidAmount: true, createdAt: true, status: true, dueDate: true }
+        select: { totalAmount: true, paidAmount: true, createdAt: true, status: true, dueDate: true, exchangeRate: true }
       }),
       
       prisma.project.count({ where: { organizationId, status: { in: ["Active", "In Progress"] } } }),
@@ -74,9 +74,9 @@ class DashboardService {
       })
     ]);
 
-    const totalRevenue = totalRevAgg._sum.amount || 0;
-    const revenueLast30 = revLast30Agg._sum.amount || 0;
-    const revenuePrev30 = revPrev30Agg._sum.amount || 0;
+    const totalRevenue = totalRevAgg.reduce((acc, p) => acc + (Number(p.amount) * Number(p.invoice?.exchangeRate || 1.0)), 0);
+    const revenueLast30 = revLast30Agg.reduce((acc, p) => acc + (Number(p.amount) * Number(p.invoice?.exchangeRate || 1.0)), 0);
+    const revenuePrev30 = revPrev30Agg.reduce((acc, p) => acc + (Number(p.amount) * Number(p.invoice?.exchangeRate || 1.0)), 0);
 
     let outstanding = 0;
     let overdueCount = 0;
@@ -84,8 +84,11 @@ class DashboardService {
     let overdueCreatedPrev30 = 0;
 
     unpaidInvoices.forEach((inv) => {
-      if (inv.paidAmount < inv.totalAmount) {
-        outstanding += inv.totalAmount - inv.paidAmount;
+      const rate = Number(inv.exchangeRate || 1.0);
+      const total = Number(inv.totalAmount);
+      const paid = Number(inv.paidAmount || 0);
+      if (paid < total) {
+        outstanding += (total - paid) * rate;
       }
 
       const isOverdue = inv.status === "Overdue" || (new Date(inv.dueDate) < now && inv.paidAmount < inv.totalAmount);
@@ -304,7 +307,7 @@ class DashboardService {
           invoice: { organizationId },
           date: { gte: startOfYear, lte: endOfYear },
         },
-        select: { amount: true, date: true },
+        select: { amount: true, date: true, invoice: { select: { exchangeRate: true } } },
       }),
       prisma.expense.findMany({
         where: {
@@ -323,7 +326,8 @@ class DashboardService {
 
     paymentsThisYear.forEach((p) => {
       const m = new Date(p.date).getMonth();
-      monthlyData[m].revenue += p.amount;
+      const rate = Number(p.invoice?.exchangeRate || 1.0);
+      monthlyData[m].revenue += Number(p.amount) * rate;
     });
 
     expensesThisYear.forEach((e) => {

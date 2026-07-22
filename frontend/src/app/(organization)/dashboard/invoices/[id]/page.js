@@ -21,7 +21,8 @@ import {
     BuildingIcon,
     TrashIcon,
     LinkIcon,
-    CheckCircle2Icon
+    CheckCircle2Icon,
+    MoreHorizontal,
 } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
@@ -34,6 +35,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
 import { useOrganization } from "@/components/providers/organization-provider";
+import { EditPaymentDialog } from "@/components/invoices/edit-payment-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 export default function InvoiceDetailsPage() {
@@ -57,6 +67,12 @@ export default function InvoiceDetailsPage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [paymentToEdit, setPaymentToEdit] = useState(null);
+  const [isEditPaymentOpen, setIsEditPaymentOpen] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState(null);
+  const [isPaymentDeleteDialogOpen, setIsPaymentDeleteDialogOpen] = useState(false);
+  const [isPaymentDeleting, setIsPaymentDeleting] = useState(false);
   
   const masterCurrency = organization?.masterCurrency || "USD";
 
@@ -118,6 +134,32 @@ export default function InvoiceDetailsPage() {
           setIsDeleting(false);
       }
   }
+
+  const handleEditPaymentClick = (payment) => {
+    setPaymentToEdit({ ...payment, invoice });
+    setIsEditPaymentOpen(true);
+  };
+
+  const handleDeletePaymentClick = (payment) => {
+    setPaymentToDelete({ ...payment, invoice });
+    setIsPaymentDeleteDialogOpen(true);
+  };
+
+  const confirmDeletePayment = async () => {
+    if (!paymentToDelete) return;
+    setIsPaymentDeleting(true);
+    try {
+      await API.delete(`/payments/${paymentToDelete.id}`);
+      toast.success("Payment deleted successfully");
+      fetchInvoice();
+    } catch (error) {
+      toast.error("Failed to delete payment");
+    } finally {
+      setIsPaymentDeleting(false);
+      setIsPaymentDeleteDialogOpen(false);
+      setPaymentToDelete(null);
+    }
+  };
 
   const copyPortalLink = () => {
     if (!invoice?.clientId) return;
@@ -459,6 +501,7 @@ export default function InvoiceDetailsPage() {
                                       <TableHead>Method</TableHead>
                                       <TableHead>Reference</TableHead>
                                       <TableHead className="text-right">Amount</TableHead>
+                                      <TableHead className="text-right">Actions</TableHead>
                                   </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -476,6 +519,29 @@ export default function InvoiceDetailsPage() {
                                                       +{formatCurrency(payment.amount * (invoice.exchangeRate || 1.0), masterCurrency)}
                                                   </div>
                                               )}
+                                          </TableCell>
+                                          <TableCell className="text-right">
+                                            <DropdownMenu>
+                                              <DropdownMenuTrigger render={
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                  <span className="sr-only">Open menu</span>
+                                                  <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                              } />
+                                              <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => handleEditPaymentClick(payment)}>
+                                                  <EditIcon className="mr-2 h-4 w-4" /> Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem 
+                                                  onClick={() => handleDeletePaymentClick(payment)}
+                                                  className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
+                                                >
+                                                  <TrashIcon className="mr-2 h-4 w-4" /> Delete
+                                                </DropdownMenuItem>
+                                              </DropdownMenuContent>
+                                            </DropdownMenu>
                                           </TableCell>
                                       </TableRow>
                                   ))}
@@ -574,6 +640,32 @@ export default function InvoiceDetailsPage() {
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
               {isDeleting ? "Deleting..." : "Delete Invoice"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <EditPaymentDialog 
+        open={isEditPaymentOpen} 
+        onOpenChange={setIsEditPaymentOpen} 
+        onSuccess={fetchInvoice}
+        payment={paymentToEdit}
+      />
+      
+      <Dialog open={isPaymentDeleteDialogOpen} onOpenChange={setIsPaymentDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Payment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this payment of <span className="font-semibold text-foreground">{paymentToDelete?.amount} {paymentToDelete?.invoice?.currency}</span>? This action cannot be undone and will update the invoice's balance.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setIsPaymentDeleteDialogOpen(false)} disabled={isPaymentDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeletePayment} disabled={isPaymentDeleting}>
+              {isPaymentDeleting ? "Deleting..." : "Delete Payment"}
             </Button>
           </div>
         </DialogContent>

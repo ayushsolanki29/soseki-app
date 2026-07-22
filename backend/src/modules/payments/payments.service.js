@@ -41,6 +41,9 @@ class PaymentsService {
             exchangeRate: true,
             client: {
               select: { id: true, name: true, email: true }
+            },
+            project: {
+              select: { id: true, title: true }
             }
           }
         }
@@ -57,6 +60,139 @@ class PaymentsService {
         totalPages: Math.ceil(totalCount / limitNum)
       }
     };
+  }
+  async updatePayment(organizationId, id, data) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const { amount, date, method, reference } = data;
+    const newAmount = parseFloat(amount);
+
+    if (isNaN(newAmount) || newAmount <= 0) {
+      const error = new Error("Invalid payment amount");
+      error.status = 400;
+      throw error;
+    }
+
+    // Use a transaction to ensure atomic update of both payment and invoice
+    const result = await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.findUnique({
+        where: { id },
+        include: { invoice: true }
+      });
+
+      if (!payment || payment.invoice.organizationId !== organizationId) {
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+      }
+
+      const amountDifference = newAmount - payment.amount;
+
+      // Update the payment
+      const updatedPayment = await tx.payment.update({
+        where: { id },
+        data: {
+          amount: newAmount,
+          date: date ? new Date(date) : undefined,
+          method,
+          reference,
+        }
+      });
+
+      // Update the invoice
+      const invoice = payment.invoice;
+      const newPaidAmount = Math.max(0, invoice.paidAmount + amountDifference);
+      
+      let newStatus = invoice.status;
+      if (newPaidAmount >= invoice.totalAmount) {
+        newStatus = "Paid";
+      } else if (newPaidAmount > 0) {
+        newStatus = "Partially Paid";
+      } else {
+        if (invoice.status === "Paid" || invoice.status === "Partially Paid") {
+            newStatus = "Sent";
+        }
+      }
+
+      await tx.invoice.update({
+        where: { id: invoice.id },
+        data: {
+          paidAmount: newPaidAmount,
+          status: newStatus,
+          activities: {
+            create: {
+              type: "UPDATED",
+              description: `Payment ${payment.id.slice(-6)} updated to ${invoice.currency || "USD"} ${newAmount.toFixed(2)}`
+            }
+          }
+        }
+      });
+
+      return updatedPayment;
+    });
+
+    return result;
+  }
+
+  async deletePayment(organizationId, id) {
+    if (!organizationId) {
+      const error = new Error("Unauthorized: No organization found");
+      error.status = 401;
+      throw error;
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.findUnique({
+        where: { id },
+        include: { invoice: true }
+      });
+
+      if (!payment || payment.invoice.organizationId !== organizationId) {
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+      }
+
+      const invoice = payment.invoice;
+      const newPaidAmount = Math.max(0, invoice.paidAmount - payment.amount);
+      
+      let newStatus = invoice.status;
+      if (newPaidAmount >= invoice.totalAmount) {
+        newStatus = "Paid";
+      } else if (newPaidAmount > 0) {
+        newStatus = "Partially Paid";
+      } else {
+        if (invoice.status === "Paid" || invoice.status === "Partially Paid") {
+            newStatus = "Sent";
+        }
+      }
+
+      await tx.invoice.update({
+        where: { id: invoice.id },
+        data: {
+          paidAmount: newPaidAmount,
+          status: newStatus,
+          activities: {
+            create: {
+              type: "UPDATED",
+              description: `Payment of ${invoice.currency || "USD"} ${payment.amount.toFixed(2)} deleted`
+            }
+          }
+        }
+      });
+
+      await tx.payment.delete({
+        where: { id }
+      });
+
+      return { success: true };
+    });
+
+    return result;
   }
 }
 

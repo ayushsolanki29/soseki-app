@@ -5,7 +5,7 @@ class InvoicesController {
     try {
       const { clientId, projectId, status, page, limit } = req.query;
       const result = await invoicesService.getInvoices(req.user.organizationId, clientId, projectId, status, page, limit);
-      return res.status(200).json({ success: true, invoices: result.invoices, pagination: result.pagination });
+      return res.status(200).json({ success: true, invoices: result.invoices, summary: result.summary, pagination: result.pagination });
     } catch (error) {
       if (error.status === 401) {
         return res.status(error.status).json({ success: false, message: error.message });
