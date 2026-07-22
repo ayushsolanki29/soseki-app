@@ -17,7 +17,7 @@ export function ZeroLockinSection() {
           Own your data <span className="text-blue-600">forever</span>
         </h2>
         <p className="text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed">
-          Self-hostable, fully open-source, and powered by your own PostgreSQL database. No SaaS lock-in, ever.
+          Fully open-source, and powered by your own PostgreSQL database. No SaaS lock-in, ever.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8 w-full">
@@ -55,7 +55,7 @@ export function ZeroLockinSection() {
 
             <div className="text-center max-w-xs">
               <div className="text-[11px] font-bold tracking-wider uppercase text-blue-600 mb-2.5 flex items-center justify-center gap-1.5 group-hover:scale-105 transition-transform duration-300">
-                <Terminal className="w-4 h-4" /> SELF-HOSTABLE
+                <Terminal className="w-4 h-4" /> DEPLOY ANYWHERE
               </div>
               <p className="text-[14px] text-slate-600 leading-relaxed font-medium">
                 Deploy Soseki on your own infrastructure in minutes. No per-seat pricing surprises, entirely open-source.

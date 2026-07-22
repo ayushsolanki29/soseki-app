@@ -14,10 +14,10 @@ export function ClientIntakeSection() {
         className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center"
       >
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5">
-          Client intake on <span className="text-blue-600">autopilot</span>
+          Stop asking clients the same ten questions over email
         </h2>
         <p className="text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed">
-          Build shareable public forms instantly with AI, or use the drag-and-drop builder to customize your client discovery process.
+          Build a public onboarding or discovery form with the drag and drop builder, or paste your usual questions into ChatGPT and let it draft the form for you.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8 w-full">
@@ -56,7 +56,7 @@ export function ClientIntakeSection() {
                 <Sparkles className="w-4 h-4" /> AI-ASSISTED CREATION
               </div>
               <p className="text-[14px] text-slate-600 leading-relaxed font-medium">
-                Paste questions into ChatGPT or let our built-in AI generate perfect onboarding forms in seconds.
+                Share the link. Clients do not need an account to fill it out.
               </p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export function ClientIntakeSection() {
                 <Link2 className="w-4 h-4" /> SHAREABLE PUBLIC LINKS
               </div>
               <p className="text-[14px] text-slate-600 leading-relaxed font-medium">
-                Share forms instantly without requiring clients to log in. Their answers sync directly into your workspace.
+                Their answers land directly in your workspace.
               </p>
             </div>
           </div>

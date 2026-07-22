@@ -9,6 +9,7 @@ import { Header } from "@/components/header";
 
 // New modular landing components
 import { HeroSection } from "@/components/landing/hero-section";
+import { AboutSection } from "@/components/landing/about-section";
 import { GlobalBillingSection } from "@/components/landing/global-billing-section";
 import { ClientIntakeSection } from "@/components/landing/client-intake-section";
 import { FinancialClaritySection } from "@/components/landing/financial-clarity-section";
@@ -20,8 +21,8 @@ export default function LandingPage() {
         <Header />
 
         <HeroSection />
-
-        {/* Trusted By Section */}
+        
+        <AboutSection />
         {/* <section className="bg-white py-20 border-t border-slate-100 flex flex-col items-center border-b overflow-hidden">
           <p className="text-[13px] font-medium text-slate-500 mb-8">Trusted by fast-growing startups and agencies</p>
           <div className="w-full max-w-6xl mx-auto px-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">

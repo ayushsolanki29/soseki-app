@@ -93,9 +93,9 @@ export default function FeaturesPage() {
             blocks={[
               {
                 title: "Direct Client Portal",
-                description: "Give your clients a secure portal where they can pay you directly—with zero middleman platform fees.",
+                description: "Give your clients a secure portal where they can pay you directly, with zero middleman platform fees.",
                 visual: <ClientPortalWidget />,
-                features: ["Zero middleman fees", "Direct payments", "Secure portal", "Invoice history"],
+                features: ["Zero middleman fees", "Direct payments", "Secure portal"],
                 icon: <ShieldCheck className="w-6 h-6 text-blue-500" />
               },
               {

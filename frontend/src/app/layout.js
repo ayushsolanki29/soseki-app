@@ -106,7 +106,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="t-page-fade min-h-full flex flex-col overflow-x-hidden">
+      <body className="min-h-full flex flex-col overflow-x-hidden">
         <GoogleTagManager gtmId="GTM-KS9248KF" />
         <GoogleAnalytics gaId="G-X1600G8S2W" />
         <TooltipProvider>{children}</TooltipProvider>

@@ -29,10 +29,10 @@ export function PricingSection() {
     							PRICING
     						</p>
     						<h1 className="font-bold text-3xl leading-tight md:text-5xl mb-4">
-    							Pay for what you use. Nothing more.
+    							Pay for what you use.
     						</h1>
                             <p className="text-muted-foreground text-balance">
-                                We ditched the rigid subscription model. Buy credits only when you need them.
+                                No contracts, no forced monthly plan. Buy credits when you need them.
                             </p>
                         </div>
 

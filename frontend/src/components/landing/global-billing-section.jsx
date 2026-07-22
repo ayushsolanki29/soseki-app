@@ -8,10 +8,10 @@ export function GlobalBillingSection() {
     <section className="bg-white py-24 border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5">
-            Global billing with <span className="text-blue-600">zero friction</span>
+            Bill in whatever currency your client actually pays in
           </h2>
           <p className="text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed">
-            Multi-currency invoicing, automatic live exchange rates, and accurate reporting for your service business.
+            If your clients are in Berlin, London, and New York, you should not have to do the exchange rate math yourself.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8 w-full">
@@ -67,7 +67,7 @@ export function GlobalBillingSection() {
                   <Globe className="w-4 h-4" /> MULTI-CURRENCY INVOICING
                 </div>
                 <p className="text-[14px] text-slate-600 leading-relaxed font-medium">
-                  Create invoices and record expenses in any currency. Soseki automatically fetches live exchange rates.
+                  Soseki records invoices and expenses in their original currency and pulls in live exchange rates.
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export function GlobalBillingSection() {
                   <BarChart3 className="w-4 h-4" /> ACCURATE REPORTING
                 </div>
                 <p className="text-[14px] text-slate-600 leading-relaxed font-medium">
-                  Store exchange-rate snapshots for accurate reporting in your master currency without doing mental math.
+                  Keeps a snapshot of the rate at the time of payment, so your reports in your home currency stay accurate even after the market moves.
                 </p>
               </div>
             </div>

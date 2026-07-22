@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { FullWidthDivider } from "@/components/full-width-divider";
-import { DynamicTime } from "@/components/dynamic-time";
 import Link from "next/link";
 
 export function CallToAction({
@@ -16,12 +15,12 @@ export function CallToAction({
             <div className="border-b px-6 py-24">
 				<h2 className="text-center font-bold text-4xl md:text-5xl tracking-tight text-slate-900">
 					{title || (
-						<>Set up in 10 mins.<br/>Back to building by <DynamicTime offsetMinutes={10} />.</>
+						<>Open source, actively maintained, and built by someone who runs client work the same way you do.</>
 					)}
 				</h2>
 				<p
                     className="mx-auto max-w-2xl text-balance text-center text-slate-600 text-lg md:text-xl mt-6 leading-relaxed">
-					{description || "Built for freelancers and agencies who want to focus on their clients, not their admin."}
+					{description || "Join the community of freelancers and agencies using Soseki."}
 				</p>
 			</div>
             <div

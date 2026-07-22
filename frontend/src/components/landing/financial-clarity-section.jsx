@@ -20,10 +20,10 @@ export function FinancialClaritySection() {
         className="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center"
       >
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-6">
-          Real-time <span className="text-blue-600">financial clarity</span>
+          A dashboard that shows what is actually happening
         </h2>
         <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-20 leading-relaxed">
-          Interactive dashboards and instant metrics so you get answers and avoid surprises. Everything you need, one click away.
+          Burn rate, monthly recurring revenue, and expense trends, pulled from your real invoices and expenses instead of a spreadsheet you update once a quarter.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 w-full">
@@ -84,7 +84,7 @@ export function FinancialClaritySection() {
                 <BarChart2 className="w-4 h-4" /> INVESTOR-READY METRICS
               </div>
               <p className="text-[15px] text-slate-600 leading-relaxed font-medium group-hover:text-slate-800 transition-colors duration-300">
-                Send beautiful investor updates with real-time access to cash, burn rate, runway, and MRR.
+                Enough to send a client or investor a real update.
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export function FinancialClaritySection() {
                 <Activity className="w-4 h-4" /> FLUCTUATION INSIGHTS
               </div>
               <p className="text-[15px] text-slate-600 leading-relaxed font-medium group-hover:text-slate-800 transition-colors duration-300">
-                Track monthly changes, identify anomalies, and uncover drivers to revenue and expenses dynamically.
+                Not so much that you need a finance degree to read it.
               </p>
             </div>
           </div>

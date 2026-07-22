@@ -27,11 +27,11 @@ export function MobileNav() {
       </Button>
 
       {open && (
-        <Portal id="mobile-menu" className="z-[99999] items-center justify-center p-4">
+        <Portal id="mobile-menu" className="z-[99999] items-center justify-start pt-6 px-4 sm:pt-8">
           <PortalBackdrop onClick={() => setOpen(false)} />
           
           <div
-            className="relative z-50 flex w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-white shadow-2xl p-6 animate-in zoom-in-95 fade-in duration-200"
+            className="relative z-50 flex w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-white shadow-2xl p-6 animate-in slide-in-from-top-8 fade-in zoom-in-95 duration-200"
             data-slot={open ? "open" : "closed"}
           >
             {/* Header */}
