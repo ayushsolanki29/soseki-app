@@ -105,12 +105,17 @@ class PaymentsService {
 
       // Update the invoice
       const invoice = payment.invoice;
-      const newPaidAmount = Math.max(0, invoice.paidAmount + amountDifference);
+      const newPaidAmount = Math.max(0, Number(invoice.paidAmount) + amountDifference);
       
       let newStatus = invoice.status;
-      if (newPaidAmount >= invoice.totalAmount) {
+      
+      // Fix Javascript floating point precision before comparing (e.g., 534.9999999999999 vs 535)
+      const roundedPaid = Number(Number(newPaidAmount).toFixed(2));
+      const roundedTotal = Number(Number(invoice.totalAmount).toFixed(2));
+
+      if (roundedPaid >= roundedTotal) {
         newStatus = "Paid";
-      } else if (newPaidAmount > 0) {
+      } else if (roundedPaid > 0) {
         newStatus = "Partially Paid";
       } else {
         if (invoice.status === "Paid" || invoice.status === "Partially Paid") {
@@ -158,12 +163,17 @@ class PaymentsService {
       }
 
       const invoice = payment.invoice;
-      const newPaidAmount = Math.max(0, invoice.paidAmount - payment.amount);
+      const newPaidAmount = Math.max(0, Number(invoice.paidAmount) - Number(payment.amount));
       
       let newStatus = invoice.status;
-      if (newPaidAmount >= invoice.totalAmount) {
+      
+      // Fix Javascript floating point precision before comparing
+      const roundedPaid = Number(Number(newPaidAmount).toFixed(2));
+      const roundedTotal = Number(Number(invoice.totalAmount).toFixed(2));
+
+      if (roundedPaid >= roundedTotal) {
         newStatus = "Paid";
-      } else if (newPaidAmount > 0) {
+      } else if (roundedPaid > 0) {
         newStatus = "Partially Paid";
       } else {
         if (invoice.status === "Paid" || invoice.status === "Partially Paid") {

@@ -290,12 +290,16 @@ class InvoicesService {
       throw error;
     }
 
-    const newPaidAmount = invoice.paidAmount + paymentAmount;
+    const newPaidAmount = Number(invoice.paidAmount) + paymentAmount;
     let newStatus = invoice.status;
     
-    if (newPaidAmount >= invoice.totalAmount) {
+    // Fix Javascript floating point precision before comparing (e.g., 534.9999999999999 vs 535)
+    const roundedPaid = Number(Number(newPaidAmount).toFixed(2));
+    const roundedTotal = Number(Number(invoice.totalAmount).toFixed(2));
+
+    if (roundedPaid >= roundedTotal) {
       newStatus = "Paid";
-    } else if (newPaidAmount > 0 && invoice.status !== "Paid") {
+    } else if (roundedPaid > 0 && invoice.status !== "Paid") {
       newStatus = "Partially Paid";
     }
 
