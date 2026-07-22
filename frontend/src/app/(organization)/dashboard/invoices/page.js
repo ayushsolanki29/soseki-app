@@ -122,8 +122,9 @@ export default function InvoicesPage() {
 
   // Summary KPIs in Master Currency
   const totalInvoiced = invoices.reduce((acc, inv) => acc + (inv.totalAmount * (inv.exchangeRate || 1.0)), 0);
-  const totalPaid = invoices.reduce((acc, inv) => acc + (inv.paidAmount * (inv.exchangeRate || 1.0)), 0);
-  const totalOutstanding = totalInvoiced - totalPaid;
+  // Cap the paid amount at the total amount to prevent dummy data or overpayments from drastically distorting KPIs
+  const totalPaid = invoices.reduce((acc, inv) => acc + (Math.min(inv.paidAmount || 0, inv.totalAmount) * (inv.exchangeRate || 1.0)), 0);
+  const totalOutstanding = Math.max(0, totalInvoiced - totalPaid);
   const overdueCount = invoices.filter(inv => inv.status === 'Overdue').length;
 
   return (
@@ -146,33 +147,45 @@ export default function InvoicesPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
+        <div 
+          onClick={() => setStatusFilter("All")}
+          className="rounded-xl border shadow p-6 cursor-pointer transition-all hover:shadow-md hover:ring-2 hover:ring-primary/20 bg-slate-50 dark:bg-slate-900/50"
+        >
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="tracking-tight text-sm font-medium">Total Invoiced</h3>
-                <FileTextIcon className="h-4 w-4 text-muted-foreground" />
+                <FileTextIcon className="h-4 w-4 text-slate-500" />
             </div>
-            <div className="text-2xl font-bold">{formatCurrency(totalInvoiced, masterCurrency)}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalInvoiced, masterCurrency)}</div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
+        <div 
+          onClick={() => setStatusFilter("Partially Paid")}
+          className="rounded-xl border shadow p-6 cursor-pointer transition-all hover:shadow-md hover:ring-2 hover:ring-amber-500/20 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/50"
+        >
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 className="tracking-tight text-sm font-medium">Outstanding Amount</h3>
-                <FileTextIcon className="h-4 w-4 text-muted-foreground" />
+                <h3 className="tracking-tight text-sm font-medium text-amber-900 dark:text-amber-200">Outstanding Amount</h3>
+                <FileTextIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             </div>
-            <div className="text-2xl font-bold">{formatCurrency(totalOutstanding, masterCurrency)}</div>
+            <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{formatCurrency(totalOutstanding, masterCurrency)}</div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
+        <div 
+          onClick={() => setStatusFilter("Paid")}
+          className="rounded-xl border shadow p-6 cursor-pointer transition-all hover:shadow-md hover:ring-2 hover:ring-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/50"
+        >
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 className="tracking-tight text-sm font-medium">Paid Total</h3>
-                <CheckCircleIcon className="h-4 w-4 text-muted-foreground" />
+                <h3 className="tracking-tight text-sm font-medium text-emerald-900 dark:text-emerald-200">Paid Total</h3>
+                <CheckCircleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div className="text-2xl font-bold">{formatCurrency(totalPaid, masterCurrency)}</div>
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{formatCurrency(totalPaid, masterCurrency)}</div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
+        <div 
+          onClick={() => setStatusFilter("Overdue")}
+          className="rounded-xl border shadow p-6 cursor-pointer transition-all hover:shadow-md hover:ring-2 hover:ring-rose-500/20 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/50"
+        >
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 className="tracking-tight text-sm font-medium">Overdue Invoices</h3>
-                <FileTextIcon className="h-4 w-4 text-muted-foreground" />
+                <h3 className="tracking-tight text-sm font-medium text-rose-900 dark:text-rose-200">Overdue Invoices</h3>
+                <FileTextIcon className="h-4 w-4 text-rose-600 dark:text-rose-400" />
             </div>
-            <div className="text-2xl font-bold">{overdueCount}</div>
+            <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">{overdueCount}</div>
         </div>
       </div>
       
