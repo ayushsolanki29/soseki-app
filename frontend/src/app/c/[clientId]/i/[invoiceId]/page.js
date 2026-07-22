@@ -3,8 +3,10 @@
 import { useEffect, useState, use } from "react";
 import API from "@/lib/api";
 import Link from "next/link";
-import { ArrowLeft, Download, CreditCard, Building, Building2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Download, CreditCard, Building, Building2, CheckCircle2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { generatePDF } from "@/lib/pdfHelper";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -18,6 +20,18 @@ export default function ClientPortalInvoice({ params }) {
   const [invoice, setInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    const success = await generatePDF('invoice-print-area', `Invoice-${invoice.invoiceNumber}.pdf`);
+    if (success) {
+      toast.success('PDF downloaded successfully');
+    } else {
+      toast.error('Failed to generate PDF');
+    }
+    setIsGeneratingPdf(false);
+  };
 
   useEffect(() => {
     API.get(`/portal/client/${clientId}/invoices/${invoiceId}`)
@@ -92,9 +106,8 @@ export default function ClientPortalInvoice({ params }) {
             <p className="text-slate-500">{invoice.project?.title || "General Invoice"}</p>
           </div>
           <div className="flex gap-3">
-            {/* Dummy Download PDF action */}
-            <Button variant="outline" className="hidden sm:flex">
-              <Download className="w-4 h-4 mr-2" /> Download PDF
+            <Button variant="outline" className="hidden sm:flex" onClick={handleDownloadPdf} disabled={isGeneratingPdf}>
+              {isGeneratingPdf ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />} Download PDF
             </Button>
             {!isPaid && (
               <Link href={`/c/${clientId}/i/${invoiceId}/pay`}>
@@ -113,7 +126,7 @@ export default function ClientPortalInvoice({ params }) {
           <div className="min-w-[800px] lg:min-w-0">
             <Card className="border-slate-200 shadow-xl shadow-black/5 overflow-hidden relative bg-white">
               <div className="w-full flex justify-center py-6">
-                <div className="w-[800px] lg:w-full max-w-[210mm] bg-white pointer-events-none">
+                <div id="invoice-print-area" className="w-[800px] lg:w-full max-w-[210mm] bg-white pointer-events-none">
                 {template === "soseki-modern" && (
                     <SosekiModernInvoice invoice={invoice} organization={invoice.organization} masterCurrency={masterCurrency} />
                 )}

@@ -5,7 +5,9 @@ import { useParams } from "next/navigation";
 import API from "@/lib/api";
 import { SosekiModernExpense } from "@/components/expenses/templates/soseki-modern";
 import { Button } from "@/components/ui/button";
-import { PrinterIcon } from "lucide-react";
+import { PrinterIcon, DownloadIcon, Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
+import { generatePDF } from "@/lib/pdfHelper";
 import { DocumentSettingsDialog } from "@/components/shared/document-settings-dialog";
 import { useOrganization } from "@/components/providers/organization-provider";
 
@@ -14,6 +16,18 @@ export default function ExpensePreviewPage() {
   const { organization, refetch } = useOrganization();
   const [expense, setExpense] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    const success = await generatePDF('expense-print-area', `Expense-${expense.id.slice(0,6).toUpperCase()}.pdf`);
+    if (success) {
+      toast.success('PDF downloaded successfully');
+    } else {
+      toast.error('Failed to generate PDF');
+    }
+    setIsGeneratingPdf(false);
+  };
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -72,15 +86,19 @@ export default function ExpensePreviewPage() {
                 documentType="expense"
                 masterCurrency={expense?.currency || "INR"}
             />
-            <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs">
+            <Button size="sm" variant="outline" onClick={() => window.print()} className="gap-2 h-8 text-xs">
                 <PrinterIcon className="size-3" />
-                Print / Save PDF
+                Print
+            </Button>
+            <Button size="sm" onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="gap-2 h-8 text-xs">
+                {isGeneratingPdf ? <Loader2Icon className="size-3 animate-spin" /> : <DownloadIcon className="size-3" />}
+                Download PDF
             </Button>
           </div>
       </div>
 
       <div className="min-h-screen py-8 print:py-0 print:bg-white flex justify-center">
-        <div className="w-full max-w-[210mm] min-h-[297mm] bg-white shadow-2xl print:shadow-none print:m-0 mx-auto overflow-hidden">
+        <div id="expense-print-area" className="w-full max-w-[210mm] min-h-[297mm] bg-white shadow-2xl print:shadow-none print:m-0 mx-auto overflow-hidden">
           {template === "soseki-modern" && (
               <SosekiModernExpense expense={expense} organization={organization} />
           )}

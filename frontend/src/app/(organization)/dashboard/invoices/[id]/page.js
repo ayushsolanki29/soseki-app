@@ -379,7 +379,6 @@ export default function InvoiceDetailsPage() {
                               <TableHead>Description</TableHead>
                               <TableHead className="text-right">Qty</TableHead>
                               <TableHead className="text-right">Price</TableHead>
-                              <TableHead className="text-right">Tax</TableHead>
                               <TableHead className="text-right">Total</TableHead>
                           </TableRow>
                       </TableHeader>
@@ -388,14 +387,13 @@ export default function InvoiceDetailsPage() {
                               <TableRow key={item.id}>
                                   <TableCell className="font-medium">{item.description}</TableCell>
                                   <TableCell className="text-right">{item.quantity}</TableCell>
-                                  <TableCell className="text-right">${item.unitPrice.toLocaleString()}</TableCell>
-                                  <TableCell className="text-right">{item.taxRate}%</TableCell>
-                                  <TableCell className="text-right font-medium">${item.total.toLocaleString()}</TableCell>
+                                  <TableCell className="text-right">{formatCurrency(item.unitPrice, invoice.currency)}</TableCell>
+                                  <TableCell className="text-right font-medium">{formatCurrency(item.total, invoice.currency)}</TableCell>
                               </TableRow>
                           ))}
                           {(!invoice.items || invoice.items.length === 0) && (
                               <TableRow>
-                                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                                       No line items found.
                                   </TableCell>
                               </TableRow>
