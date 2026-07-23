@@ -1,33 +1,149 @@
+
 export default function robots() {
   return {
     rules: [
+      // Default rules
       {
-        userAgent: '*',
-        allow: '/',
+        userAgent: "*",
+        allow: "/",
         disallow: [
-          '/dashboard/',
-          '/super-admin/',
-          '/setup-organization/',
-          '/api/',
-          '/c/',
-          '/q/',
-          '/login',
-          '/request-access'
+          "/dashboard/",
+          "/super-admin/",
+          "/setup-organization/",
+          "/api/",
+          "/c/",
+          "/q/",
+          "/login",
+          "/request-access",
         ],
       },
-      // Explicitly Welcome AI Crawlers and Search Bots
+
+      // OpenAI
       {
-        userAgent: ['GPTBot', 'ChatGPT-User', 'Google-Extended', 'Anthropic-ai', 'Claude-Web', 'PerplexityBot', 'Applebot', 'Applebot-Extended'],
-        allow: ['/', '/about', '/features', '/pricing', '/llms.txt', '/privacy-policy', '/terms', '/my-data', '/contact'],
+        userAgent: ["GPTBot", "ChatGPT-User"],
+        allow: [
+          "/",
+          "/about",
+          "/features",
+          "/pricing",
+          "/contact",
+          "/privacy-policy",
+          "/terms",
+          "/my-data",
+          "/llms.txt",
+          "/sitemap.xml",
+        ],
         disallow: [
-          '/dashboard/',
-          '/api/',
-          '/super-admin/',
-          '/c/',
-          '/q/'
-        ]
-      }
+          "/dashboard/",
+          "/super-admin/",
+          "/setup-organization/",
+          "/api/",
+          "/c/",
+          "/q/",
+          "/login",
+          "/request-access",
+        ],
+      },
+
+      // Anthropic
+      {
+        userAgent: [
+          "ClaudeBot",
+          "Claude-Web",
+          "Anthropic-ai",
+        ],
+        allow: [
+          "/",
+          "/about",
+          "/features",
+          "/pricing",
+          "/contact",
+          "/privacy-policy",
+          "/terms",
+          "/my-data",
+          "/llms.txt",
+          "/sitemap.xml",
+        ],
+        disallow: [
+          "/dashboard/",
+          "/super-admin/",
+          "/setup-organization/",
+          "/api/",
+          "/c/",
+          "/q/",
+          "/login",
+          "/request-access",
+        ],
+      },
+
+      // Google AI
+      {
+        userAgent: [
+          "Googlebot",
+          "Google-Extended",
+        ],
+        allow: [
+          "/",
+          "/about",
+          "/features",
+          "/pricing",
+          "/contact",
+          "/privacy-policy",
+          "/terms",
+          "/my-data",
+          "/llms.txt",
+          "/sitemap.xml",
+        ],
+        disallow: [
+          "/dashboard/",
+          "/super-admin/",
+          "/setup-organization/",
+          "/api/",
+          "/c/",
+          "/q/",
+          "/login",
+          "/request-access",
+        ],
+      },
+
+      // Other AI & Search
+      {
+        userAgent: [
+          "PerplexityBot",
+          "Applebot",
+          "Applebot-Extended",
+          "CCBot",
+          "Amazonbot",
+          "Bytespider",
+          "OAI-SearchBot",
+        ],
+        allow: [
+          "/",
+          "/about",
+          "/features",
+          "/pricing",
+          "/contact",
+          "/privacy-policy",
+          "/terms",
+          "/my-data",
+          "/llms.txt",
+          "/sitemap.xml",
+        ],
+        disallow: [
+          "/dashboard/",
+          "/super-admin/",
+          "/setup-organization/",
+          "/api/",
+          "/c/",
+          "/q/",
+          "/login",
+          "/request-access",
+        ],
+      },
     ],
-    sitemap: 'https://soseki.app/sitemap.xml',
-  }
+
+    sitemap: "https://soseki.app/sitemap.xml",
+
+    host: "https://soseki.app",
+  };
 }
