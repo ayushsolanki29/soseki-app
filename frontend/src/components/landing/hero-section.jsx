@@ -46,6 +46,7 @@ export function HeroSection() {
           width={1100} 
           height={700} 
           priority
+          fetchPriority="high"
           className="w-[250%] max-w-none sm:w-full sm:max-w-full sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-y sm:border border-slate-100 relative z-10 object-cover object-left" 
         />
       </div>

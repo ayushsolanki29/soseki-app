@@ -1,6 +1,6 @@
 {
   "name": "soseki-app",
-  "version": "1.0.30-beta-release",
+  "version": "1.0.35-beta-release",
   "description": "All-in-one business operating platform for freelancers, consultants, and small agencies.",
   "author": "Ayush Solanki",
   "homepage": "https://github.com/ayushsolanki29/soseki-app",
@@ -61,5 +61,11 @@
     "eslint-plugin-unused-imports": "^4.4.1",
     "tailwindcss": "^4",
     "typescript": "^6.0.3"
-  }
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Safari versions",
+    "last 2 Firefox versions",
+    "last 2 Edge versions"
+  ]
 }
