@@ -14,6 +14,11 @@ import { GlobalBillingSection } from "@/components/landing/global-billing-sectio
 import { ClientIntakeSection } from "@/components/landing/client-intake-section";
 import { FinancialClaritySection } from "@/components/landing/financial-clarity-section";
 
+export const metadata = {
+  title: "Free Invoicing Software for Freelancers",
+  description: "Manage clients, invoices, projects, and expenses in one free, open source workspace. Multi currency invoicing with 0% payment fees.",
+};
+
 export default function LandingPage() {
   return (
     <main>

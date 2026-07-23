@@ -16,10 +16,10 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata = {
   metadataBase: new URL('https://soseki.app'),
   title: {
-    default: "Soseki - All-in-one business operating platform",
+    default: "Soseki: Free Invoicing & CRM for Freelancers",
     template: "%s | Soseki"
   },
-  description: "The open-source platform for freelancers and agencies to magically simplify business operations. One workspace for clients, projects, invoices, payments, and expenses.",
+  description: "Run invoicing, client management, and project tracking in one free, open source workspace built for freelancers and small agencies.",
   keywords: ["freelancer platform", "agency management", "open-source crm", "client portal", "project management", "invoicing software"],
   authors: [{ name: "Soseki" }],
   creator: "Soseki",
@@ -28,8 +28,8 @@ export const metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Soseki - All-in-one business operating platform",
-    description: "The open-source platform for freelancers and agencies. Manage clients, projects, invoices, and payments in one workspace.",
+    title: "Soseki: Free Invoicing & CRM for Freelancers",
+    description: "Run invoicing, client management, and project tracking in one free, open source workspace built for freelancers and small agencies.",
     url: "https://soseki.app",
     siteName: "Soseki",
     locale: 'en_US',
@@ -37,8 +37,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Soseki - All-in-one business operating platform",
-    description: "The open-source platform for freelancers and agencies. Manage clients, projects, invoices, and payments in one workspace.",
+    title: "Soseki: Free Invoicing & CRM for Freelancers",
+    description: "Run invoicing, client management, and project tracking in one free, open source workspace built for freelancers and small agencies.",
   },
   verification: {
     google: "g2zd7qYHgqu2qzAwP8FGpj_t3XsNuHH-VcKgmBfK9aU",

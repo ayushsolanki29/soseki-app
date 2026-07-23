@@ -32,7 +32,7 @@ export function CurrencyIntegration() {
           <div className="relative w-full h-full z-10">
             <Image
               src="/currency/dollor.webp"
-              alt="Master Currency (USD)"
+              alt="Base Currency (USD)"
               fill
               sizes="(max-width: 768px) 100vw, 400px"
               className="object-contain"
@@ -45,7 +45,7 @@ export function CurrencyIntegration() {
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           className="mt-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-full text-[11px] font-bold tracking-widest text-[#2563eb] shadow-[0_4px_12px_rgba(0,0,0,0.05)] uppercase relative z-10"
         >
-          Master Currency
+          Base Currency
         </motion.div>
       </div>
 

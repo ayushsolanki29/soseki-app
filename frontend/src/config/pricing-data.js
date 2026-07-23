@@ -36,9 +36,9 @@ export const PRICING_DATA = {
       "Premium Client Management",
       "Advanced Project Tracking",
       "Dashboard & Financial Analytics",
-      "Global Universal Search",
+      "Global Search",
       "AI Form Generation",
-      "Team Collaboration"
+      "Client Collaboration"
     ]
   }
 };

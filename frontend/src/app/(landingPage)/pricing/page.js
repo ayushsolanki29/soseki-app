@@ -18,6 +18,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { PRICING_DATA } from "@/config/pricing-data";
 import { CallToAction } from "@/components/cta";
 
+export const metadata = {
+  title: "Pricing: Free Plan for Freelancers",
+  description: "Every account gets 25 free days of full access each month. Pay only for extra credits when you need them. No subscriptions, no contracts.",
+};
+
 export default function PricingPage() {
   const [currency, setCurrency] = useState("usd"); // "inr" or "usd"
   const [packageIndex, setPackageIndex] = useState(1); // Default to 30 credits (index 1)
@@ -184,7 +189,7 @@ export default function PricingPage() {
                 { name: "Direct Client Payments (0% Fee)", free: true, comm: true },
                 { name: "AI-Assisted Workflows", free: true, comm: true },
                 { name: "Dashboard & Analytics", free: true, comm: true },
-                { name: "Global Universal Search", free: false, comm: true },
+                { name: "Global Search", free: false, comm: true },
                 { name: "Premium Client Management", free: false, comm: true },
                 { name: "Support", free: "Community", comm: "Priority Dedicated" },
               ].map((row, idx) => (
@@ -238,7 +243,7 @@ export default function PricingPage() {
             />
             <FAQAccordion 
               q="Does Soseki support multiple currencies?" 
-              a="Yes, you can invoice your global clients in their local currency. Soseki handles the currency conversion and payment tracking seamlessly." 
+              a="Yes, you can invoice your global clients in their local currency. Soseki handles the currency conversion and payment tracking automatically." 
             />
             <FAQAccordion 
               q="What happens to my client portal if I run out of credits?" 

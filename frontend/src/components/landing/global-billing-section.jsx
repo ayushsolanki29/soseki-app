@@ -98,7 +98,7 @@ export function GlobalBillingSection() {
                 
                 <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 relative z-10 shadow-inner group-hover:border-emerald-100 transition-colors duration-300">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[12px] font-semibold text-slate-500">Master Currency (USD)</span>
+                    <span className="text-[12px] font-semibold text-slate-500">Base Currency (USD)</span>
                     <span className="text-base font-bold text-slate-900">$12,450.00</span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2 mb-2 overflow-hidden">

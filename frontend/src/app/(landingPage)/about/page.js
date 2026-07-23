@@ -43,7 +43,7 @@ import { CallToAction } from "@/components/cta";
 const missionPoints = [
   {
     title: "Simplify business management",
-    desc: "Unifying your workflow into a single, cohesive platform without the friction.",
+    desc: "Unifying your workflow into a single, cohesive platform without the bloat.",
     icon: <Workflow className="h-6 w-6 text-slate-700" />
   },
   {
@@ -155,6 +155,11 @@ function Reveal({ children, className, delay = 0 }) {
   );
 }
 
+export const metadata = {
+  title: { absolute: "About Soseki: Why We Built an Open Source Invoicing Tool" },
+  description: "Soseki is built by one developer who was tired of juggling five tools to run freelance client work. Read the story behind it.",
+};
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-clip">
@@ -174,7 +179,7 @@ export default function AboutPage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 mb-8 leading-[1.05]">
-              Zero bloat. Zero friction. <br className="hidden md:block" />
+              Zero bloat. Zero padding. <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
                 Absolute clarity.
               </span>
@@ -182,7 +187,7 @@ export default function AboutPage() {
 
             <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-3xl mx-auto">
               Say goodbye to the chaos of scattered spreadsheets and bloated SaaS subscriptions.
-              <strong> Soseki</strong> is the modern, open-source operating system for freelancers, agencies, and small teams.
+              <strong> Soseki</strong> is the modern, open-source operating system for freelancers and small agencies.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -214,7 +219,7 @@ export default function AboutPage() {
             <div className="relative">
               <span className="absolute -top-10 -left-6 text-8xl text-blue-200/50 font-serif leading-none select-none">"</span>
               <p className="text-2xl md:text-3xl font-medium text-slate-800 leading-relaxed relative z-10">
-                I built Soseki because I was tired of duct-taping five different SaaS subscriptions together just to get paid. The goal was simple: create one beautiful, open-source platform that actually respects the freelancer's workflow and data ownership.
+                I built Soseki because I got tired of stitching together spreadsheets, an invoicing tool, and a separate CRM just to run client work. The goal was simple: create one clear, open-source platform that actually respects the freelancer's workflow and data ownership.
               </p>
               <span className="absolute -bottom-16 -right-6 text-8xl text-blue-200/50 font-serif leading-none select-none">"</span>
             </div>
@@ -262,17 +267,13 @@ export default function AboutPage() {
                 </h2>
                 <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
                   <p>
-                    Running a service business should not require five different SaaS products, endless spreadsheets, or hours of manual administration.
+                    <strong>Soseki</strong> is named after Natsume Soseki, the Japanese novelist. Not as a branding gimmick, but because of how he wrote: no bloat, no padding, just what the work actually needs. That is the idea behind the product too.
                   </p>
                   <p>
-                    <strong>Soseki</strong> was created to replace that fragmented workflow with a single, beautifully designed platform that manages the complete client lifecycle from the initial handshake to the final payment.
+                    Freelancers do not need forty modules they will never open. They need invoices that go out correctly, a clear record of what a client owes, and a way to tell if the month actually made money.
                   </p>
-                </div>
-                
-                <div className="mt-10 p-6 bg-slate-50 border border-slate-100 rounded-2xl relative">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-blue-600 rounded-l-2xl" />
-                  <p className="text-slate-700 font-medium">
-                    Named after the Japanese novelist Natsume Soseki, known for his precise and uncluttered writing, our platform embodies the same philosophy: <strong>Zero bloat, zero friction, and absolute clarity.</strong>
+                  <p>
+                    It is built and maintained by one backend engineer who got tired of stitching together spreadsheets, an invoicing tool, and a separate CRM just to run client work. The code is open source under the MIT license, so anyone can read it or contribute to it.
                   </p>
                 </div>
               </div>
@@ -284,7 +285,7 @@ export default function AboutPage() {
                   {
                     icon: <Layers3 className="h-5 w-5 text-blue-600" />,
                     title: "Simple & Unified",
-                    desc: "Less friction, fewer tabs, and a tighter workflow. Everything you need without the unnecessary complexity.",
+                    desc: "Less bloat, fewer tabs, and a tighter workflow. Everything you need without the unnecessary complexity.",
                   },
                   {
                     icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
@@ -471,7 +472,7 @@ export default function AboutPage() {
                 A Unified Operations Engine
               </h2>
               <p className="text-xl text-slate-500 leading-relaxed">
-                Stop wrestling with fragmented tools. Soseki connects every phase of your business—from the first client handshake to the final payment—in one seamless, frictionless environment.
+                Stop wrestling with fragmented tools. Soseki connects every phase of your business from the first client handshake to the final payment in one unified workspace.
               </p>
             </div>
           </Reveal>
@@ -514,9 +515,9 @@ export default function AboutPage() {
                 <div className="h-12 w-12 flex items-center justify-center bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl">
                   <Search className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Zero-Friction Context</h3>
+                <h3 className="text-xl font-bold text-slate-900">Zero-Bloat Context</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  With features like Global Command Search and unified settings, every module is accessible instantly without ever breaking your workflow.
+                  With features like Global Command Search and unified settings, every module is accessible instantly without breaking your workflow.
                 </p>
               </div>
             </div>
@@ -526,8 +527,8 @@ export default function AboutPage() {
 
       <div className="py-24 px-6">
         <CallToAction 
-          title="Join the future of business management" 
-          description="Whether you are an independent freelancer or a growing agency, Soseki gives you everything you need to manage your business with clarity, ownership, and confidence." 
+          title="Run your service business without the busywork" 
+          description="Open source, actively maintained, and built by someone who runs client work the same way you do." 
         />
       </div>
 
