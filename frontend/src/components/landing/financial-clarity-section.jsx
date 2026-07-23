@@ -34,10 +34,10 @@ export function FinancialClaritySection() {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-3xl blur-3xl group-hover:blur-2xl transition-all duration-700 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100" />
               
               {/* Horizontal Scrolling Mockup */}
-              <div className="flex gap-6 relative z-10 w-[140%] -translate-x-[15%] group-hover:-translate-x-[2%] transition-transform duration-1000 ease-out">
+              <div className="flex gap-4 sm:gap-6 relative z-10 w-full overflow-x-auto snap-x snap-mandatory pb-6 px-4 sm:px-0 no-scrollbar items-center">
                 
                 {/* Card 1: Burn */}
-                <Card className="w-72 flex-shrink-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 border-slate-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:border-blue-200 text-left group/card">
+                <Card className="w-72 flex-shrink-0 snap-center bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 border-slate-100 transition-all duration-300 hover:shadow-2xl hover:border-blue-200 text-left group/card">
                   <CardHeader className="pb-3 pt-6 px-6">
                     <CardTitle className="font-medium text-slate-500 text-sm flex items-center justify-between">
                       Burn Rate
@@ -57,7 +57,7 @@ export function FinancialClaritySection() {
                 </Card>
 
                 {/* Card 2: MRR */}
-                <Card className="w-72 flex-shrink-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 border-slate-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:border-emerald-200 text-left opacity-90 group-hover:opacity-100 group-hover:scale-[1.02]">
+                <Card className="w-72 flex-shrink-0 snap-center bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 border-slate-100 transition-all duration-300 hover:shadow-2xl hover:border-emerald-200 text-left opacity-90 hover:opacity-100">
                   <CardHeader className="pb-3 pt-6 px-6">
                     <CardTitle className="font-medium text-slate-500 text-sm flex items-center justify-between">
                       MRR
@@ -80,7 +80,7 @@ export function FinancialClaritySection() {
             </div>
 
             <div className="text-center max-w-sm">
-              <div className="text-xs font-bold tracking-widest uppercase text-blue-600 mb-3 flex items-center justify-center gap-2 group-hover:scale-110 transition-transform duration-500 ease-out">
+              <div className="text-xs font-bold tracking-widest uppercase text-blue-600 mb-3 flex items-center justify-center gap-2 transition-colors duration-300">
                 <BarChart2 className="w-4 h-4" /> INVESTOR-READY METRICS
               </div>
               <p className="text-[15px] text-slate-600 leading-relaxed font-medium group-hover:text-slate-800 transition-colors duration-300">
@@ -91,7 +91,7 @@ export function FinancialClaritySection() {
 
           {/* Right Feature Mock: Fluctuation Table */}
           <div className="flex flex-col items-center group cursor-default">
-            <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-10 h-[260px] flex flex-col relative overflow-hidden transition-all duration-700 group-hover:shadow-[0_20px_60px_rgb(37,99,235,0.15)] group-hover:-translate-y-2 group-hover:border-blue-100/50">
+            <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-10 h-[260px] flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgb(37,99,235,0.10)] hover:border-blue-100/50">
               
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -99,7 +99,7 @@ export function FinancialClaritySection() {
                 <CardHeader className="border-b border-slate-100 py-4 px-6 bg-slate-50/50">
                   <CardTitle className="text-sm font-bold text-slate-700">Software Expenses</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 overflow-x-auto no-scrollbar">
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent border-slate-100">

@@ -13,10 +13,10 @@ export function ClientIntakeSection() {
         transition={{ duration: 0.7 }}
         className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center"
       >
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5 text-balance">
           Stop asking clients the same ten questions over email
         </h2>
-        <p className="text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed">
+        <p className="text-[17px] sm:text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed text-balance">
           Build a public onboarding or discovery form with the drag and drop builder, or paste your usual questions into ChatGPT and let it draft the form for you.
         </p>
 

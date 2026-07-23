@@ -7,10 +7,10 @@ export function GlobalBillingSection() {
   return (
     <section className="bg-white py-24 border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-5 text-balance">
             Bill in whatever currency your client actually pays in
           </h2>
-          <p className="text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed">
+          <p className="text-[17px] sm:text-lg md:text-[19px] text-slate-600 max-w-2xl mb-16 leading-relaxed text-balance">
             If your clients are in Berlin, London, and New York, you should not have to do the exchange rate math yourself.
           </p>
 

@@ -71,14 +71,14 @@ export default function RootLayout({ children }) {
       className={`${plusJakartaSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script
+      <body className="min-h-full flex flex-col overflow-x-hidden">
+        <Script
+          id="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Script
           id="google-consent-mode"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -105,8 +105,6 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-      </head>
-      <body className="min-h-full flex flex-col overflow-x-hidden">
         <GoogleTagManager gtmId="GTM-KS9248KF" />
         <GoogleAnalytics gaId="G-X1600G8S2W" />
         <TooltipProvider>{children}</TooltipProvider>

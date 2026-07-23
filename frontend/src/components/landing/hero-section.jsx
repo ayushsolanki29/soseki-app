@@ -14,14 +14,14 @@ export function HeroSection() {
           <ArrowRight className="w-3.5 h-3.5 shrink-0" />
         </Link>
 
-        <h1 className="text-5xl md:text-[4.5rem] font-bold tracking-tight text-[#09090b] mb-6 max-w-3xl leading-[1.05]">
+        <h1 className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold tracking-tight text-[#09090b] mb-6 max-w-5xl leading-[1.05]">
           Run your freelance business without five different tools
         </h1>
 
-        <p className="text-[17px] md:text-[21px] text-[#52525b] mb-10 max-w-3xl leading-relaxed">
-          Clients, projects, invoices, and expenses, all in one workspace. <br className="hidden md:block" />
-          <span className="md:hidden">All in one workspace.<br /></span>
-          No juggling a separate invoicing app, a CRM, and a spreadsheet just to know if the month made money.
+        <p className="text-[17px] md:text-[21px] text-[#52525b] mb-10 max-w-5xl leading-relaxed">
+          Clients, projects, invoices, and expenses in one workspace.{" "}
+          <br className="hidden md:block" />
+          Stop juggling a CRM, invoicing app, and spreadsheet to see your profits.
         </p>
 
         <div className="flex flex-row items-center justify-center gap-5 sm:gap-6 mb-12">
@@ -39,14 +39,14 @@ export function HeroSection() {
       </div>
 
       {/* Dashboard Mockup exactly matching the layout style */}
-      <div className="mt-16 sm:mt-24 w-full max-w-[1100px] relative sm:px-6">
+      <div className="mt-16 sm:mt-24 w-full max-w-[1100px] relative sm:px-6 flex justify-start">
         <Image 
           src="/dashboard.png" 
           alt="Soseki Dashboard Preview" 
           width={1100} 
           height={700} 
           priority
-          className="w-full sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-y sm:border border-slate-100 relative z-10 object-cover" 
+          className="w-[250%] max-w-none sm:w-full sm:max-w-full sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-y sm:border border-slate-100 relative z-10 object-cover object-left" 
         />
       </div>
     </main>

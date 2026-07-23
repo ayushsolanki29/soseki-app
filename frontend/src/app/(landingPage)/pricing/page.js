@@ -140,7 +140,7 @@ export default function PricingPage() {
                 </div>
                 
                 <ul className="space-y-4 mb-8">
-                  {PRICING_DATA.paid.features.map((feat, idx) => (
+                  {PRICING_DATA.features.map((feat, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 font-medium">
                       <Sparkles className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                       <span>{feat}</span>
