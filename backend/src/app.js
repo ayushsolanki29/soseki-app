@@ -12,7 +12,7 @@ const { rateLimit: rateLimitConfig, server: serverConfig } = require("./config/a
 const app = express();
 
 // Use CLIENT_URL from config but support comma separated array
-const CLIENT_URL = serverConfig.clientUrl.includes(",") 
+const CLIENT_URL = serverConfig.clientUrl.includes(",")
   ? serverConfig.clientUrl.split(",").map((url) => url.trim())
   : serverConfig.clientUrl;
 

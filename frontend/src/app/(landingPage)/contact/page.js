@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
+import API from "@/lib/api";
 import { GithubIcon } from "@/components/github-icon";
 
 import { Header } from "@/components/header";
@@ -98,18 +99,6 @@ const responsePoints = [
   },
 ];
 
-function SectionHeading({ eyebrow, title, desc, align = "left" }) {
-  return (
-    <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center")}>
-      <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12px] font-medium text-blue-600 shadow-sm">
-        <Sparkles className="h-3.5 w-3.5" />
-        {eyebrow}
-      </div>
-      <h2 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
-      <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">{desc}</p>
-    </div>
-  );
-}
 
 function Reveal({ children, className, delay = 0 }) {
   return (
@@ -128,28 +117,27 @@ function Reveal({ children, className, delay = 0 }) {
 export default function ContactPage() {
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle, submitting, success, error
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('submitting');
-    setErrorMessage('');
+    setErrors({});
 
     try {
-      const res = await fetch('http://localhost:5050/api/public/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
+      await API.post('/public/contact', formData);
       setStatus('success');
       setFormData({ firstName: '', lastName: '', email: '', message: '' });
     } catch (err) {
       setStatus('error');
-      setErrorMessage(err.message);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || "An error occurred";
+      let field = 'general';
+      if (errorMsg.toLowerCase().includes('first name')) field = 'firstName';
+      else if (errorMsg.toLowerCase().includes('last name')) field = 'lastName';
+      else if (errorMsg.toLowerCase().includes('email')) field = 'email';
+      else if (errorMsg.toLowerCase().includes('message')) field = 'message';
+      
+      setErrors({ [field]: errorMsg });
     }
   };
 
@@ -212,35 +200,35 @@ export default function ContactPage() {
                     <div className="flex-1 space-y-2">
                       <label htmlFor="firstName" className="text-sm font-semibold text-slate-900">First Name</label>
                       <input type="text" id="firstName" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="John" />
-                      {status === 'error' && errorMessage.toLowerCase().includes('first name') && (
-                        <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                      {errors.firstName && (
+                        <p className="text-red-500 text-sm mt-1 font-medium">{errors.firstName}</p>
                       )}
                     </div>
                     <div className="flex-1 space-y-2">
                       <label htmlFor="lastName" className="text-sm font-semibold text-slate-900">Last Name</label>
                       <input type="text" id="lastName" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="Doe" />
-                      {status === 'error' && errorMessage.toLowerCase().includes('last name') && (
-                        <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                      {errors.lastName && (
+                        <p className="text-red-500 text-sm mt-1 font-medium">{errors.lastName}</p>
                       )}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-semibold text-slate-900">Work Email</label>
                     <input type="email" id="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="john@example.com" />
-                    {status === 'error' && errorMessage.toLowerCase().includes('email') && (
-                      <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1 font-medium">{errors.email}</p>
                     )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="message" className="text-sm font-semibold text-slate-900">Message</label>
                     <textarea id="message" rows="4" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} required className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="How can we help you?"></textarea>
-                    {status === 'error' && errorMessage.toLowerCase().includes('message') && (
-                      <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                    {errors.message && (
+                      <p className="text-red-500 text-sm mt-1 font-medium">{errors.message}</p>
                     )}
                   </div>
-                  {status === 'error' && !errorMessage.toLowerCase().includes('email') && !errorMessage.toLowerCase().includes('first name') && !errorMessage.toLowerCase().includes('last name') && !errorMessage.toLowerCase().includes('message') && (
+                  {errors.general && (
                     <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium">
-                      {errorMessage}
+                      {errors.general}
                     </div>
                   )}
                   <button type="submit" disabled={status === 'submitting'} className="mt-2 w-full rounded-xl bg-blue-600 py-3.5 text-[15px] font-bold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed">
