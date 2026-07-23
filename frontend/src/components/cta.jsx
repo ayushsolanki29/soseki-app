@@ -12,14 +12,14 @@ export function CallToAction({
         <div
             className="relative mx-auto flex w-full max-w-5xl flex-col justify-between border-x">
             <FullWidthDivider className="-top-px" />
-            <div className="border-b px-6 py-24">
-				<h2 className="text-center font-bold text-4xl md:text-5xl tracking-tight text-slate-900">
+            <div className="border-b px-4 sm:px-6 py-16 md:py-24">
+				<h2 className="text-center font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-slate-900">
 					{title || (
 						<>Open source, actively maintained, and built by someone who runs client work the same way you do.</>
 					)}
 				</h2>
 				<p
-                    className="mx-auto max-w-2xl text-balance text-center text-slate-600 text-lg md:text-xl mt-6 leading-relaxed">
+                    className="mx-auto max-w-2xl text-balance text-center text-slate-600 text-base sm:text-lg md:text-xl mt-6 leading-relaxed">
 					{description || "Join the community of freelancers and agencies using Soseki."}
 				</p>
 			</div>

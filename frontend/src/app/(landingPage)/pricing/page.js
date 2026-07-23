@@ -30,7 +30,7 @@ export default function PricingPage() {
       <Header />
 
       {/* Modern Hero & Calculator Section */}
-      <section className="relative pt-32 pb-24 border-b border-slate-100 px-6">
+      <section className="relative pt-24 md:pt-32 pb-16 md:pb-24 border-b border-slate-100 px-4 sm:px-6">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white pointer-events-none" />
         
         <div className="mx-auto max-w-5xl w-full relative z-10 flex flex-col items-center">
@@ -38,12 +38,12 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-6">
               Pay for what you use.<br/><span className="text-blue-600">Nothing more.</span>
             </h1>
-            <p className="mt-4 text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="mt-4 text-base md:text-xl text-slate-600 max-w-2xl mx-auto px-2 md:px-0">
               We ditched the rigid subscription model. Every account gets 25 free days of usage every month. Buy extra credits only when you need them.
             </p>
           </motion.div>
@@ -56,7 +56,7 @@ export default function PricingPage() {
             className="w-full max-w-4xl bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col md:flex-row overflow-hidden"
           >
             {/* Free Tier Side */}
-            <div className="w-full md:w-1/2 p-8 md:p-12 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between relative overflow-hidden group">
+            <div className="w-full md:w-1/2 p-6 md:p-12 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
               
               <div className="relative z-10">
@@ -87,13 +87,13 @@ export default function PricingPage() {
             </div>
 
             {/* Paid Tier Side */}
-            <div className="w-full md:w-1/2 p-8 md:p-12 bg-white flex flex-col justify-between relative overflow-hidden">
+            <div className="w-full md:w-1/2 p-6 md:p-12 bg-white flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold uppercase py-1 px-4 rounded-bl-xl tracking-wider">
                 Pro Tier
               </div>
 
               <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 sm:gap-0">
                   <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                     <Zap className="w-5 h-5 text-blue-500 fill-blue-500" /> Pay As You Go
                   </h3>
@@ -116,23 +116,28 @@ export default function PricingPage() {
                 </div>
 
                 {/* Package Toggle */}
-                <div className="grid grid-cols-2 gap-3 mb-8">
+                <div className={cn("grid gap-3 mb-8", paidData.packages.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
                   {paidData.packages.map((pkg, idx) => (
                     <button
                       key={idx}
                       onClick={() => setPackageIndex(idx)}
                       className={cn(
-                        "py-3 px-4 rounded-xl border text-left transition-all relative overflow-hidden",
+                        "py-3 px-3 sm:px-4 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-center",
                         packageIndex === idx 
                           ? "border-blue-500 bg-blue-50/50 shadow-sm ring-1 ring-blue-500" 
                           : "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
                       )}
                     >
                       {packageIndex === idx && (
-                        <motion.div layoutId="package-active" className="absolute inset-0 border-2 border-blue-500 rounded-xl" />
+                        <motion.div layoutId="package-active" className="absolute inset-0 border-2 border-blue-500 rounded-xl pointer-events-none" />
                       )}
-                      <div className="text-[13px] font-bold text-slate-500 mb-1">{pkg.credits} Credits</div>
-                      <div className="text-xl font-bold text-slate-900">
+                      {pkg.popular && (
+                        <div className="absolute top-0 right-0 bg-blue-500 text-white text-[9px] font-bold uppercase py-0.5 px-2 rounded-bl-lg tracking-wider pointer-events-none z-10 shadow-sm">
+                          Popular
+                        </div>
+                      )}
+                      <div className="text-[12px] sm:text-[13px] font-bold text-slate-500 mb-0.5 relative z-10">{pkg.credits} Credits</div>
+                      <div className="text-lg sm:text-xl font-bold text-slate-900 relative z-10">
                         {paidData.currencySymbol}{pkg.price.toFixed(2)}
                       </div>
                     </button>
@@ -158,10 +163,10 @@ export default function PricingPage() {
       </section>
 
       {/* Feature Comparison Table */}
-      <section className="py-24 bg-slate-50 border-b border-slate-100 px-6">
+      <section className="py-16 md:py-24 bg-slate-50 border-b border-slate-100 px-4 sm:px-6">
         <div className="mx-auto max-w-4xl text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">Compare Features</h2>
-          <p className="text-slate-600 mb-6">Both tiers include full access to the platform. Pro users get access to premium features and support.</p>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-4">Compare Features</h2>
+          <p className="text-sm md:text-base text-slate-600 mb-6 px-2 md:px-0">Both tiers include full access to the platform. Pro users get access to premium features and support.</p>
           <Link href="/features" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-medium transition-colors text-[15px]">
             View all detailed features <ArrowRight className="w-4 h-4" />
           </Link>
@@ -212,11 +217,11 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-white px-6 border-b border-slate-100">
+      <section className="py-16 md:py-24 bg-white px-4 sm:px-6 border-b border-slate-100">
         <div className="mx-auto max-w-3xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-slate-600">Everything you need to know about the credit system.</p>
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-sm md:text-base text-slate-600 px-2 md:px-0">Everything you need to know about the credit system.</p>
           </div>
 
           <div className="space-y-4">
