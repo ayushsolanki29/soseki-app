@@ -433,3 +433,13 @@ model PageVisit {
   @@index([createdAt])
   @@index([utmSource])
 }
+
+model ContactSubmission {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  message   String
+  status    String   @default("Unread") // Unread, Read, Responded
+  createdAt DateTime @default(now())
+}

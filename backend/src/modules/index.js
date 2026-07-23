@@ -20,6 +20,7 @@ const dashboardRoutes = require('./dashboard/dashboard.routes');
 const superAdminRoutes = require('./super-admin/super-admin.routes');
 const migrationRoutes = require('./migration/migration.routes');
 const portalRoutes = require('./portal/portal.routes');
+const publicRoutes = require('./public/public.routes');
 
 // Define routes
 
@@ -40,5 +41,6 @@ router.use('/super-admin', superAdminRoutes);
 router.use('/tracking', trackingRoutes);
 router.use('/migration', migrationRoutes);
 router.use('/portal', portalRoutes);
+router.use('/public', publicRoutes);
 
 module.exports = router;

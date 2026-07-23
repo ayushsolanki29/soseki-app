@@ -313,5 +313,17 @@ class SuperAdminController {
       next(error);
     }
   }
+  async getContacts(req, res, next) {
+    try {
+      // Direct prisma call since we don't have a service method yet
+      const prisma = require("../../database/prisma");
+      const contacts = await prisma.contactSubmission.findMany({
+        orderBy: { createdAt: 'desc' }
+      });
+      return res.status(200).json({ success: true, contacts });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new SuperAdminController();

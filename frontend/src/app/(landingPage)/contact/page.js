@@ -16,6 +16,7 @@ import {
   Waypoints,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { GithubIcon } from "@/components/github-icon";
 
@@ -125,6 +126,33 @@ function Reveal({ children, className, delay = 0 }) {
 }
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle, submitting, success, error
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('submitting');
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('http://localhost:5050/api/public/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+      setStatus('success');
+      setFormData({ firstName: '', lastName: '', email: '', message: '' });
+    } catch (err) {
+      setStatus('error');
+      setErrorMessage(err.message);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-clip">
       <Header />
@@ -168,32 +196,61 @@ export default function ContactPage() {
             {/* Right Column: Form (Takes up 3 columns) */}
             <Reveal delay={0.2} className="lg:col-span-3">
               <div className="relative overflow-hidden rounded-[24px] sm:rounded-[32px] border border-slate-200 bg-white p-6 sm:p-8 md:p-10 shadow-xl shadow-slate-200/50 h-full">
-                <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+                {status === 'success' ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center h-[400px]">
+                    <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-6">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3">Message Sent!</h3>
+                    <p className="text-slate-600 mb-8 max-w-sm">We&apos;ve received your message and will get back to you shortly.</p>
+                    <button type="button" onClick={() => setStatus('idle')} className="text-blue-600 font-semibold hover:underline">Send another message</button>
+                  </div>
+                ) : (
+                <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+
                   <div className="flex flex-col sm:flex-row gap-5">
                     <div className="flex-1 space-y-2">
                       <label htmlFor="firstName" className="text-sm font-semibold text-slate-900">First Name</label>
-                      <input type="text" id="firstName" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="John" />
+                      <input type="text" id="firstName" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="John" />
+                      {status === 'error' && errorMessage.toLowerCase().includes('first name') && (
+                        <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                      )}
                     </div>
                     <div className="flex-1 space-y-2">
                       <label htmlFor="lastName" className="text-sm font-semibold text-slate-900">Last Name</label>
-                      <input type="text" id="lastName" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="Doe" />
+                      <input type="text" id="lastName" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="Doe" />
+                      {status === 'error' && errorMessage.toLowerCase().includes('last name') && (
+                        <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-semibold text-slate-900">Work Email</label>
-                    <input type="email" id="email" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="john@example.com" />
+                    <input type="email" id="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="john@example.com" />
+                    {status === 'error' && errorMessage.toLowerCase().includes('email') && (
+                      <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="message" className="text-sm font-semibold text-slate-900">Message</label>
-                    <textarea id="message" rows="4" className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="How can we help you?"></textarea>
+                    <textarea id="message" rows="4" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} required className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500" placeholder="How can we help you?"></textarea>
+                    {status === 'error' && errorMessage.toLowerCase().includes('message') && (
+                      <p className="text-red-500 text-sm mt-1 font-medium">{errorMessage}</p>
+                    )}
                   </div>
-                  <button type="submit" className="mt-2 w-full rounded-xl bg-blue-600 py-3.5 text-[15px] font-bold text-white shadow-sm transition-all hover:bg-blue-700">
-                    Send Message
+                  {status === 'error' && !errorMessage.toLowerCase().includes('email') && !errorMessage.toLowerCase().includes('first name') && !errorMessage.toLowerCase().includes('last name') && !errorMessage.toLowerCase().includes('message') && (
+                    <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium">
+                      {errorMessage}
+                    </div>
+                  )}
+                  <button type="submit" disabled={status === 'submitting'} className="mt-2 w-full rounded-xl bg-blue-600 py-3.5 text-[15px] font-bold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed">
+                    {status === 'submitting' ? 'Sending...' : 'Send Message'}
                   </button>
                   <p className="text-center text-xs text-slate-500 mt-2">
                     By submitting this form, you agree to our privacy policy.
                   </p>
                 </form>
+                )}
               </div>
             </Reveal>
 
