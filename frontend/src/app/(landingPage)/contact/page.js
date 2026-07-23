@@ -86,10 +86,6 @@ function Reveal({ children, className, delay = 0 }) {
   );
 }
 
-export const metadata = {
-  title: "Contact Us",
-};
-
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#f3f8ff] text-[#09090b] font-sans selection:bg-blue-200 overflow-x-clip">

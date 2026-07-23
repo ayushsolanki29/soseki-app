@@ -25,10 +25,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { APP_EMAILS } from "@/lib/constants";
 
-export const metadata = {
-  title: "Privacy Policy",
-};
-
 const PrivacyPolicyPage = () => {
   const router = useRouter();
 

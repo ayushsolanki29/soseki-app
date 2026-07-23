@@ -26,11 +26,6 @@ const AiFormWidget = dynamic(() => import("@/components/landing/ai-widgets").the
 const DashboardWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.DashboardWidget), { loading: () => <WidgetSkeleton />, ssr: false });
 const SearchWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.SearchWidget), { loading: () => <WidgetSkeleton />, ssr: false });
 
-export const metadata = {
-  title: "Invoicing, CRM & Project Tools for Freelancers",
-  description: "Multi currency invoicing, client portals, project tracking, and AI powered data migration, all in one open source tool for freelancers.",
-};
-
 export default function FeaturesPage() {
   return (
     <main className="min-h-screen bg-[#fcfdfd] text-[#09090b] font-sans selection:bg-blue-200 flex flex-col overflow-x-clip">
