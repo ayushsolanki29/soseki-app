@@ -8,6 +8,7 @@ import { HeroSection } from "@/components/landing/hero-section";
 import { GlobalBillingSection } from "@/components/landing/global-billing-section";
 import { ClientIntakeSection } from "@/components/landing/client-intake-section";
 import { FinancialClaritySection } from "@/components/landing/financial-clarity-section";
+import { TrustedBySection } from "@/components/landing/trusted-by-section";
 
 export const metadata = {
   title: "Free Invoicing Software for Freelancers",
@@ -21,6 +22,8 @@ export default function LandingPage() {
         <Header />
 
         <HeroSection />
+
+        <TrustedBySection />
 
         <GlobalBillingSection />
         <ClientIntakeSection />
