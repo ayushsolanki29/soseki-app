@@ -48,6 +48,11 @@ export function TrustedBySection() {
             <img src="https://auraplusplus.com/images/badges/featured-on-light.svg" alt="Featured on Aura++" width="265" height="58" className="h-[56px] w-auto" />
           </a>
 
+          {/* Example 6: Product Hunt */}
+          <a href="https://www.producthunt.com/products/soseki?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-soseki" target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform flex items-center justify-center">
+            <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1205549&theme=dark&t=1784899100375" alt="Soseki - Run Your Freelance Business, All in One Place | Product Hunt" width="250" height="54" className="h-[56px] w-auto" />
+          </a>
+
           {/* You can add the rest of your badges here! Just paste them below like the ones above. */}
         </div>
       </div>
