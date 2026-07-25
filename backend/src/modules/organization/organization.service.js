@@ -142,15 +142,25 @@ class OrganizationService {
       throw error;
     }
 
-    const organization = await prisma.organization.create({
-      data: {
-        name: name.trim(),
-        masterCurrency: masterCurrency || "USD",
-        users: {
-          connect: { id: user.id },
+    let organization;
+    try {
+      organization = await prisma.organization.create({
+        data: {
+          name: name.trim(),
+          masterCurrency: masterCurrency || "USD",
+          users: {
+            connect: { id: user.id },
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        const err = new Error("An organization with this name already exists");
+        err.status = 400;
+        throw err;
+      }
+      throw error;
+    }
 
     await prisma.user.update({
       where: { id: user.id },

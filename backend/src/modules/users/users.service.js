@@ -12,6 +12,7 @@ class UsersService {
         name: true,
         organizationId: true,
         createdAt: true,
+        emailVerified: true,
       }
     });
 
@@ -29,7 +30,13 @@ class UsersService {
 
     const updateData = {};
     if (name) updateData.name = name;
-    if (email) updateData.email = email;
+    if (email) {
+      updateData.email = email;
+      const currentUser = await prisma.user.findUnique({ where: { id: userId } });
+      if (currentUser && currentUser.email !== email) {
+        updateData.emailVerified = false;
+      }
+    }
     
     if (password) {
       const salt = await bcrypt.genSalt(authConfig.bcryptSaltRounds);
@@ -44,6 +51,7 @@ class UsersService {
           id: true,
           email: true,
           name: true,
+          emailVerified: true,
         }
       });
       return updatedUser;

@@ -44,22 +44,20 @@ class AuthService {
       },
     });
 
-    // Send verification email
-    try {
-      const htmlBody = renderTemplate("email_verification", { 
-        subject: "Verify your Soseki account",
-        name: user.name,
-        otpCode: otpCode 
-      });
+    // Send verification email in the background
+    const htmlBody = renderTemplate("email_verification", { 
+      subject: "Verify your Soseki account",
+      name: user.name,
+      otpCode: otpCode 
+    });
 
-      await mailer.sendMail({
-        to: user.email,
-        subject: "Verify your Soseki account",
-        html: htmlBody
-      });
-    } catch (error) {
+    mailer.sendMail({
+      to: user.email,
+      subject: "Verify your Soseki account",
+      html: htmlBody
+    }).catch(error => {
       console.error("[AuthService] Failed to send verification email:", error);
-    }
+    });
 
     // Generate accessToken
     const payload = {
@@ -274,21 +272,19 @@ class AuthService {
       },
     });
 
-    try {
-      const htmlBody = renderTemplate("email_verification", { 
-        subject: "Verify your Soseki account",
-        name: user.name,
-        otpCode: otpCode 
-      });
+    const htmlBody = renderTemplate("email_verification", { 
+      subject: "Verify your Soseki account",
+      name: user.name,
+      otpCode: otpCode 
+    });
 
-      await mailer.sendMail({
-        to: user.email,
-        subject: "Verify your Soseki account",
-        html: htmlBody
-      });
-    } catch (error) {
+    mailer.sendMail({
+      to: user.email,
+      subject: "Verify your Soseki account",
+      html: htmlBody
+    }).catch(error => {
       console.error("[AuthService] Failed to send verification email:", error);
-    }
+    });
     
     return true;
   }

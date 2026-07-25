@@ -14,11 +14,12 @@ export function EmailVerificationPopup() {
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const [step, setStep] = useState("send"); // "send" or "verify"
+  const [step, setStep] = useState("verify"); // "send" or "verify"
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [rateLimitWarning, setRateLimitWarning] = useState("");
   
   const inputRefs = useRef([]);
 
@@ -48,16 +49,19 @@ export function EmailVerificationPopup() {
 
   const handleSendOtp = async () => {
     setIsSending(true);
+    setRateLimitWarning("");
     try {
       await API.post("/auth/resend-verification");
       toast.success("Verification code sent to your email!");
       setCooldown(60);
       setStep("verify");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send code.");
       if (error.response?.status === 429) {
+          setRateLimitWarning(error.response?.data?.message || "Please wait before requesting another code.");
           setCooldown(60);
-          setStep("verify"); // Let them verify if they just sent it recently
+          setStep("verify");
+      } else {
+          toast.error(error.response?.data?.message || "Failed to send code.");
       }
     } finally {
       setIsSending(false);
@@ -243,15 +247,22 @@ export function EmailVerificationPopup() {
                     </Button>
                   </form>
 
-                  <div className="w-full max-w-[320px] flex justify-center">
+                    <div className="w-full max-w-[320px] flex flex-col items-center">
                      <button 
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-2"
                         onClick={handleSendOtp}
                         disabled={isSending || cooldown > 0}
+                        type="button"
                       >
-                        {cooldown > 0 ? `Resend available in ${cooldown}s` : "Didn't receive a code? Resend"}
+                        {isSending ? "Sending..." : cooldown > 0 ? `Resend code in ${cooldown}s` : "Didn't receive a code? Resend"}
                       </button>
-                  </div>
+                      
+                      {rateLimitWarning && (
+                        <p className="text-xs text-amber-600 dark:text-amber-500 font-medium text-center">
+                          {rateLimitWarning}
+                        </p>
+                      )}
+                    </div>
                 </div>
               )}
             </motion.div>

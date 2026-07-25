@@ -53,8 +53,8 @@ export default function SetupOrganizationPage() {
         router.push("/dashboard");
       }
     } catch (error) {
-      toast.error("Setup failed", {
-        description: error.response?.data?.error || "Something went wrong. Please try again.",
+      toast.warning("Setup incomplete", {
+        description: error.response?.data?.message || error.response?.data?.error || "Something went wrong. Please try again.",
       });
     } finally {
       setIsLoading(false);

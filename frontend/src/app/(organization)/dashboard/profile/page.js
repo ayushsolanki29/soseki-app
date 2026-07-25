@@ -13,6 +13,8 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 export default function ProfilePage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [originalEmail, setOriginalEmail] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,6 +39,8 @@ export default function ProfilePage() {
         if (res.data?.user) {
           setName(res.data.user.name || "");
           setEmail(res.data.user.email || "");
+          setOriginalEmail(res.data.user.email || "");
+          setIsEmailVerified(res.data.user.emailVerified || false);
         }
       } catch (error) {
         toast.error("Failed to load profile");
@@ -61,11 +65,18 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      await API.patch("/users/profile", { 
+      const res = await API.patch("/users/profile", { 
         name: name.trim(),
         email: email.trim(),
       });
-      toast.success("Profile updated successfully!");
+      // Update email verified status locally if they changed it
+      if (email.trim() !== originalEmail) {
+          setIsEmailVerified(false);
+          toast.success("Profile updated! Please verify your new email.");
+          setTimeout(() => window.location.reload(), 1500);
+      } else {
+          toast.success("Profile updated successfully!");
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
@@ -196,9 +207,12 @@ export default function ProfilePage() {
                       value={email} 
                       onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({...prev, email: undefined})); }} 
                       placeholder="john@example.com" 
-                      disabled={isSaving}
+                      disabled={isSaving || isEmailVerified}
                       className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
+                    {isEmailVerified ? (
+                      <p className="text-xs text-muted-foreground mt-1">Your email is verified. Contact support to change it.</p>
+                    ) : null}
                     {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
                 </div>
               </div>

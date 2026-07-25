@@ -138,7 +138,14 @@ class AuthController {
       
       // Update JWT payload with new emailVerified status
       // Generate new token to reflect updated status
-      const payload = { ...req.user, emailVerified: true };
+      const payload = {
+        userId: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        hasOrg: !!req.user.organizationId,
+        organizationId: req.user.organizationId || null,
+        emailVerified: true,
+      };
       const { auth: authConfig } = require("../../config/app.config");
       const jwt = require("jsonwebtoken");
       const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
