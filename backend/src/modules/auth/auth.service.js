@@ -96,7 +96,7 @@ class AuthService {
         name: user.name,
         emailVerified: false,
       },
-    };121231
+    };
   }
   async login(email, password, termsAccepted) {
     const normalizedEmail = email.trim().toLowerCase();
