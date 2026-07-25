@@ -47,6 +47,9 @@ const renderTemplate = (templateName, context) => {
     return template(context);
   }
 
+  // Add default variables if not provided
+  context.logoUrl = context.logoUrl || `${process.env.CLIENT_URL || 'http://localhost:3000'}/logo.png`;
+  
   const bodyHtml = template(context);
   
   try {

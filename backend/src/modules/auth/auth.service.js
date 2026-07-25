@@ -48,6 +48,7 @@ class AuthService {
     try {
       const htmlBody = renderTemplate("email_verification", { 
         subject: "Verify your Soseki account",
+        name: user.name,
         otpCode: otpCode 
       });
 
@@ -276,6 +277,7 @@ class AuthService {
     try {
       const htmlBody = renderTemplate("email_verification", { 
         subject: "Verify your Soseki account",
+        name: user.name,
         otpCode: otpCode 
       });
 
