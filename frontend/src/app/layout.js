@@ -45,24 +45,44 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Soseki',
-    applicationCategory: 'BusinessApplication',
-    operatingSystem: 'Web',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD'
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Soseki',
+      url: 'https://soseki.app',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://soseki.app/search?q={search_term_string}',
+        'query-input': 'required name=search_term_string'
+      }
     },
-    description: 'All-in-one business operating platform for freelancers, consultants, and small agencies.',
-    url: 'https://soseki.app',
-    creator: {
+    {
+      '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: 'Soseki'
+      name: 'Soseki',
+      url: 'https://soseki.app',
+      logo: 'https://soseki.app/logo.png',
+      sameAs: [
+        'https://github.com/ayushsolanki29/soseki-app',
+        'https://twitter.com/sosekiapp'
+      ]
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Soseki',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
+      },
+      description: 'All-in-one business operating platform for freelancers, consultants, and small agencies.',
+      url: 'https://soseki.app'
     }
-  };
+  ];
 
   return (
     <html
