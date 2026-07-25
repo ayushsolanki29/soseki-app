@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const prisma = require("../../database/prisma");
 const mailer = require("../../utils/mailer");
+const { renderTemplate } = require("../emails/email.template");
 
 const { auth: authConfig, server: serverConfig } = require("../../config/app.config");
 
@@ -45,17 +46,15 @@ class AuthService {
 
     // Send verification email
     try {
+      const htmlBody = renderTemplate("email_verification", { 
+        subject: "Verify your Soseki account",
+        otpCode: otpCode 
+      });
+
       await mailer.sendMail({
         to: user.email,
         subject: "Verify your Soseki account",
-        html: `
-          <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto;">
-            <h2>Welcome to Soseki!</h2>
-            <p>Your email verification code is:</p>
-            <h1 style="letter-spacing: 4px; font-size: 32px; color: #000;">${otpCode}</h1>
-            <p>This code will expire in 15 minutes.</p>
-          </div>
-        `
+        html: htmlBody
       });
     } catch (error) {
       console.error("[AuthService] Failed to send verification email:", error);
@@ -275,17 +274,15 @@ class AuthService {
     });
 
     try {
+      const htmlBody = renderTemplate("email_verification", { 
+        subject: "Verify your Soseki account",
+        otpCode: otpCode 
+      });
+
       await mailer.sendMail({
         to: user.email,
         subject: "Verify your Soseki account",
-        html: `
-          <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto;">
-            <h2>Soseki Verification</h2>
-            <p>Your new verification code is:</p>
-            <h1 style="letter-spacing: 4px; font-size: 32px; color: #000;">${otpCode}</h1>
-            <p>This code will expire in 15 minutes.</p>
-          </div>
-        `
+        html: htmlBody
       });
     } catch (error) {
       console.error("[AuthService] Failed to send verification email:", error);

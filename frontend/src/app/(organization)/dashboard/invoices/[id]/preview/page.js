@@ -116,7 +116,7 @@ export default function InvoicePreviewPage() {
                 organization={organization} 
                 onOrganizationUpdate={() => refetch()} 
                 documentType="invoice" 
-                masterCurrency={invoice?.currency || "INR"}
+                masterCurrency={masterCurrency}
             />
             <Button size="sm" variant="outline" onClick={() => window.print()} className="gap-2 h-8 text-xs">
                 <PrinterIcon className="size-3" />

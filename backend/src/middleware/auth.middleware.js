@@ -55,6 +55,7 @@ const authMiddleware = async (req, res, next) => {
         id: true, 
         email: true,
         name: true,
+        emailVerified: true,
         organizationId: true,
         organization: {
           select: { status: true }
@@ -78,6 +79,7 @@ const authMiddleware = async (req, res, next) => {
       id: userStatus.id,
       email: userStatus.email,
       name: userStatus.name,
+      emailVerified: userStatus.emailVerified,
       organizationId: userStatus.organizationId,
       organization: userStatus.organization
     };

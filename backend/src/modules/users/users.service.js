@@ -36,17 +36,25 @@ class UsersService {
       updateData.passwordHash = await bcrypt.hash(password, salt);
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        name: true,
+    try {
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        }
+      });
+      return updatedUser;
+    } catch (error) {
+      if (error.code === 'P2002') {
+        const err = new Error("This email is already in use by another account");
+        err.status = 400;
+        throw err;
       }
-    });
-
-    return updatedUser;
+      throw error;
+    }
   }
   async updatePassword(userId, currentPassword, newPassword) {
     const user = await prisma.user.findUnique({

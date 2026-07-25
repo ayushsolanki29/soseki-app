@@ -14,6 +14,7 @@ import { useOrganization } from "@/components/providers/organization-provider";
 export default function ExpensePreviewPage() {
   const { id } = useParams();
   const { organization, refetch } = useOrganization();
+  const masterCurrency = organization?.masterCurrency || "USD";
   const [expense, setExpense] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -84,7 +85,7 @@ export default function ExpensePreviewPage() {
                 organization={organization} 
                 onOrganizationUpdate={() => refetch()} 
                 documentType="expense"
-                masterCurrency={expense?.currency || "INR"}
+                masterCurrency={masterCurrency}
             />
             <Button size="sm" variant="outline" onClick={() => window.print()} className="gap-2 h-8 text-xs">
                 <PrinterIcon className="size-3" />

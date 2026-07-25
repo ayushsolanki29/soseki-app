@@ -24,7 +24,7 @@ const createQuestionnaireValidation = Joi.object({
 const updateQuestionnaireValidation = Joi.object({
   title: Joi.string().trim().min(1).optional(),
   description: Joi.string().allow(null, "").optional(),
-  status: Joi.string().valid("Draft", "Active", "Inactive", "Archived").optional(),
+  status: Joi.string().valid("Active", "Paused", "Closed").optional(),
   maxResponses: Joi.number().integer().min(1).allow(null, "").optional(),
   clientId: Joi.string().allow(null, "").optional(),
   projectId: Joi.string().allow(null, "").optional(),

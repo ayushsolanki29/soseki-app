@@ -11,7 +11,7 @@ const createProjectValidation = Joi.object({
     "date.base": "Start date must be a valid date",
     "any.required": "Start date is required",
   }),
-  estimatedEndDate: Joi.date().iso().allow(null).optional(),
+  estimatedEndDate: Joi.date().iso().allow(null, "").optional(),
   status: Joi.string().valid("Planning", "Active", "Completed", "OnHold", "Cancelled").optional(),
   clientId: Joi.string().required().messages({
     "string.empty": "Client ID is required",
@@ -23,7 +23,7 @@ const updateProjectValidation = Joi.object({
   title: Joi.string().trim().min(1).optional(),
   description: Joi.string().allow("").optional(),
   startDate: Joi.date().iso().optional(),
-  estimatedEndDate: Joi.date().iso().allow(null).optional(),
+  estimatedEndDate: Joi.date().iso().allow(null, "").optional(),
   status: Joi.string().valid("Planning", "Active", "Completed", "OnHold", "Cancelled").optional(),
   clientId: Joi.string().optional(),
 });

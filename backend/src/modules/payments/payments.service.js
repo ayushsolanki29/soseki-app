@@ -106,9 +106,9 @@ class PaymentsService {
       // Update the invoice
       const invoice = payment.invoice;
       const newPaidAmount = Math.max(0, Number(invoice.paidAmount) + amountDifference);
-      
+
       let newStatus = invoice.status;
-      
+
       // Fix Javascript floating point precision before comparing (e.g., 534.9999999999999 vs 535)
       const roundedPaid = Number(Number(newPaidAmount).toFixed(2));
       const roundedTotal = Number(Number(invoice.totalAmount).toFixed(2));
@@ -119,7 +119,7 @@ class PaymentsService {
         newStatus = "Partially Paid";
       } else {
         if (invoice.status === "Paid" || invoice.status === "Partially Paid") {
-            newStatus = "Sent";
+          newStatus = "Sent";
         }
       }
 
@@ -164,9 +164,9 @@ class PaymentsService {
 
       const invoice = payment.invoice;
       const newPaidAmount = Math.max(0, Number(invoice.paidAmount) - Number(payment.amount));
-      
+
       let newStatus = invoice.status;
-      
+
       // Fix Javascript floating point precision before comparing
       const roundedPaid = Number(Number(newPaidAmount).toFixed(2));
       const roundedTotal = Number(Number(invoice.totalAmount).toFixed(2));
@@ -177,7 +177,7 @@ class PaymentsService {
         newStatus = "Partially Paid";
       } else {
         if (invoice.status === "Paid" || invoice.status === "Partially Paid") {
-            newStatus = "Sent";
+          newStatus = "Sent";
         }
       }
 

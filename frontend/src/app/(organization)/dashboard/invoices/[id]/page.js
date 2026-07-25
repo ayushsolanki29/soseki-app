@@ -560,45 +560,47 @@ export default function InvoiceDetailsPage() {
                           </div>
                       )}
                   </div>
+              </div>
+          )}
 
-                  <div className="bg-card border rounded-xl p-6">
-                      <h3 className="font-semibold text-lg mb-4">Linked Expenses</h3>
-                      {invoice.expenses?.length > 0 ? (
-                          <Table>
-                              <TableHeader>
-                                  <TableRow>
-                                      <TableHead>Date</TableHead>
-                                      <TableHead>Description</TableHead>
-                                      <TableHead>Category</TableHead>
-                                      <TableHead className="text-right">Amount</TableHead>
-                                  </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                  {invoice.expenses.map(expense => (
-                                      <TableRow key={expense.id}>
-                                          <TableCell>{formatDate(expense.date)}</TableCell>
-                                          <TableCell>{expense.description}</TableCell>
-                                          <TableCell>{expense.category}</TableCell>
-                                          <TableCell className="text-right font-medium">
-                                              <div className="text-destructive">
-                                                -{formatCurrency(expense.amount, expense.currency || invoice.currency)}
+          {activeTab === 'expenses' && (
+              <div className="bg-card border rounded-xl p-6">
+                  <h3 className="font-semibold text-lg mb-4">Linked Expenses</h3>
+                  {invoice.expenses?.length > 0 ? (
+                      <Table>
+                          <TableHeader>
+                              <TableRow>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead>Description</TableHead>
+                                  <TableHead>Category</TableHead>
+                                  <TableHead className="text-right">Amount</TableHead>
+                              </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                              {invoice.expenses.map(expense => (
+                                  <TableRow key={expense.id}>
+                                      <TableCell>{formatDate(expense.date)}</TableCell>
+                                      <TableCell>{expense.description}</TableCell>
+                                      <TableCell>{expense.category}</TableCell>
+                                      <TableCell className="text-right font-medium">
+                                          <div className="text-destructive">
+                                            -{formatCurrency(expense.amount, expense.currency || invoice.currency)}
+                                          </div>
+                                          {masterCurrency && (expense.currency || invoice.currency) !== masterCurrency && (
+                                              <div className="text-xs text-muted-foreground mt-0.5 font-normal">
+                                                  -{formatCurrency(expense.amount * (expense.exchangeRate || invoice.exchangeRate || 1.0), masterCurrency)}
                                               </div>
-                                              {masterCurrency && (expense.currency || invoice.currency) !== masterCurrency && (
-                                                  <div className="text-xs text-muted-foreground mt-0.5 font-normal">
-                                                      -{formatCurrency(expense.amount * (expense.exchangeRate || invoice.exchangeRate || 1.0), masterCurrency)}
-                                                  </div>
-                                              )}
-                                          </TableCell>
-                                      </TableRow>
-                                  ))}
-                              </TableBody>
-                          </Table>
-                      ) : (
-                          <div className="text-center py-12 text-muted-foreground">
-                              No expenses have been linked to this invoice.
-                          </div>
-                      )}
-                  </div>
+                                          )}
+                                      </TableCell>
+                                  </TableRow>
+                              ))}
+                          </TableBody>
+                      </Table>
+                  ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                          No expenses have been linked to this invoice.
+                      </div>
+                  )}
               </div>
           )}
 
