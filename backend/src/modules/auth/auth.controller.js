@@ -1,6 +1,34 @@
 const authService = require("./auth.service");
 
 class AuthController {
+  async register(req, res, next) {
+    try {
+      const { name, email, password, termsAccepted } = req.body;
+      const result = await authService.register(name, email, password, termsAccepted);
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("accessToken", result.accessToken, cookieOptions);
+      res.cookie("refreshToken", result.refreshToken, cookieOptions);
+
+      return res.status(201).json({
+        success: true,
+        user: result.user,
+      });
+    } catch (error) {
+      if (error.status === 400) {
+        return res.status(400).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
   async login(req, res, next) {
     try {
       const { email, password, termsAccepted } = req.body;
@@ -93,6 +121,56 @@ class AuthController {
       const result = await authService.checkEmail(email);
       return res.status(200).json(result);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyEmail(req, res, next) {
+    try {
+      const { otp } = req.body;
+      const userId = req.user.id;
+      
+      if (!otp) {
+        return res.status(400).json({ success: false, message: "OTP is required" });
+      }
+
+      await authService.verifyEmail(userId, otp);
+      
+      // Update JWT payload with new emailVerified status
+      // Generate new token to reflect updated status
+      const payload = { ...req.user, emailVerified: true };
+      const { auth: authConfig } = require("../../config/app.config");
+      const jwt = require("jsonwebtoken");
+      const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
+      
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("accessToken", accessToken, cookieOptions);
+
+      return res.status(200).json({ success: true, message: "Email verified successfully" });
+    } catch (error) {
+      if (error.status === 400 || error.status === 404) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async resendVerification(req, res, next) {
+    try {
+      const userId = req.user.id;
+      await authService.resendVerification(userId);
+      return res.status(200).json({ success: true, message: "Verification code sent" });
+    } catch (error) {
+      if (error.status === 400 || error.status === 404 || error.status === 429) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
       next(error);
     }
   }

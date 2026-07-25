@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { APP_NAME, APP_VERSION } from "@/lib/constants";
 import { usePathname } from "next/navigation";
+import { EmailVerificationPopup } from "@/components/email-verification-popup";
 
 export function AppShell({
     children
@@ -51,6 +52,7 @@ export function AppShell({
                         </div>
                     </SidebarInset>
                 </SidebarProvider>
+                <EmailVerificationPopup />
             </OrganizationProvider>
         </div>
     );

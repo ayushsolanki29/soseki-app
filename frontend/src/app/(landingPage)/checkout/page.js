@@ -56,7 +56,7 @@ export default function CheckoutPage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-16"
           >
-            <Link href="/request-access" className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30 hover:-translate-y-1 text-[16px] flex items-center justify-center gap-2">
+            <Link href="/setup-account" className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30 hover:-translate-y-1 text-[16px] flex items-center justify-center gap-2">
               <Mail className="w-5 h-5" /> Request Access
             </Link>
             <Link href="/login" className="w-full sm:w-auto bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-4 px-10 rounded-xl shadow-sm transition-all text-[16px] flex items-center justify-center gap-2">

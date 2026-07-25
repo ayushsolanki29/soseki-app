@@ -36,7 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, EyeIcon, InfoIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, EyeIcon, InfoIcon, UsersIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import ct from "countries-and-timezones";
 import API from "@/lib/api";
@@ -228,8 +228,15 @@ export default function ClientsPage() {
               <SkeletonHelper type="table" rows={5} columns={7} />
             ) : clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                  No clients found.
+                <TableCell colSpan={7} className="text-center h-[300px] text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <UsersIcon className="size-12 text-muted-foreground/30" />
+                        <h3 className="font-semibold text-lg text-foreground">No clients yet</h3>
+                        <p>Add your first client to start organizing your work.</p>
+                        <Button onClick={() => { setEditingClient(null); setIsSheetOpen(true); }} className="mt-4">
+                            Add Client
+                        </Button>
+                    </div>
                 </TableCell>
               </TableRow>
             ) : (

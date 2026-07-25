@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, LinkIcon, CopyIcon, Loader2Icon, SparklesIcon } from "lucide-react";
+import { SearchIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon, EditIcon, TrashIcon, LinkIcon, CopyIcon, Loader2Icon, SparklesIcon, FileQuestionIcon } from "lucide-react";
 import API from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -157,8 +157,15 @@ export default function QuestionnairesPage() {
               <SkeletonHelper type="table" rows={5} columns={5} />
             ) : questionnaires.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
-                  No questionnaires found.
+                <TableCell colSpan={5} className="text-center h-[300px] text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <FileQuestionIcon className="size-12 text-muted-foreground/30" />
+                        <h3 className="font-semibold text-lg text-foreground">No questionnaires yet</h3>
+                        <p>Create your first form to start gathering responses and feedback.</p>
+                        <Button onClick={() => router.push("/dashboard/questionnaires/new")} className="mt-4">
+                            Create Questionnaire
+                        </Button>
+                    </div>
                 </TableCell>
               </TableRow>
             ) : (

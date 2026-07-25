@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { formatDate, cn } from "@/lib/utils";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
@@ -34,7 +35,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PlusIcon, EyeIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, EyeIcon, MoreHorizontalIcon, EditIcon, TrashIcon, BriefcaseIcon } from "lucide-react";
 import API from "@/lib/api";
 import { ProjectForm } from "@/components/forms/project-form";
 import { toast } from "sonner";
@@ -42,6 +43,7 @@ import Link from "next/link";
 import { SkeletonHelper } from "@/components/shared/skeleton-helper";
 
 export default function ProjectsPage() {
+  const searchParams = useSearchParams();
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -49,7 +51,7 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Sheet State
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(searchParams.get("new") === "true");
   const [editingProject, setEditingProject] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
 
@@ -166,8 +168,15 @@ export default function ProjectsPage() {
               <SkeletonHelper type="table" columns={6} rows={5} />
             ) : projects.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
-                  No projects found.
+                <TableCell colSpan={6} className="text-center h-[300px] text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <BriefcaseIcon className="size-12 text-muted-foreground/30" />
+                        <h3 className="font-semibold text-lg text-foreground">No projects yet</h3>
+                        <p>Create your first project and start managing timelines.</p>
+                        <Button onClick={() => { setEditingProject(null); setIsSheetOpen(true); }} className="mt-4">
+                            Create Project
+                        </Button>
+                    </div>
                 </TableCell>
               </TableRow>
             ) : (

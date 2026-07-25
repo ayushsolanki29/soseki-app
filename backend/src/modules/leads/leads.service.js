@@ -1,27 +1,11 @@
 // src/modules/leads/leads.service.js
 const prisma = require("../../database/prisma");
-const disposableEmailDetector = require("disposable-email-detector").default || require("disposable-email-detector");
 const emailService = require("../emails/email.service");
 const { admin: adminConfig } = require("../../config/app.config");
 
 class LeadsService {
   async validateEmail(email) {
     const cleanEmail = email.trim().toLowerCase();
-    
-    // Disposable Email Check
-    try {
-      const isDisposable = await disposableEmailDetector(cleanEmail);
-      if (isDisposable) {
-        const error = new Error("Disposable email addresses are not allowed. Please use your primary email.");
-        error.status = 400;
-        throw error;
-      }
-    } catch (detectorError) {
-      console.warn("Disposable email detector failed (ignoring check):", detectorError);
-      if (detectorError.status === 400) {
-        throw detectorError; // Re-throw if it was our explicit disposable email error
-      }
-    }
 
     // Check if email already exists in waitlist
     const existingLead = await prisma.waitlistLead.findUnique({

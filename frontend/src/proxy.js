@@ -11,7 +11,7 @@ export default async function proxy(request) {
 const publicPaths = [
   '/login',
   '/signup',
-  '/request-access',
+  '/setup-account',
   '/status',
 
   // Authentication
@@ -104,7 +104,7 @@ const publicPaths = [
 
   if (isPublicPath) {
     // If user has a token and tries to visit login/signup/request-access, redirect them to dashboard
-    if (token && (pathname === '/login' || pathname === '/signup' || pathname === '/request-access' || pathname === '/status' || pathname === '/')) {
+    if (token && (pathname === '/login' || pathname === '/signup' || pathname === '/setup-account' || pathname === '/status' || pathname === '/')) {
       try {
         const { payload } = await jwtVerify(token, secretKey);
         const hasOrg = payload.hasOrg === true;
@@ -116,7 +116,7 @@ const publicPaths = [
     
     // If super admin has a token and tries to visit public paths, redirect to super-admin dashboard
     const superToken = request.cookies.get('superAccessToken')?.value;
-    if (superToken && (pathname === '/login' || pathname === '/signup' || pathname === '/request-access' || pathname === '/status' || pathname === '/')) {
+    if (superToken && (pathname === '/login' || pathname === '/signup' || pathname === '/setup-account' || pathname === '/status' || pathname === '/')) {
       try {
         await jwtVerify(superToken, secretKey);
         return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));

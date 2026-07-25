@@ -181,7 +181,7 @@ export default function AboutPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/request-access" className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-8 rounded-xl shadow-sm text-[15px] font-bold")}>
+              <Link href="/setup-account" className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto bg-[#2563eb] text-white hover:bg-[#1d4ed8] px-8 rounded-xl shadow-sm text-[15px] font-bold")}>
                 Request Early Access
               </Link>
               <Link href="https://github.com/ayushsolanki29/soseki-app" target="_blank" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full sm:w-auto border-slate-200 bg-white px-8 text-slate-700 hover:bg-slate-50 rounded-xl text-[15px] font-bold flex items-center justify-center gap-2 shadow-sm")}>

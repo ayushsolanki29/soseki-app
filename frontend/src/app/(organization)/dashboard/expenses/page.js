@@ -134,9 +134,15 @@ export default function ExpensesPage() {
               <SkeletonHelper type="table" columns={7} rows={5} />
             ) : expenses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
-                  <ReceiptIcon className="mx-auto size-12 mb-4 opacity-20" />
-                  No expenses found.
+                <TableCell colSpan={6} className="text-center h-[300px] text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <ReceiptIcon className="size-12 text-muted-foreground/30" />
+                        <h3 className="font-semibold text-lg text-foreground">No expenses yet</h3>
+                        <p>Record your first expense to start tracking outgoing costs.</p>
+                        <Button onClick={() => { setExpenseToEdit(null); setIsRecordExpenseOpen(true); }} className="mt-4">
+                            Record Expense
+                        </Button>
+                    </div>
                 </TableCell>
               </TableRow>
             ) : (

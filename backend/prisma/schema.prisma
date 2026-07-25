@@ -26,6 +26,11 @@ model User {
   emailPreferences EmailPreference[]
   termsAcceptedAt  DateTime?
 
+  emailVerified    Boolean                @default(false)
+  otpCode          String?
+  otpExpiresAt     DateTime?
+  otpLastSentAt    DateTime?
+
   @@index([organizationId])
 }
 

@@ -14,7 +14,7 @@ export default function robots() {
           "/c/",
           "/q/",
           "/login",
-          "/request-access",
+          "/setup-account",
         ],
       },
 
@@ -41,7 +41,7 @@ export default function robots() {
           "/c/",
           "/q/",
           "/login",
-          "/request-access",
+          "/setup-account",
         ],
       },
 
@@ -72,7 +72,7 @@ export default function robots() {
           "/c/",
           "/q/",
           "/login",
-          "/request-access",
+          "/setup-account",
         ],
       },
 
@@ -102,7 +102,7 @@ export default function robots() {
           "/c/",
           "/q/",
           "/login",
-          "/request-access",
+          "/setup-account",
         ],
       },
 
@@ -137,7 +137,7 @@ export default function robots() {
           "/c/",
           "/q/",
           "/login",
-          "/request-access",
+          "/setup-account",
         ],
       },
     ],

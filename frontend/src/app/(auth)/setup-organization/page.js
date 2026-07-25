@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,16 @@ export default function SetupOrganizationPage() {
   const [userName, setUserName] = useState("");
   const [masterCurrency, setMasterCurrency] = useState("USD");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    API.get("/auth/me")
+      .then((res) => {
+        if (res.data.success && res.data.user?.name) {
+          setUserName(res.data.user.name);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch user:", err));
+  }, []);
 
   const handleLogout = async () => {
     try {

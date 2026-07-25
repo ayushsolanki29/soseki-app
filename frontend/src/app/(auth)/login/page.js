@@ -55,8 +55,8 @@ export default function LoginPage() {
             setErrors({
               email: (
                 <span>
-                  Account not found. Want to join the waiting list?{" "}
-                  <Link href="/request-access" className="underline hover:text-red-700 font-semibold">Request access here.</Link>
+                  Account not found. Want to join?{" "}
+                  <Link href="/setup-account" className="underline hover:text-red-700 font-semibold">Setup account here.</Link>
                 </span>
               )
             });
@@ -222,7 +222,7 @@ export default function LoginPage() {
 
           <div className="text-[14px] text-muted-foreground pt-4">
             New to Soseki?{" "}
-            <Link href="/request-access" className="text-foreground font-medium hover:underline transition-colors">
+            <Link href="/setup-account" className="text-foreground font-medium hover:underline transition-colors">
               Get started
             </Link>
           </div>

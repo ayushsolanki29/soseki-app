@@ -264,11 +264,16 @@ class DashboardService {
     ]);
 
     // Also run counts concurrently with each other
-    const [activeProjectCount, pendingInvoiceCount, activeQuestionnaireCount] = await Promise.all([
+    const [activeProjectCount, pendingInvoiceCount, activeQuestionnaireCount, totalClientCount, totalProjectCount, totalInvoiceCount] = await Promise.all([
       prisma.project.count({ where: { organizationId, status: { in: ['Active', 'In Progress'] } } }),
       prisma.invoice.count({ where: { organizationId, status: 'Pending' } }),
-      prisma.questionnaire.count({ where: { organizationId, status: 'Active' } })
+      prisma.questionnaire.count({ where: { organizationId, status: 'Active' } }),
+      prisma.client.count({ where: { organizationId } }),
+      prisma.project.count({ where: { organizationId } }),
+      prisma.invoice.count({ where: { organizationId } })
     ]);
+
+    const showOnboarding = (totalClientCount + totalProjectCount + totalInvoiceCount) === 0;
 
     return {
       recentProjects,
@@ -284,7 +289,8 @@ class DashboardService {
         activeProjects: activeProjectCount,
         pendingInvoices: pendingInvoiceCount,
         activeQuestionnaires: activeQuestionnaireCount
-      }
+      },
+      showOnboarding
     };
   }
 

@@ -4,6 +4,7 @@ import { InvoiceStatusChart } from "@/components/channel-breakdown-chart";
 import { DashboardDataTable } from "@/components/dashboard-data-table";
 import { DashboardListWidget } from "@/components/dashboard-list-widget";
 import { HoverQuickActions } from "@/components/hover-quick-actions";
+import { OnboardingModal } from "@/components/onboarding-modal";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -192,7 +193,8 @@ export async function Dashboard() {
         user = {},
         upcomingProjects = [],
         upcomingInvoices = [],
-        counts = {}
+        counts = {},
+        showOnboarding = false
     } = data;
     
     // 1. Generate Activity Timeline
@@ -389,6 +391,7 @@ export async function Dashboard() {
             />
 
             <HoverQuickActions />
+            <OnboardingModal show={showOnboarding} />
         </div>
     );
 }
