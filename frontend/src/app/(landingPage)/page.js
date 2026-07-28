@@ -11,8 +11,11 @@ import { FinancialClaritySection } from "@/components/landing/financial-clarity-
 import { TrustedBySection } from "@/components/landing/trusted-by-section";
 
 export const metadata = {
-  title: "Free Invoicing Software for Freelancers",
-  description: "Manage clients, invoices, projects, and expenses in one free, open source workspace. Multi currency invoicing with 0% payment fees.",
+  title: "Soseki | Run your freelance business without five different tools",
+  description: "Clients, projects, invoices, and expenses, all in one workspace. No juggling a separate invoicing app, a CRM, and a spreadsheet.",
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function LandingPage() {

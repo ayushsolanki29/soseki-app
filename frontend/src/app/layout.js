@@ -23,9 +23,6 @@ export const metadata = {
   authors: [{ name: "Soseki" }],
   creator: "Soseki",
   publisher: "Soseki",
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     title: "Soseki: Free Invoicing & CRM for Freelancers",
     description: "Run invoicing, client management, and project tracking in one free, open source workspace built for freelancers and small agencies.",

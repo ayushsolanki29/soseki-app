@@ -8,24 +8,15 @@ import {
   CheckCircle2,
   Code2,
   Database,
-  FileText,
   Globe,
-  Heart,
   Layers3,
   LayoutGrid,
   Search,
   ShieldCheck,
   Users,
   Workflow,
-  KeyRound,
-  Receipt,
-  Gauge,
-  Ticket,
-  Settings2,
   LineChart,
-  CircleDollarSign,
-  Bot,
-  Linkedin,
+
 
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -39,6 +30,14 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { FeatureSection } from "@/components/feature-section";
 import { CallToAction } from "@/components/cta";
+
+export const metadata = {
+  title: "About Soseki | The open-source OS for freelancers",
+  description: "Say goodbye to the chaos of scattered spreadsheets and bloated SaaS subscriptions. Soseki is the modern, open-source operating system for freelancers.",
+  alternates: {
+    canonical: '/about',
+  },
+};
 
 const missionPoints = [
   {
