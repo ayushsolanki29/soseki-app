@@ -13,7 +13,7 @@ export default async function Image() {
     ? 'http://localhost:3000' 
     : 'https://soseki.app';
   
-  const bannerUrl = `${baseUrl}/banner.jpeg`;
+  const bannerUrl = `${baseUrl}/banner-og.jpeg`;
   const logoUrl = `${baseUrl}/logo.png`;
 
   return new ImageResponse(
