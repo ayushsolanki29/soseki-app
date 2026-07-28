@@ -60,8 +60,12 @@ const transporter = {
 
     // 3. Try to use Resend
     try {
+      const resendSender = mailConfig.resendFromEmail && mailConfig.resendFromEmail !== 'onboarding@resend.dev'
+        ? `"${mailConfig.fromName}" <${mailConfig.resendFromEmail}>`
+        : `"${mailConfig.fromName}" <hello@soseki.app>`; // Default to their verified domain
+
       const { data, error } = await resend.emails.send({
-        from: mailOptions.from || `"${mailConfig.fromName}" <${mailConfig.user}>`,
+        from: resendSender,
         reply_to: adminConfig.email, // Replies go directly to your personal/support inbox
         to: mailOptions.to,
         subject: mailOptions.subject,
