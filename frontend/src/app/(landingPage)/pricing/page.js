@@ -18,14 +18,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { PRICING_DATA } from "@/config/pricing-data";
 import { CallToAction } from "@/components/cta";
 
-export const metadata = {
-  title: "Pricing | Pay for what you use, nothing more",
-  description: "Every account gets 25 free days of usage every month. Buy extra credits only when you need them. No rigid subscriptions.",
-  alternates: {
-    canonical: '/pricing',
-  },
-};
-
 export default function PricingPage() {
   const [currency, setCurrency] = useState("usd"); // "inr" or "usd"
   const [packageIndex, setPackageIndex] = useState(1); // Default to 30 credits (index 1)

@@ -27,14 +27,6 @@ const AiFormWidget = dynamic(() => import("@/components/landing/ai-widgets").the
 const DashboardWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.DashboardWidget), { loading: () => <WidgetSkeleton />, ssr: false });
 const SearchWidget = dynamic(() => import("@/components/landing/insight-widgets").then(mod => mod.SearchWidget), { loading: () => <WidgetSkeleton />, ssr: false });
 
-export const metadata = {
-  title: "Features | Financial management without the busywork",
-  description: "Multi-currency invoicing, live exchange rates, and reporting that actually reflects what is happening in your business.",
-  alternates: {
-    canonical: '/features',
-  },
-};
-
 export default function FeaturesPage() {
   return (
     <main className="min-h-screen bg-[#fcfdfd] text-[#09090b] font-sans selection:bg-blue-200 flex flex-col overflow-x-clip">

@@ -1,6 +1,9 @@
 export const metadata = {
-  title: "Pricing: Free Plan for Freelancers",
-  description: "Every account gets 25 free days of full access each month. Pay only for extra credits when you need them. No subscriptions, no contracts.",
+  title: "Pricing | Pay for what you use, nothing more",
+  description: "Every account gets 25 free days of usage every month. Buy extra credits only when you need them. No rigid subscriptions.",
+  alternates: {
+    canonical: '/pricing',
+  },
 };
 
 export default function PricingLayout({ children }) {

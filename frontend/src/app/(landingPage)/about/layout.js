@@ -1,6 +1,9 @@
 export const metadata = {
-  title: { absolute: "About Soseki: Why We Built an Open Source Invoicing Tool" },
-  description: "Soseki is built by one developer who was tired of juggling five tools to run freelance client work. Read the story behind it.",
+  title: "About Soseki | The open-source OS for freelancers",
+  description: "Say goodbye to the chaos of scattered spreadsheets and bloated SaaS subscriptions. Soseki is the modern, open-source operating system for freelancers.",
+  alternates: {
+    canonical: '/about',
+  },
 };
 
 export default function AboutLayout({ children }) {

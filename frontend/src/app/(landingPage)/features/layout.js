@@ -1,6 +1,9 @@
 export const metadata = {
-  title: "Invoicing, CRM & Project Tools for Freelancers",
-  description: "Multi currency invoicing, client portals, project tracking, and AI powered data migration, all in one open source tool for freelancers.",
+  title: "Features | Financial management without the busywork",
+  description: "Multi-currency invoicing, live exchange rates, and reporting that actually reflects what is happening in your business.",
+  alternates: {
+    canonical: '/features',
+  },
 };
 
 export default function FeaturesLayout({ children }) {
