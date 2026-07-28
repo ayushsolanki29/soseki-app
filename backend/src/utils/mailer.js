@@ -61,7 +61,7 @@ const transporter = {
     // 3. Try to use Resend
     try {
       const { data, error } = await resend.emails.send({
-        from: mailOptions.from,
+        from: mailOptions.from || `"${mailConfig.fromName}" <${mailConfig.user}>`,
         reply_to: adminConfig.email, // Replies go directly to your personal/support inbox
         to: mailOptions.to,
         subject: mailOptions.subject,
