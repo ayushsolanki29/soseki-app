@@ -11,6 +11,7 @@ import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2, LightbulbIcon, FileTe
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import API from "@/lib/api";
+import { AiLoader } from "@/components/ui/ai-loader";
 
 export default function ImportQuestionnairePage() {
   const router = useRouter();
@@ -195,41 +196,37 @@ export default function ImportQuestionnairePage() {
                   Explain what kind of questionnaire you need. Our Built-in AI will automatically build the fields, choices, and logic.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 p-6">
-                <Textarea
-                  placeholder="e.g. I need a client onboarding form for my web design agency. I want to know their budget, timeline, and link to their current website..."
-                  value={rawPrompt}
-                  onChange={(e) => setRawPrompt(e.target.value)}
-                  className="h-[300px] resize-none text-sm p-4 bg-muted/10 border-border/50 focus-visible:ring-primary/30 transition-colors focus:bg-background leading-relaxed shadow-inner"
-                />
+              <CardContent className="flex-1 p-6 flex flex-col justify-center min-h-[348px]">
+                {isGenerating ? (
+                  <AiLoader text="Generating Magic..." />
+                ) : (
+                  <Textarea 
+                    placeholder="e.g. I need a client onboarding form for my web design agency. I want to know their budget, timeline, and link to their current website..."
+                    value={rawPrompt}
+                    onChange={(e) => setRawPrompt(e.target.value)}
+                    className="h-[300px] w-full resize-none text-sm p-4 bg-muted/10 border-border/50 focus-visible:ring-primary/30 transition-colors focus:bg-background leading-relaxed shadow-inner"
+                  />
+                )}
               </CardContent>
-              <CardFooter className="pt-2 pb-6 px-6 flex justify-end">
-                <Button
-                  onClick={handleGenerateWithAi}
-                  disabled={isGenerating || !rawPrompt.trim()}
-                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.05]"
-                  size="lg"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="size-5 animate-spin" />
-                      Generating Magic...
-                    </>
-                  ) : (
-                    <>
-                      <SparklesIcon className="size-5" />
-                      Generate & Import Form
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
+              {!isGenerating && (
+                <CardFooter className="pt-2 pb-6 px-6 flex justify-end">
+                  <Button 
+                    onClick={handleGenerateWithAi} 
+                    disabled={isGenerating || !rawPrompt.trim()} 
+                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.05]"
+                    size="lg"
+                  >
+                    <SparklesIcon className="size-5" /> 
+                    Generate & Import Form
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           </motion.div>
         </TabsContent>
 
         <TabsContent value="external" className="mt-0 outline-none w-full">
           <div className="flex flex-col gap-6 w-full">
-            {/* Step 1: Prompt (Compact) */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <Card className="border-border/50 shadow-sm bg-background/80 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -256,7 +253,6 @@ export default function ImportQuestionnairePage() {
               </Card>
             </motion.div>
 
-            {/* Step 2: Paste JSON */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <Card className="flex flex-col border-border/50 shadow-md bg-background/80 backdrop-blur-sm">
                 <CardHeader className="pb-4 border-b border-border/50 bg-muted/10">
@@ -268,34 +264,31 @@ export default function ImportQuestionnairePage() {
                     Once the AI replies with the JSON structure, paste it exactly as-is into the field below.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <Textarea
-                    placeholder='{\n  "title": "Example Form",\n  "fields": [...]\n}'
-                    value={jsonInput}
-                    onChange={(e) => setJsonInput(e.target.value)}
-                    className="h-[220px] resize-none font-mono text-xs bg-muted/10 border-border/50 focus-visible:ring-primary/30 p-4 text-foreground/80 leading-relaxed transition-colors focus:bg-background shadow-inner"
-                  />
+                <CardContent className="p-6 flex flex-col justify-center min-h-[268px]">
+                  {isImporting ? (
+                    <AiLoader text="Validating JSON..." />
+                  ) : (
+                    <Textarea 
+                      placeholder='{\n  "title": "Example Form",\n  "fields": [...]\n}'
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      className="h-[220px] w-full resize-none font-mono text-xs bg-muted/10 border-border/50 focus-visible:ring-primary/30 p-4 text-foreground/80 leading-relaxed transition-colors focus:bg-background shadow-inner"
+                    />
+                  )}
                 </CardContent>
-                <CardFooter className="pt-2 pb-6 px-6 flex justify-end">
-                  <Button
-                    onClick={handleImport}
-                    disabled={isImporting || !jsonInput.trim()}
-                    size="lg"
-                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.05]"
-                  >
-                    {isImporting ? (
-                      <>
-                        <Loader2 className="size-5 animate-spin" />
-                        Validating JSON...
-                      </>
-                    ) : (
-                      <>
-                        <SparklesIcon className="size-5" />
-                        Validate & Open Builder
-                      </>
-                    )}
-                  </Button>
-                </CardFooter>
+                {!isImporting && (
+                  <CardFooter className="pt-2 pb-6 px-6 flex justify-end">
+                    <Button 
+                      onClick={handleImport} 
+                      disabled={isImporting || !jsonInput.trim()} 
+                      size="lg"
+                      className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.05]"
+                    >
+                      <SparklesIcon className="size-5" /> 
+                      Validate & Open Builder
+                    </Button>
+                  </CardFooter>
+                )}
               </Card>
             </motion.div>
           </div>
