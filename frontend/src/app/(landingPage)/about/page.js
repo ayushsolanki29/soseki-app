@@ -109,7 +109,7 @@ const platformModules = [
   "Invoices",
   "Payments",
   "Expenses",
-  "AI Questionnaires",
+  "AI-Powered Questionnaires",
   "Data Migration",
   "Support Tickets",
   "Workspace Settings",

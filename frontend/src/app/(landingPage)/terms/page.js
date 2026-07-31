@@ -176,7 +176,7 @@ const TermsOfUsePage = () => {
                   },
                   {
                     t: "3.1.4 AI Productivity Tools",
-                    d: "AI migration features to rapidly import business data and draft client onboarding questionnaires.",
+                    d: "AI migration features to rapidly import business data and draft AI-powered client onboarding questionnaires.",
                   },
                   {
                     t: "3.1.5 Project Dashboards",

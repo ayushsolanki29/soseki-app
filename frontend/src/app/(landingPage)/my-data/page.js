@@ -114,7 +114,7 @@ const MyDataPage = () => {
                 <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-widest mb-1 text-blue-600">
                   Client Submitted Data (Forms)
                 </p>
-                <p className="text-sm text-muted-foreground mb-3">When your clients fill out questionnaires or intake forms.</p>
+                <p className="text-sm text-muted-foreground mb-3">When your clients fill out AI-powered questionnaires or intake forms.</p>
                 <p className="text-sm"><strong>Usage:</strong> This data is fully encrypted, strictly private, and only accessible by you (the workspace owner). It is safely stored in our AWS Mumbai database and never exposed publicly.</p>
               </div>
             </div>

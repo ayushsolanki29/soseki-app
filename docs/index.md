@@ -67,7 +67,7 @@ A unified, read-only ledger capturing every payment received across your organiz
 ### 💸 [Expenses](./expenses.md)
 Attribute costs directly to clients, projects, or invoices. Leverage multi-currency support and generate printable A4 receipts.
 
-### 📋 [Questionnaires](./questionnaires.md)
+### 📋 [AI-Powered Questionnaires](./questionnaires.md)
 Design and deploy public forms effortlessly. Manage response caps, view structured submissions, and export data with ease.
 
 ### 🔄 [Data Migration](./migration.md)

@@ -15,7 +15,7 @@
 
 ---
 
-Soseki replaces spreadsheets and scattered tools with one workspace for clients, projects, invoices, payments, expenses, questionnaires, support tickets, and reporting. The product follows the philosophy of its namesake, Japanese novelist Natsume Soseki: no bloat, no unnecessary complexity, just the tools you actually need to run a service business.
+Soseki replaces spreadsheets and scattered tools with one workspace for clients, projects, invoices, payments, expenses, AI-powered questionnaires, support tickets, and reporting. The product follows the philosophy of its namesake, Japanese novelist Natsume Soseki: no bloat, no unnecessary complexity, just the tools you actually need to run a service business.
 
 **[Full Product Documentation](./docs/index.md)** | **[Setup Guide](./SETUP.md)** 
 
@@ -52,7 +52,7 @@ Give your clients a seamless, professional experience. Soseki includes a dedicat
 - **📁 Project Management:** Track work engagements, timelines, linked invoices, and expenses.
 - **🧾 Invoicing & Payments:** Multi-currency, professional PDF generation, line-item tax rates, and a unified payment ledger.
 - **💸 Expense Tracking:** Link costs to clients, projects, or invoices with multi-currency support and receipt previews.
-- **📋 Questionnaires:** Public, shareable forms without requiring login for respondents.
+- **📋 AI-Powered Questionnaires:** Public, shareable forms without requiring login for respondents.
 - **🎫 Support Tickets:** In-app support channel with threaded conversation UI.
 - **⚙️ Workspace Settings:** Tailored organization setup including financial and currency management.
 

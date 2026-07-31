@@ -131,8 +131,8 @@ export default function FeaturesPage() {
                 icon: <FileJson className="w-6 h-6 text-purple-500" />
               },
               {
-                title: "AI Questionnaire Builder",
-                description: "Generate client onboarding forms, project briefs, or surveys with a prompt, or build them yourself with the drag and drop builder.",
+                title: "AI-Powered Questionnaire Builder",
+                description: "Generate AI-powered client onboarding forms, project briefs, or surveys with a prompt, or build them yourself with the drag and drop builder.",
                 visual: <AiFormWidget />,
                 features: ["AI form generation", "Drag & Drop Builder", "Public forms", "Response collection", "Export responses"],
                 icon: <Sparkles className="w-6 h-6 text-purple-500" />
@@ -241,7 +241,7 @@ export default function FeaturesPage() {
                 <Server className="w-6 h-6 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-purple-950 mb-2">AI handles the busywork</h3>
-              <p className="text-purple-800/70 max-w-sm text-sm md:text-base">From migrating your old spreadsheets to drafting client questionnaires, AI takes care of the setup work so you can get to the actual job faster.</p>
+              <p className="text-purple-800/70 max-w-sm text-sm md:text-base">From migrating your old spreadsheets to drafting AI-powered client questionnaires, AI takes care of the setup work so you can get to the actual job faster.</p>
             </motion.div>
 
           </div>
