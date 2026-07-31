@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }) {
-  // In Next.js 15, params is a promise. We'll handle both just in case, but usually just params.slug works in 13/14.
+export async function generateMetadata(props) {
+  const params = await props.params;
   const slug = params?.slug;
   
   // Fetch questionnaire data for metadata
@@ -13,13 +13,13 @@ export async function generateMetadata({ params }) {
     });
     
     if (!res.ok) {
-      return { title: 'Questionnaire | Soseki' };
+      return { title: 'Questionnaire' };
     }
     
     const data = await res.json();
     const questionnaire = data.questionnaire;
     
-    if (!questionnaire) return { title: 'Questionnaire | Soseki' };
+    if (!questionnaire) return { title: 'Questionnaire' };
     
     return {
       title: questionnaire.title,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
       }
     };
   } catch (err) {
-    return { title: 'Questionnaire | Soseki' };
+    return { title: 'Questionnaire' };
   }
 }
 
