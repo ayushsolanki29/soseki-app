@@ -212,7 +212,8 @@ class SuperAdminController {
     try {
       const { id } = req.params;
       const user = await superAdminService.updateUser(id, req.body);
-      const { passwordHash, ...safeUser } = user;
+      const safeUser = { ...user };
+      delete safeUser.passwordHash;
       return res.status(200).json({ success: true, user: safeUser });
     } catch (error) {
       next(error);

@@ -1,3 +1,4 @@
+/* global fetch, AbortController */
 const { ai: aiConfig } = require("../config/app.config");
 
 /**
@@ -137,7 +138,7 @@ class AiService {
   }
 
   _extractJson(text) {
-    const jsonBlockRegex = /\`\`\`(?:json)?\s*([\s\S]*?)\s*\`\`\`/i;
+    const jsonBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/i;
     const match = text.match(jsonBlockRegex);
     if (match) {
       return match[1].trim();

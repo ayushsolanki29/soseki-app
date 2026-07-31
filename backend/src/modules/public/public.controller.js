@@ -1,7 +1,6 @@
 const { queueEmail } = require('../emails/email.service');
 const prisma = require('../../database/prisma');
 const { admin } = require('../../config/app.config');
-const disposableDomains = require('../../utils/disposable-domains.json');
 // Use disposable-email-detector default export
 const detector = require('disposable-email-detector').default;
 

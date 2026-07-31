@@ -358,7 +358,6 @@ class InvoicesService {
     // Assuming the most recent payment is the unverified one that brought the total to full
     // But since `recordClientPayment` creates a Payment record with the remaining amount,
     // and updates status to Processing, we just change status to Paid, and update paidAmount
-    const pendingPaymentAmount = invoice.totalAmount - invoice.paidAmount;
 
     const updatedInvoice = await prisma.invoice.update({
       where: { id: invoiceId },

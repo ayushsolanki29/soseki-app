@@ -298,8 +298,6 @@ class QuestionnairesService {
   }
 
   async generateWithAi(userId, organizationId, prompt) {
-    const aiConfig = require("../../config/app.config").ai;
-    
     // Check daily limits
     const usage = await this.getAiUsage(organizationId);
     if (usage.used >= usage.limit) {

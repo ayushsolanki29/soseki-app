@@ -6,7 +6,7 @@ const prisma = require("../../database/prisma");
 const mailer = require("../../utils/mailer");
 const { renderTemplate } = require("../emails/email.template");
 
-const { auth: authConfig, server: serverConfig } = require("../../config/app.config");
+const { auth: authConfig } = require("../../config/app.config");
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();

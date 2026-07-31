@@ -1,7 +1,6 @@
 // src/modules/users/users.validation.js
 const Joi = require("joi");
 
-const disposableDomains = require("../../utils/disposable-domains.json");
 
 const updateProfileValidation = Joi.object({
   name: Joi.string().min(2).max(50).optional(),

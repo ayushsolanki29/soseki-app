@@ -1,6 +1,5 @@
 // src/modules/leads/leads.validation.js
 const Joi = require("joi");
-const disposableDomains = require("../../utils/disposable-domains.json");
 
 const createLeadValidation = Joi.object({
   fullName: Joi.string().trim().min(2).max(50).required().messages({

@@ -234,7 +234,7 @@ exports.recordClientPayment = async (clientId, invoiceId, method, reference) => 
   // Create payment record and activity log, and update invoice status
   const result = await prisma.$transaction(async (tx) => {
     // 1. Create Payment record
-    const payment = await tx.payment.create({
+    await tx.payment.create({
       data: {
         amount: invoice.totalAmount - invoice.paidAmount,
         method: method || "Bank Transfer",
