@@ -325,5 +325,14 @@ class SuperAdminController {
       next(error);
     }
   }
+
+  async getAiStats(req, res, next) {
+    try {
+      const stats = await superAdminService.getAiStats();
+      return res.status(200).json({ success: true, stats });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new SuperAdminController();

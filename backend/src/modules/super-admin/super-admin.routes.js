@@ -36,5 +36,6 @@ router.get("/traffic", superAdminController.getTrafficStats);
 router.get("/template-requests", superAdminController.getTemplateRequests);
 router.patch("/template-requests/:id", superAdminController.updateTemplateRequestStatus);
 router.get("/contacts", authMiddleware, superAdminController.getContacts);
+router.get("/ai-stats", authMiddleware, superAdminController.getAiStats);
 
 module.exports = router;

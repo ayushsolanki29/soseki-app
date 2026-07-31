@@ -25,6 +25,7 @@ model User {
   sessions         Session[]
   emailPreferences EmailPreference[]
   termsAcceptedAt  DateTime?
+  aiUsages         AiUsage[]
 
   emailVerified    Boolean                @default(false)
   otpCode          String?
@@ -53,6 +54,7 @@ model Organization {
   supportTickets   SupportTicket[]
   templateRequests TemplateRequest[]
   profile          OrganizationProfile?
+  aiUsages         AiUsage[]
 }
 
 model Client {
@@ -447,4 +449,26 @@ model ContactSubmission {
   message   String
   status    String   @default("Unread") // Unread, Read, Responded
   createdAt DateTime @default(now())
+}
+
+model AiUsage {
+  id               String       @id @default(uuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  feature          String       // e.g., 'questionnaire_generation'
+  provider         String       @default("OpenRouter")
+  model            String       
+  
+  promptTokens     Int          @default(0)
+  completionTokens Int          @default(0)
+  totalTokens      Int          @default(0)
+  
+  success          Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([userId])
 }

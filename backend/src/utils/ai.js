@@ -46,6 +46,8 @@ class AiService {
     try {
       const response = await this._callOpenRouter(messages);
       responseText = response.choices?.[0]?.message?.content || "";
+      const usage = response.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+      const model = response.model || aiConfig.openRouterModel;
 
       // Strip markdown code blocks like ```json
       const cleanedText = this._extractJson(responseText);
@@ -67,9 +69,13 @@ class AiService {
       }
 
       const duration = Date.now() - startTime;
-      console.log(`[AI Service] Success. Provider: OpenRouter | Model: ${aiConfig.openRouterModel} | Duration: ${duration}ms | Retry: ${isRetry}`);
+      console.log(`[AI Service] Success. Provider: OpenRouter | Model: ${model} | Tokens: ${usage.total_tokens} | Duration: ${duration}ms | Retry: ${isRetry}`);
 
-      return parsedJson;
+      return {
+        data: parsedJson,
+        usage,
+        model
+      };
     } catch (error) {
       const duration = Date.now() - startTime;
       console.error(`[AI Service] Attempt failed. Provider: OpenRouter | Model: ${aiConfig.openRouterModel} | Duration: ${duration}ms | Retry: ${isRetry} | Error: ${error.message}`);

@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, Sidebar, SidebarHeader, SidebarContent, 
 import { SuperAdminHeader } from "@/components/super-admin-header";
 import { LogoIcon } from "@/components/logo";
 import { NavGroup } from "@/components/nav-group";
-import { LayoutDashboardIcon, UsersIcon, BuildingIcon, SearchIcon, PlusIcon, UserIcon, TicketIcon, SettingsIcon, MailIcon, LayoutTemplateIcon, MessageSquareIcon } from "lucide-react";
+import { LayoutDashboardIcon, UsersIcon, BuildingIcon, SearchIcon, PlusIcon, UserIcon, TicketIcon, SettingsIcon, MailIcon, LayoutTemplateIcon, MessageSquareIcon, BrainCircuitIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,11 @@ export default function SuperAdminLayout({ children }) {
           path: "/super-admin/organizations",
           icon: <BuildingIcon />,
         },
-
+        {
+          title: "AI Health",
+          path: "/super-admin/ai-health",
+          icon: <BrainCircuitIcon />,
+        },
         {
           title: "Requested Access",
           path: "/super-admin/access-requests",

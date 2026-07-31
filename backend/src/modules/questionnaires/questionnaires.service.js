@@ -276,15 +276,61 @@ class QuestionnairesService {
 
   // --- AI METHODS ---
 
-  async generateWithAi(prompt) {
+  async getAiUsage(organizationId) {
+    const aiConfig = require("../../config/app.config").ai;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const used = await prisma.aiUsage.count({
+      where: {
+        organizationId,
+        feature: "questionnaire_generation",
+        success: true,
+        createdAt: { gte: today },
+      },
+    });
+
+    return {
+      used,
+      limit: aiConfig.maxGenerationsPerDay,
+      remaining: Math.max(0, aiConfig.maxGenerationsPerDay - used),
+    };
+  }
+
+  async generateWithAi(userId, organizationId, prompt) {
+    const aiConfig = require("../../config/app.config").ai;
+    
+    // Check daily limits
+    const usage = await this.getAiUsage(organizationId);
+    if (usage.used >= usage.limit) {
+      const error = new Error("Daily AI generation limit reached.");
+      error.status = 429;
+      throw error;
+    }
+
     const validateFn = async (parsedJson) => {
-      // Use existing Joi schema for validation
       await importAiQuestionnaireValidation.validateAsync({ json: parsedJson });
       this._validateSpecificRules(parsedJson);
     };
 
     const result = await aiService.generateJson(SYSTEM_PROMPT, prompt, validateFn);
-    return result;
+    
+    // Save usage metrics to database
+    await prisma.aiUsage.create({
+      data: {
+        userId,
+        organizationId,
+        feature: "questionnaire_generation",
+        provider: "OpenRouter",
+        model: result.model,
+        promptTokens: result.usage.prompt_tokens,
+        completionTokens: result.usage.completion_tokens,
+        totalTokens: result.usage.total_tokens,
+        success: true,
+      },
+    });
+
+    return result.data;
   }
 
   getPromptForAi() {
@@ -302,10 +348,11 @@ class QuestionnairesService {
   }
 
   _validateSpecificRules(json) {
+    const aiConfig = require("../../config/app.config").ai;
     const validTypes = ["TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX"];
     
-    if (json.fields.length > 50) {
-      const error = new Error("Questionnaire cannot exceed 50 fields.");
+    if (json.fields.length > aiConfig.maxFields) {
+      const error = new Error(`Questionnaire cannot exceed ${aiConfig.maxFields} fields.`);
       error.status = 400;
       throw error;
     }

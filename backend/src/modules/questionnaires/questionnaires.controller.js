@@ -36,8 +36,17 @@ class QuestionnairesController {
 
   async generateQuestionnaireFromAi(req, res, next) {
     try {
-      const result = await questionnairesService.generateWithAi(req.body.prompt);
+      const result = await questionnairesService.generateWithAi(req.user.id, req.user.organizationId, req.body.prompt);
       return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAiUsage(req, res, next) {
+    try {
+      const result = await questionnairesService.getAiUsage(req.user.organizationId);
+      return res.status(200).json({ success: true, ...result });
     } catch (error) {
       next(error);
     }

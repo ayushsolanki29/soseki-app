@@ -50,5 +50,8 @@ module.exports = {
     openRouterModel: process.env.OPENROUTER_MODEL,
     enableAi: process.env.ENABLE_AI === "true",
     aiTimeout: parseInt(process.env.AI_TIMEOUT) || 30000,
+    maxGenerationsPerDay: parseInt(process.env.AI_MAX_GENERATIONS_PER_DAY) || 3,
+    maxFields: parseInt(process.env.AI_MAX_FIELDS) || 6,
+    maxPromptLength: parseInt(process.env.AI_MAX_PROMPT_LENGTH) || 2000,
   }
 };

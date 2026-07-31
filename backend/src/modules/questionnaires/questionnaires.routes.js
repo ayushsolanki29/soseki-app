@@ -16,6 +16,7 @@ router.get("/prompt", questionnairesController.getPrompt);
 router.get("/templates", questionnairesController.getTemplates);
 
 // AI Routes
+router.get("/ai-usage", questionnairesController.getAiUsage);
 router.post("/generate", validate(questionnairesValidation.generateQuestionnaireFromAiValidation), questionnairesController.generateQuestionnaireFromAi);
 router.get("/generate-prompt", questionnairesController.getPromptForAi);
 router.post("/import-ai", validate(questionnairesValidation.importAiQuestionnaireValidation), questionnairesController.importAiQuestionnaire);

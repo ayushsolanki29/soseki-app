@@ -39,17 +39,28 @@ const submitQuestionnaireResponseValidation = Joi.object({
 });
 
 const generateQuestionnaireFromAiValidation = Joi.object({
-  prompt: Joi.string().trim().min(1).required().messages({
+  prompt: Joi.string().trim().min(1).max(2000).required().messages({
     "string.empty": "Prompt is required",
+    "string.max": "Prompt is too long (max 2000 characters)",
     "any.required": "Prompt is required",
   }),
 });
 
 const importAiQuestionnaireValidation = Joi.object({
   json: Joi.object({
-    title: Joi.string().trim().min(1).required(),
-    description: Joi.string().allow(null, "").optional(),
-    fields: Joi.array().items(fieldSchema).min(1).required(),
+    title: Joi.string().trim().min(1).max(150).required(),
+    description: Joi.string().max(500).allow(null, "").optional(),
+    fields: Joi.array().items(
+      Joi.object({
+        type: Joi.string().valid("TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX").required(),
+        label: Joi.string().max(200).required(),
+        description: Joi.string().max(300).allow(null, "").optional(),
+        required: Joi.boolean().optional(),
+        options: Joi.array().items(Joi.string().max(100)).max(10).allow(null).optional(),
+      })
+    ).min(1).max(6).required().messages({
+      "array.max": "Questionnaire cannot exceed 6 fields",
+    }),
   }).required().messages({
     "object.base": "Invalid JSON payload",
     "any.required": "JSON payload is required",

@@ -23,9 +23,23 @@ export default function ImportQuestionnairePage() {
   const [promptTemplate, setPromptTemplate] = useState("");
   const [suggestionTemplates, setSuggestionTemplates] = useState(null);
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
+  
+  const [aiUsage, setAiUsage] = useState({ used: 0, limit: 3, remaining: 3, loaded: false });
+
+  const fetchAiUsage = async () => {
+    try {
+      const res = await API.get("/questionnaires/ai-usage");
+      if (res.data) {
+        setAiUsage({ ...res.data, loaded: true });
+      }
+    } catch (error) {
+      console.error("Failed to fetch AI usage:", error);
+    }
+  };
 
   useEffect(() => {
     fetchPromptAndTemplates();
+    fetchAiUsage();
   }, []);
 
   const fetchPromptAndTemplates = async () => {
@@ -97,7 +111,17 @@ export default function ImportQuestionnairePage() {
       toast.success("Questionnaire generated! Opening builder...");
       router.push(`/dashboard/questionnaires/new`);
     } catch (error) {
-      toast.error(error.response?.data?.error || error.response?.data?.message || "Failed to generate questionnaire.");
+      console.error("AI Generation error:", error);
+      
+      // Handle rate limits and validation errors
+      if (error?.response?.status === 429) {
+        toast.error("Daily AI generation limit reached. Please use 'Use Your Own AI' or try again tomorrow.");
+        fetchAiUsage(); // Refresh limit
+      } else if (error?.response?.status === 413 || error?.response?.data?.message?.includes("too long")) {
+        toast.error("Prompt is too long. Please shorten your request.");
+      } else {
+        toast.error(error?.response?.data?.message || "Failed to generate questionnaire with AI.");
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -204,21 +228,32 @@ export default function ImportQuestionnairePage() {
                     placeholder="e.g. I need a client onboarding form for my web design agency. I want to know their budget, timeline, and link to their current website..."
                     value={rawPrompt}
                     onChange={(e) => setRawPrompt(e.target.value)}
-                    className="h-[300px] w-full resize-none text-sm p-4 bg-muted/10 border-border/50 focus-visible:ring-primary/30 transition-colors focus:bg-background leading-relaxed shadow-inner"
+                    disabled={aiUsage.loaded && aiUsage.remaining === 0}
+                    className="h-[300px] w-full resize-none text-sm p-4 bg-muted/10 border-border/50 focus-visible:ring-primary/30 transition-colors focus:bg-background leading-relaxed shadow-inner disabled:opacity-50"
                   />
                 )}
               </CardContent>
               {!isGenerating && (
-                <CardFooter className="pt-2 pb-6 px-6 flex justify-end">
+                <CardFooter className="pt-2 pb-6 px-6 flex flex-col items-end gap-2">
                   <Button 
                     onClick={handleGenerateWithAi} 
-                    disabled={isGenerating || !rawPrompt.trim()} 
+                    disabled={isGenerating || !rawPrompt.trim() || (aiUsage.loaded && aiUsage.remaining === 0)} 
                     className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.05]"
                     size="lg"
                   >
                     <SparklesIcon className="size-5" /> 
-                    Generate & Import Form
+                    {aiUsage.loaded && aiUsage.remaining === 0 ? "Limit Reached" : "Generate & Import Form"}
                   </Button>
+                  
+                  {aiUsage.loaded && (
+                    <div className="text-xs text-muted-foreground mr-1">
+                      {aiUsage.remaining === 0 ? (
+                        <span className="text-destructive font-medium">Daily AI generation limit reached. Please use 'Use Your Own AI'.</span>
+                      ) : (
+                        <span><span className="font-medium text-foreground">{aiUsage.remaining} of {aiUsage.limit}</span> remaining today</span>
+                      )}
+                    </div>
+                  )}
                 </CardFooter>
               )}
             </Card>

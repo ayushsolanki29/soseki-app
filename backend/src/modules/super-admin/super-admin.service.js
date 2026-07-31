@@ -793,6 +793,80 @@ class SuperAdminService {
       data: { status }
     });
   }
+
+  async getAiStats() {
+    const [
+      totalGenerations,
+      successfulGenerations,
+      failedGenerations,
+      tokenAggregations,
+      recentLogs,
+      orgUsageData
+    ] = await Promise.all([
+      prisma.aiUsage.count(),
+      prisma.aiUsage.count({ where: { success: true } }),
+      prisma.aiUsage.count({ where: { success: false } }),
+      prisma.aiUsage.aggregate({
+        _sum: {
+          promptTokens: true,
+          completionTokens: true,
+          totalTokens: true
+        }
+      }),
+      prisma.aiUsage.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        include: {
+          organization: { select: { name: true } },
+          user: { select: { name: true, email: true } }
+        }
+      }),
+      prisma.aiUsage.groupBy({
+        by: ['organizationId'],
+        _count: { _all: true },
+        _sum: { totalTokens: true },
+        orderBy: { _count: { organizationId: 'desc' } },
+        take: 10
+      })
+    ]);
+
+    // Format top organizations
+    const orgIds = orgUsageData.map(o => o.organizationId);
+    const orgs = await prisma.organization.findMany({
+      where: { id: { in: orgIds } },
+      select: { id: true, name: true }
+    });
+    
+    const topOrganizations = orgUsageData.map(data => {
+      const org = orgs.find(o => o.id === data.organizationId);
+      return {
+        id: data.organizationId,
+        name: org ? org.name : 'Unknown',
+        generations: data._count._all,
+        totalTokens: data._sum.totalTokens || 0
+      };
+    });
+
+    const successRate = totalGenerations > 0 
+      ? Math.round((successfulGenerations / totalGenerations) * 100) 
+      : 0;
+
+    return {
+      overview: {
+        totalGenerations,
+        successfulGenerations,
+        failedGenerations,
+        successRate,
+        tokens: {
+          prompt: tokenAggregations._sum.promptTokens || 0,
+          completion: tokenAggregations._sum.completionTokens || 0,
+          total: tokenAggregations._sum.totalTokens || 0
+        }
+      },
+      topOrganizations,
+      recentLogs
+    };
+  }
 }
 
 module.exports = new SuperAdminService();
