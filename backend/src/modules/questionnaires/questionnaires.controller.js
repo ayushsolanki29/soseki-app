@@ -32,6 +32,35 @@ class QuestionnairesController {
     }
   }
 
+  // --- AI METHODS ---
+
+  async generateQuestionnaireFromAi(req, res, next) {
+    try {
+      const result = await questionnairesService.generateWithAi(req.body.prompt);
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPromptForAi(req, res, next) {
+    try {
+      const result = questionnairesService.getPromptForAi();
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async importAiQuestionnaire(req, res, next) {
+    try {
+      const result = await questionnairesService.importAiQuestionnaire(req.body.json);
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createQuestionnaire(req, res, next) {
     try {
       const questionnaire = await questionnairesService.createQuestionnaire(req.user.organizationId, req.body);

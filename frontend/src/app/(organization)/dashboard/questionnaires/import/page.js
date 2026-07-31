@@ -1,10 +1,13 @@
 "use client";
 
+import { motion } from "motion/react";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2, LightbulbIcon, FileTextIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronLeftIcon, CopyIcon, SparklesIcon, Loader2, LightbulbIcon, FileTextIcon, BotIcon, SettingsIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import API from "@/lib/api";
@@ -13,6 +16,8 @@ export default function ImportQuestionnairePage() {
   const router = useRouter();
   const [jsonInput, setJsonInput] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [rawPrompt, setRawPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const [promptTemplate, setPromptTemplate] = useState("");
   const [suggestionTemplates, setSuggestionTemplates] = useState(null);
@@ -64,13 +69,36 @@ export default function ImportQuestionnairePage() {
 
     setIsImporting(true);
     try {
-      const res = await API.post("/questionnaires", parsed);
-      toast.success("Questionnaire successfully generated!");
-      router.push(`/dashboard/questionnaires/${res.data.questionnaire.id}`);
+      const res = await API.post("/questionnaires/import-ai", { json: parsed });
+      sessionStorage.setItem("ai_generated_questionnaire", JSON.stringify(res.data));
+      toast.success("Validation successful! Opening builder...");
+      router.push(`/dashboard/questionnaires/new`);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to import questionnaire.");
+      toast.error(error.response?.data?.error || error.response?.data?.message || "Failed to validate questionnaire.");
     } finally {
       setIsImporting(false);
+    }
+  };
+
+  const handleGenerateWithAi = async () => {
+    if (!rawPrompt.trim()) {
+      toast.error("Please describe what information you need to gather.");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      // 1. Generate JSON via Built-in AI (This endpoint validates and returns the JSON without saving)
+      const generateRes = await API.post("/questionnaires/generate", { prompt: rawPrompt });
+      
+      // 2. Pass data to the Builder UI for review
+      sessionStorage.setItem("ai_generated_questionnaire", JSON.stringify(generateRes.data));
+      toast.success("Questionnaire generated! Opening builder...");
+      router.push(`/dashboard/questionnaires/new`);
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.response?.data?.message || "Failed to generate questionnaire.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -90,105 +118,206 @@ export default function ImportQuestionnairePage() {
   };
 
   return (
-    <div className="p-8 h-full max-w-5xl mx-auto flex flex-col gap-8">
-      <div className="flex items-center gap-4 mb-2">
-        <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/questionnaires")}>
+    <div className="p-8 h-full max-w-5xl mx-auto flex flex-col gap-8 relative">
+      {/* Background Glow */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none -z-10" />
+
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-4 mb-2"
+      >
+        <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/questionnaires")} className="rounded-full shadow-sm hover:shadow-md transition-all">
           <ChevronLeftIcon className="size-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Import with AI</h1>
-          <p className="text-muted-foreground mt-1">Generate a complete questionnaire from raw data using ChatGPT or Claude.</p>
+          <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">Import with AI</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Generate a complete questionnaire from raw data using ChatGPT or Claude.</p>
         </div>
-      </div>
+      </motion.div>
 
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="p-4 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div className="flex items-center gap-2 text-primary font-medium">
-              <LightbulbIcon className="size-5" />
-              <span>Smart Suggestions:</span>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-md shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <SparklesIcon className="size-24 text-primary" />
+          </div>
+          <CardContent className="p-5 flex flex-col gap-4 relative z-10">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <div className="flex items-center gap-2 text-primary font-semibold">
+                <LightbulbIcon className="size-5 animate-pulse" />
+                <span>Smart Suggestions:</span>
+              </div>
+              <p className="text-sm text-foreground/80">Don't have your own data? Start instantly with a ready-made template.</p>
             </div>
-            <p className="text-sm text-muted-foreground">Don't have your own data? Start instantly with a ready-made template.</p>
-          </div>
-          <div className="flex gap-3 w-full">
-            <Button variant="outline" size="sm" onClick={() => setTemplate('onboarding')} className="flex-1 sm:flex-none gap-2 bg-background shadow-sm">
-              <FileTextIcon className="size-4 text-blue-500" />
-              Client Onboarding
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setTemplate('payment')} className="flex-1 sm:flex-none gap-2 bg-background shadow-sm">
-              <FileTextIcon className="size-4 text-green-500" />
-              Payment Terms
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex flex-wrap gap-3 w-full">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setTemplate('onboarding')} 
+                className="gap-2 bg-background/60 hover:bg-background shadow-sm hover:shadow-md transition-all border-primary/10 hover:border-blue-500/30 rounded-full"
+              >
+                <FileTextIcon className="size-4 text-blue-500" />
+                Client Onboarding
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setTemplate('payment')} 
+                className="gap-2 bg-background/60 hover:bg-background shadow-sm hover:shadow-md transition-all border-primary/10 hover:border-green-500/30 rounded-full"
+              >
+                <FileTextIcon className="size-4 text-green-500" />
+                Payment Terms
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Step 1: Prompt */}
-        <Card className="flex flex-col border-primary/20 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="flex items-center justify-center size-6 rounded-full bg-primary/10 text-primary text-sm font-bold">1</span>
-              Copy the Prompt
-            </CardTitle>
-            <CardDescription>
-              Copy this system prompt and paste it into ChatGPT, Claude, or any AI tool, along with your raw text/excel data.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <div className="relative h-full min-h-[300px]">
-              {isLoadingPrompt ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/30 rounded-md">
-                   <Loader2 className="size-6 text-primary animate-spin mb-2" />
-                   <p className="text-sm font-medium text-muted-foreground">We are cooking, just a moment...</p>
-                </div>
-              ) : (
+      <Tabs defaultValue="built-in" className="w-full">
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 bg-muted/50 p-1 rounded-xl shadow-sm">
+          <TabsTrigger value="built-in" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <BotIcon className="size-4" /> Built-in AI
+          </TabsTrigger>
+          <TabsTrigger value="external" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <SettingsIcon className="size-4" /> Use Your Own AI
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="built-in" className="mt-0 outline-none">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col h-full max-w-3xl mx-auto">
+            <Card className="flex flex-col h-full border-border/50 shadow-lg bg-background/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+              <CardHeader className="pb-4 border-b border-border/50 bg-muted/20">
+                <CardTitle className="flex items-center gap-2">
+                  <BotIcon className="size-5 text-primary" /> Describe Your Form
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Explain what kind of questionnaire you need. Our Built-in AI will automatically build the fields, choices, and logic.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 p-6">
                 <Textarea 
-                  readOnly 
-                  value={promptTemplate} 
-                  className="h-full resize-none font-mono text-xs bg-muted/30"
+                  placeholder="e.g. I need a client onboarding form for my web design agency. I want to know their budget, timeline, and link to their current website..."
+                  value={rawPrompt}
+                  onChange={(e) => setRawPrompt(e.target.value)}
+                  className="h-[300px] resize-none text-sm p-4 bg-muted/10 border-border/50 focus-visible:ring-primary/30 transition-colors focus:bg-background leading-relaxed shadow-inner"
                 />
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="pt-4 border-t">
-            <Button onClick={copyPrompt} className="w-full gap-2">
-              <CopyIcon className="size-4" /> Copy Prompt to Clipboard
-            </Button>
-          </CardFooter>
-        </Card>
+              </CardContent>
+              <CardFooter className="pt-2 pb-6 px-6">
+                <Button 
+                  onClick={handleGenerateWithAi} 
+                  disabled={isGenerating || !rawPrompt.trim()} 
+                  className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.01]"
+                  size="lg"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin" />
+                      Generating Magic...
+                    </>
+                  ) : (
+                    <>
+                      <SparklesIcon className="size-5" /> 
+                      Generate & Import Form
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        </TabsContent>
 
-        {/* Step 2: Paste JSON */}
-        <Card className="flex flex-col border-primary/20 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="flex items-center justify-center size-6 rounded-full bg-primary/10 text-primary text-sm font-bold">2</span>
-              Paste Generated JSON
-            </CardTitle>
-            <CardDescription>
-              Paste the raw JSON output provided by the AI into the field below to automatically create your form.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <Textarea 
-              placeholder='{\n  "title": "Example Form",\n  "fields": [...]\n}'
-              value={jsonInput}
-              onChange={(e) => setJsonInput(e.target.value)}
-              className="h-full min-h-[300px] resize-none font-mono text-xs"
-            />
-          </CardContent>
-          <CardFooter className="pt-4 border-t">
-            <Button 
-              onClick={handleImport} 
-              disabled={isImporting || !jsonInput.trim()} 
-              className="w-full gap-2"
-            >
-              <SparklesIcon className="size-4" /> 
-              {isImporting ? "Generating Form..." : "Import Questionnaire"}
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+        <TabsContent value="external" className="mt-0 outline-none">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Step 1: Prompt */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="flex flex-col h-full">
+              <Card className="flex flex-col h-full border-border/50 shadow-md hover:shadow-lg transition-all duration-300 bg-background/80 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-sm text-sm font-bold">1</span>
+                    Copy the Prompt
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Copy this system prompt and paste it into ChatGPT, Claude, or any AI tool, along with your raw text/excel data.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 p-0 px-6">
+                  <div className="relative h-full min-h-[350px] rounded-md overflow-hidden border border-border/50 group shadow-inner">
+                    {isLoadingPrompt ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/20 backdrop-blur-sm">
+                         <Loader2 className="size-8 text-primary animate-spin mb-3" />
+                         <p className="text-sm font-medium text-foreground/70">We are cooking, just a moment...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button size="icon" variant="secondary" onClick={copyPrompt} className="size-8 rounded-md shadow-sm bg-background/80 backdrop-blur-md border border-border">
+                            <CopyIcon className="size-3" />
+                          </Button>
+                        </div>
+                        <Textarea 
+                          readOnly 
+                          value={promptTemplate} 
+                          className="h-full min-h-[350px] resize-none font-mono text-xs bg-muted/10 border-0 focus-visible:ring-0 p-4 text-foreground/80 leading-relaxed"
+                        />
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-6 pb-6">
+                  <Button onClick={copyPrompt} className="w-full gap-2 shadow-sm transition-all hover:scale-[1.01]" variant="default">
+                    <CopyIcon className="size-4" /> Copy Prompt to Clipboard
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
+
+            {/* Step 2: Paste JSON */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="flex flex-col h-full">
+              <Card className="flex flex-col h-full border-border/50 shadow-md hover:shadow-lg transition-all duration-300 bg-background/80 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-sm text-sm font-bold">2</span>
+                    Paste Generated JSON
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Paste the raw JSON output provided by the AI into the field below to automatically create your form.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 p-0 px-6">
+                  <div className="relative h-full min-h-[350px] rounded-md overflow-hidden border border-border/50 group shadow-inner">
+                    <Textarea 
+                      placeholder='{\n  "title": "Example Form",\n  "fields": [...]\n}'
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      className="h-full min-h-[350px] resize-none font-mono text-xs bg-muted/10 border-0 focus-visible:ring-0 p-4 text-foreground/80 leading-relaxed transition-colors focus:bg-background"
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-6 pb-6">
+                  <Button 
+                    onClick={handleImport} 
+                    disabled={isImporting || !jsonInput.trim()} 
+                    className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary shadow-md transition-all hover:scale-[1.01]"
+                  >
+                    {isImporting ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        Generating Form...
+                      </>
+                    ) : (
+                      <>
+                        <SparklesIcon className="size-4" /> 
+                        Import Questionnaire
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

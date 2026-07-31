@@ -1,6 +1,9 @@
 // src/modules/questionnaires/questionnaires.service.js
 const prisma = require("../../database/prisma");
 const crypto = require("crypto");
+const aiService = require("../../utils/ai");
+const { SYSTEM_PROMPT, EXPORT_PROMPT_TEMPLATE } = require("./questionnaires.prompts");
+const { importAiQuestionnaireValidation } = require("./questionnaires.validation");
 
 class QuestionnairesService {
   async getQuestionnaires(organizationId, query = "", status = "All", page = "1", limit = "25") {
@@ -269,6 +272,68 @@ class QuestionnairesService {
         totalPages: Math.ceil(totalCount / limitNum),
       },
     };
+  }
+
+  // --- AI METHODS ---
+
+  async generateWithAi(prompt) {
+    const validateFn = async (parsedJson) => {
+      // Use existing Joi schema for validation
+      await importAiQuestionnaireValidation.validateAsync({ json: parsedJson });
+      this._validateSpecificRules(parsedJson);
+    };
+
+    const result = await aiService.generateJson(SYSTEM_PROMPT, prompt, validateFn);
+    return result;
+  }
+
+  getPromptForAi() {
+    return { prompt: EXPORT_PROMPT_TEMPLATE };
+  }
+
+  async importAiQuestionnaire(json) {
+    // Basic Joi validation
+    await importAiQuestionnaireValidation.validateAsync({ json });
+    
+    // Additional domain validations
+    this._validateSpecificRules(json);
+
+    return json;
+  }
+
+  _validateSpecificRules(json) {
+    const validTypes = ["TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX"];
+    
+    if (json.fields.length > 50) {
+      const error = new Error("Questionnaire cannot exceed 50 fields.");
+      error.status = 400;
+      throw error;
+    }
+
+    const seenLabels = new Set();
+    
+    for (const field of json.fields) {
+      if (!validTypes.includes(field.type)) {
+        const error = new Error(`Unsupported field type: ${field.type}`);
+        error.status = 422;
+        throw error;
+      }
+      
+      if (seenLabels.has(field.label)) {
+        const error = new Error(`Duplicate field label found: ${field.label}`);
+        error.status = 400;
+        throw error;
+      }
+      seenLabels.add(field.label);
+
+      if (["SELECT", "RADIO", "CHECKBOX"].includes(field.type)) {
+        if (!field.options || field.options.length === 0) {
+          const error = new Error(`Field "${field.label}" requires options.`);
+          error.status = 400;
+          throw error;
+        }
+      }
+    }
   }
 
   // --- PUBLIC METHODS ---

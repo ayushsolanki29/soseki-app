@@ -44,5 +44,11 @@ module.exports = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MINUTES || 15) * 60 * 1000,
     // Default max 500 requests per window
     maxRequests: parseInt(process.env.RATE_LIMIT_MAX) || 500,
+  },
+  ai: {
+    openRouterApiKey: process.env.OPENROUTER_API_KEY,
+    openRouterModel: process.env.OPENROUTER_MODEL,
+    enableAi: process.env.ENABLE_AI === "true",
+    aiTimeout: parseInt(process.env.AI_TIMEOUT) || 30000,
   }
 };

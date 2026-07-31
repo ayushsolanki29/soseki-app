@@ -38,8 +38,28 @@ const submitQuestionnaireResponseValidation = Joi.object({
   }),
 });
 
+const generateQuestionnaireFromAiValidation = Joi.object({
+  prompt: Joi.string().trim().min(1).required().messages({
+    "string.empty": "Prompt is required",
+    "any.required": "Prompt is required",
+  }),
+});
+
+const importAiQuestionnaireValidation = Joi.object({
+  json: Joi.object({
+    title: Joi.string().trim().min(1).required(),
+    description: Joi.string().allow(null, "").optional(),
+    fields: Joi.array().items(fieldSchema).min(1).required(),
+  }).required().messages({
+    "object.base": "Invalid JSON payload",
+    "any.required": "JSON payload is required",
+  }),
+});
+
 module.exports = {
   createQuestionnaireValidation,
   updateQuestionnaireValidation,
   submitQuestionnaireResponseValidation,
+  generateQuestionnaireFromAiValidation,
+  importAiQuestionnaireValidation,
 };
