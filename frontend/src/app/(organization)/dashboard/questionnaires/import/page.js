@@ -127,20 +127,49 @@ export default function ImportQuestionnairePage() {
     }
   };
 
-  const setTemplate = (type) => {
+  const [activeTab, setActiveTab] = useState("built-in");
+
+  const setTemplate = async (type) => {
     if (!suggestionTemplates) {
       toast.error("Templates are still loading, please wait.");
       return;
     }
 
+    let selectedJson = null;
     if (type === "onboarding" && suggestionTemplates.onboarding) {
-      setJsonInput(JSON.stringify(suggestionTemplates.onboarding, null, 2));
-      toast.success("Client Onboarding template loaded!");
+      selectedJson = JSON.stringify(suggestionTemplates.onboarding, null, 2);
     } else if (type === "payment" && suggestionTemplates.payment) {
-      setJsonInput(JSON.stringify(suggestionTemplates.payment, null, 2));
-      toast.success("Payment Terms template loaded!");
+      selectedJson = JSON.stringify(suggestionTemplates.payment, null, 2);
+    }
+
+    if (selectedJson) {
+      setJsonInput(selectedJson);
+      setActiveTab("external");
+      
+      let parsed;
+      try {
+        parsed = JSON.parse(selectedJson);
+      } catch (e) {
+        return;
+      }
+
+      setIsImporting(true);
+      toast.loading("Generating template...");
+      try {
+        const res = await API.post("/questionnaires/import-ai", { json: parsed });
+        sessionStorage.setItem("ai_generated_questionnaire", JSON.stringify(res.data));
+        toast.dismiss();
+        toast.success("Opening builder...");
+        router.push(`/dashboard/questionnaires/new`);
+      } catch (error) {
+        toast.dismiss();
+        toast.error(error.response?.data?.error || "Failed to load template into builder.");
+      } finally {
+        setIsImporting(false);
+      }
     }
   };
+
 
   return (
     <div className="p-8 h-full w-full flex flex-col gap-8 relative overflow-x-hidden">
@@ -199,7 +228,7 @@ export default function ImportQuestionnairePage() {
         </Card>
       </motion.div>
 
-      <Tabs defaultValue="built-in" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 bg-muted/50 p-1 rounded-xl shadow-sm">
           <TabsTrigger value="built-in" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
             <BotIcon className="size-4" /> Built-in AI
