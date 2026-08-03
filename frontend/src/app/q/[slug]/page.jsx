@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useRef } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,16 +26,20 @@ export default function PublicQuestionnairePage({ params }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [answers, setAnswers] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const ITEMS_PER_PAGE = 30;
+  const [currentPage, setCurrentPage] = useState(0);
+  const formRef = useRef(null);
 
   useEffect(() => {
     const fetchForm = async () => {
       try {
         const res = await API.get(`/questionnaires/public/${unwrappedParams.slug}`);
-        
+
         setData(res.data.questionnaire);
         // Initialize answers state with default values
         const initialAnswers = {};
@@ -79,7 +83,7 @@ export default function PublicQuestionnairePage({ params }) {
     setIsSubmitting(true);
     try {
       const res = await API.post(`/questionnaires/public/${unwrappedParams.slug}`, { answers });
-      
+
       if (res.data.success) {
         setIsSubmitted(true);
       } else {
@@ -90,6 +94,18 @@ export default function PublicQuestionnairePage({ params }) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleNextPage = () => {
+    if (formRef.current && formRef.current.reportValidity()) {
+      setCurrentPage(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => prev - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (isLoading) {
@@ -106,7 +122,7 @@ export default function PublicQuestionnairePage({ params }) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-destructive/5 via-background to-background pointer-events-none" />
-        
+
         <Card className="max-w-md w-full border-border/40 shadow-2xl shadow-black/5 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-md relative z-10 text-center py-8">
           <CardContent className="space-y-6 pt-6">
             <div className="mx-auto size-16 bg-destructive/10 rounded-full flex items-center justify-center">
@@ -120,7 +136,7 @@ export default function PublicQuestionnairePage({ params }) {
             </div>
           </CardContent>
         </Card>
-        
+
         <div className="mt-12 relative z-10">
           <Link href="/" className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
             <span className="text-sm text-muted-foreground">Powered by</span>
@@ -136,13 +152,13 @@ export default function PublicQuestionnairePage({ params }) {
     return (
       <div className="min-h-screen bg-background py-12 px-4 sm:px-6 flex flex-col items-center justify-center t-page-fade relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none" />
-        
+
         <Card className="max-w-md w-full text-center py-8 border-border/40 shadow-2xl shadow-black/5 rounded-2xl bg-card/50 backdrop-blur-sm relative z-10">
           <CardContent className="space-y-8 pt-4">
             <div className="mx-auto size-16 bg-primary/10 rounded-full flex items-center justify-center">
               <CheckCircle2Icon className="size-8 text-primary" />
             </div>
-            
+
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tight text-foreground">Thank you!</h2>
               <p className="text-muted-foreground text-sm">Your response has been successfully submitted.</p>
@@ -165,11 +181,11 @@ export default function PublicQuestionnairePage({ params }) {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Connect with us</p>
                 <div className="flex items-center justify-center gap-3">
                   {APP_SOCIALS.map((social) => (
-                    <a 
-                      key={social.name} 
-                      href={social.url} 
-                      target="_blank" 
-                      rel="noreferrer" 
+                    <a
+                      key={social.name}
+                      href={social.url}
+                      target="_blank"
+                      rel="noreferrer"
                       className="p-2.5 bg-background border border-border/40 rounded-full hover:bg-muted/60 transition-colors shadow-sm text-muted-foreground hover:text-foreground"
                       title={social.name}
                     >
@@ -181,7 +197,7 @@ export default function PublicQuestionnairePage({ params }) {
                   ))}
                 </div>
               </div>
-              
+
               <Link href="/">
                 <Button className="w-full rounded-full h-11" variant="outline">
                   Return to Homepage
@@ -198,7 +214,7 @@ export default function PublicQuestionnairePage({ params }) {
     <div className="min-h-screen bg-background py-16 px-4 sm:px-6 t-page-fade flex flex-col relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none" />
-      
+
       <div className="max-w-3xl mx-auto space-y-12 flex-1 w-full relative z-10">
         <div className="text-center flex flex-col items-center pt-8">
           <div className="flex flex-col items-center gap-4 mb-8">
@@ -216,105 +232,128 @@ export default function PublicQuestionnairePage({ params }) {
         </div>
 
         <Card className="border-border/40 shadow-2xl shadow-black/5 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
-          <form onSubmit={handleSubmit}>
+          <form ref={formRef} onSubmit={handleSubmit}>
             <CardContent className="p-8 sm:p-12 space-y-12">
-              {data.fields.map((field, index) => (
-                <div key={field.id} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label className="text-lg font-semibold text-foreground flex gap-1 items-baseline">
-                      <span className="text-muted-foreground/50 font-normal text-sm mr-2">{index + 1}.</span> 
-                      {field.label}
-                      {field.required && <span className="text-destructive text-sm ml-1">*</span>}
-                    </Label>
-                    {field.description && (
-                      <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
-                    )}
-                  </div>
+              {data.fields.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE).map((field, index) => {
+                const absoluteIndex = currentPage * ITEMS_PER_PAGE + index;
+                return (
+                  <div key={field.id} className="space-y-5">
+                    <div className="space-y-2">
+                      <Label className="text-lg font-semibold text-foreground flex gap-1 items-baseline">
+                        <span className="text-muted-foreground/50 font-normal text-sm mr-2">{absoluteIndex + 1}.</span>
+                        {field.label}
+                        {field.required && <span className="text-destructive text-sm ml-1">*</span>}
+                      </Label>
+                      {field.description && (
+                        <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
+                      )}
+                    </div>
 
-                  <div className="pt-2 ml-6">
-                    {(field.type === 'TEXT' || !['TEXTAREA', 'SELECT', 'RADIO', 'CHECKBOX'].includes(field.type)) && (
-                      <Input 
-                        type={field.type === 'EMAIL' ? 'email' : (field.type === 'NUMBER' ? 'number' : 'text')}
-                        placeholder="Your answer" 
-                        required={field.required}
-                        value={answers[field.id] || ""}
-                        onChange={(e) => handleAnswerChange(field.id, e.target.value)}
-                        maxLength={255}
-                        className="max-w-md bg-background/50 border-border/50 focus-visible:ring-primary/20 h-12 text-base"
-                      />
-                    )}
+                    <div className="pt-2 ml-6">
+                      {(field.type === 'TEXT' || !['TEXTAREA', 'SELECT', 'RADIO', 'CHECKBOX'].includes(field.type)) && (
+                        <Input
+                          type={field.type === 'EMAIL' ? 'email' : (field.type === 'NUMBER' ? 'number' : 'text')}
+                          placeholder="Your answer"
+                          required={field.required}
+                          value={answers[field.id] || ""}
+                          onChange={(e) => handleAnswerChange(field.id, e.target.value)}
+                          maxLength={255}
+                          className="max-w-md bg-background/50 border-border/50 focus-visible:ring-primary/20 h-12 text-base"
+                        />
+                      )}
 
-                    {field.type === 'TEXTAREA' && (
-                      <Textarea 
-                        placeholder="Your answer" 
-                        required={field.required}
-                        value={answers[field.id] || ""}
-                        onChange={(e) => handleAnswerChange(field.id, e.target.value)}
-                        maxLength={2000}
-                        className="min-h-[120px] bg-background/50 border-border/50 focus-visible:ring-primary/20 text-base resize-y"
-                      />
-                    )}
+                      {field.type === 'TEXTAREA' && (
+                        <Textarea
+                          placeholder="Your answer"
+                          required={field.required}
+                          value={answers[field.id] || ""}
+                          onChange={(e) => handleAnswerChange(field.id, e.target.value)}
+                          maxLength={2000}
+                          className="min-h-[120px] bg-background/50 border-border/50 focus-visible:ring-primary/20 text-base resize-y"
+                        />
+                      )}
 
-                    {field.type === 'SELECT' && (
-                      <div className="max-w-md">
-                        <Select 
+                      {field.type === 'SELECT' && (
+                        <div className="max-w-md">
+                          <Select
+                            required={field.required}
+                            value={answers[field.id] || ""}
+                            onValueChange={(val) => handleAnswerChange(field.id, val)}
+                          >
+                            <SelectTrigger className="h-12 bg-background/50 border-border/50 text-base">
+                              <SelectValue placeholder="Select an option" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {field.options?.map((opt, i) => (
+                                <SelectItem key={i} value={opt} className="text-base py-3">{opt}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {field.type === 'RADIO' && (
+                        <RadioGroup
                           required={field.required}
                           value={answers[field.id] || ""}
                           onValueChange={(val) => handleAnswerChange(field.id, val)}
+                          className="space-y-4"
                         >
-                          <SelectTrigger className="h-12 bg-background/50 border-border/50 text-base">
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {field.options?.map((opt, i) => (
-                              <SelectItem key={i} value={opt} className="text-base py-3">{opt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
+                          {field.options?.map((opt, i) => (
+                            <div key={i} className="flex items-center space-x-4">
+                              <RadioGroupItem value={opt} id={`${field.id}-${i}`} className="size-5" />
+                              <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-none text-base">{opt}</Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
 
-                    {field.type === 'RADIO' && (
-                      <RadioGroup 
-                        required={field.required}
-                        value={answers[field.id] || ""}
-                        onValueChange={(val) => handleAnswerChange(field.id, val)}
-                        className="space-y-4"
-                      >
-                        {field.options?.map((opt, i) => (
-                          <div key={i} className="flex items-center space-x-4">
-                            <RadioGroupItem value={opt} id={`${field.id}-${i}`} className="size-5" />
-                            <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-none text-base">{opt}</Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    )}
-
-                    {field.type === 'CHECKBOX' && (
-                      <div className="space-y-4">
-                        {field.options?.map((opt, i) => (
-                          <div key={i} className="flex items-start space-x-4">
-                            <Checkbox 
-                              id={`${field.id}-${i}`} 
-                              checked={answers[field.id]?.includes(opt)}
-                              onCheckedChange={(checked) => handleCheckboxChange(field.id, opt, checked)}
-                              className="size-5 mt-0.5"
-                            />
-                            <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-tight text-base pt-0.5">{opt}</Label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                      {field.type === 'CHECKBOX' && (
+                        <div className="space-y-4">
+                          {field.options?.map((opt, i) => (
+                            <div key={i} className="flex items-start space-x-4">
+                              <Checkbox
+                                id={`${field.id}-${i}`}
+                                checked={answers[field.id]?.includes(opt)}
+                                onCheckedChange={(checked) => handleCheckboxChange(field.id, opt, checked)}
+                                className="size-5 mt-0.5"
+                              />
+                              <Label htmlFor={`${field.id}-${i}`} className="font-normal cursor-pointer leading-tight text-base pt-0.5">{opt}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </CardContent>
             <CardFooter className="bg-muted/10 p-8 sm:px-12 sm:py-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-muted-foreground w-full sm:w-auto text-center sm:text-left">Fields marked with <span className="text-destructive">*</span> are required.</p>
-              <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto px-10 h-12 text-base rounded-full shadow-md hover:shadow-lg transition-all">
-                {isSubmitting && <Loader2Icon className="size-5 mr-2 animate-spin" />}
-                {isSubmitting ? "Submitting..." : "Submit Response"}
-              </Button>
+              <p className="text-xs text-muted-foreground w-full sm:w-auto text-center sm:text-left">
+                {data.fields.length > ITEMS_PER_PAGE
+                  ? `Page ${currentPage + 1} of ${Math.ceil(data.fields.length / ITEMS_PER_PAGE)}`
+                  : `Fields marked with * are required.`
+                }
+              </p>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                {currentPage > 0 && (
+                  <Button type="button" variant="outline" size="lg" onClick={handlePrevPage} className="w-full sm:w-auto px-8 h-12 text-base rounded-full shadow-sm hover:shadow-md transition-all">
+                    Previous
+                  </Button>
+                )}
+
+                {currentPage < Math.ceil(data.fields.length / ITEMS_PER_PAGE) - 1 ? (
+                  <Button type="button" size="lg" onClick={handleNextPage} className="w-full sm:w-auto px-10 h-12 text-base rounded-full shadow-md hover:shadow-lg transition-all">
+                    Next Page
+                  </Button>
+                ) : (
+                  <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto px-10 h-12 text-base rounded-full shadow-md hover:shadow-lg transition-all">
+                    {isSubmitting && <Loader2Icon className="size-5 mr-2 animate-spin" />}
+                    {isSubmitting ? "Submitting..." : "Submit Response"}
+                  </Button>
+                )}
+              </div>
             </CardFooter>
           </form>
         </Card>

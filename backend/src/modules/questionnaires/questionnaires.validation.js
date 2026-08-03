@@ -18,7 +18,9 @@ const createQuestionnaireValidation = Joi.object({
   maxResponses: Joi.number().integer().min(1).allow(null, "").optional(),
   clientId: Joi.string().allow(null, "").optional(),
   projectId: Joi.string().allow(null, "").optional(),
-  fields: Joi.array().items(fieldSchema).optional(),
+  fields: Joi.array().items(fieldSchema).max(100).optional().messages({
+    "array.max": "A form cannot exceed 100 questions to ensure page performance."
+  }),
 });
 
 const updateQuestionnaireValidation = Joi.object({
@@ -28,7 +30,9 @@ const updateQuestionnaireValidation = Joi.object({
   maxResponses: Joi.number().integer().min(1).allow(null, "").optional(),
   clientId: Joi.string().allow(null, "").optional(),
   projectId: Joi.string().allow(null, "").optional(),
-  fields: Joi.array().items(fieldSchema).optional(),
+  fields: Joi.array().items(fieldSchema).max(100).optional().messages({
+    "array.max": "A form cannot exceed 100 questions to ensure page performance."
+  }),
 });
 
 const submitQuestionnaireResponseValidation = Joi.object({
@@ -48,17 +52,36 @@ const generateQuestionnaireFromAiValidation = Joi.object({
 
 const importAiQuestionnaireValidation = Joi.object({
   json: Joi.object({
-    title: Joi.string().trim().min(1).max(150).required(),
-    description: Joi.string().max(500).allow(null, "").optional(),
+    title: Joi.string().trim().min(1).max(150).required().messages({
+      "string.max": "Form title cannot exceed 150 characters.",
+      "any.required": "Form title is required.",
+      "string.empty": "Form title cannot be empty."
+    }),
+    description: Joi.string().max(500).allow(null, "").optional().messages({
+      "string.max": "Form description cannot exceed 500 characters."
+    }),
     fields: Joi.array().items(
       Joi.object({
-        type: Joi.string().valid("TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX").required(),
-        label: Joi.string().max(200).required(),
-        description: Joi.string().max(300).allow(null, "").optional(),
+        type: Joi.string().valid("TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX").required().messages({
+          "any.only": "Invalid question type. Must be TEXT, TEXTAREA, SELECT, RADIO, or CHECKBOX."
+        }),
+        label: Joi.string().max(200).required().messages({
+          "string.max": "Question text cannot exceed 200 characters.",
+          "any.required": "Question text is required.",
+          "string.empty": "Question text cannot be empty."
+        }),
+        description: Joi.string().max(300).allow(null, "").optional().messages({
+          "string.max": "Question description cannot exceed 300 characters."
+        }),
         required: Joi.boolean().optional(),
-        options: Joi.array().items(Joi.string().max(100)).max(10).allow(null).optional(),
+        options: Joi.array().items(Joi.string().max(100)).max(50).allow(null).optional().messages({
+          "array.max": "A question cannot have more than 50 options."
+        }),
       })
-    ).min(1).required(),
+    ).min(1).max(100).required().messages({
+      "array.min": "You must include at least one question.",
+      "array.max": "A form cannot exceed 100 questions to ensure page performance."
+    }),
   }).required().messages({
     "object.base": "Invalid JSON payload",
     "any.required": "JSON payload is required",
