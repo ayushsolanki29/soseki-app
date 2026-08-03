@@ -52,11 +52,11 @@ export function ExpensesTable({ expenses, isLoading, masterCurrency }) {
                         <TableCell className="max-w-[200px] truncate">{expense.description || "-"}</TableCell>
                         <TableCell className="text-right">
                             <div className="font-medium">
-                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: expense.currency || 'USD' }).format(expense.amount)}
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: expense.currency || 'USD', currencyDisplay: 'narrowSymbol' }).format(expense.amount)}
                             </div>
                             {masterCurrency && expense.currency && expense.currency !== masterCurrency && (
                                 <div className="text-xs text-muted-foreground mt-0.5">
-                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(expense.amount * (expense.exchangeRate || 1.0))}
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency, currencyDisplay: 'narrowSymbol' }).format(expense.amount * (expense.exchangeRate || 1.0))}
                                 </div>
                             )}
                         </TableCell>

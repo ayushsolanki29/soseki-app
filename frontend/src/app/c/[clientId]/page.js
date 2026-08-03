@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { ExternalLink, User, Mail, Phone, MapPin, Building, ArrowRight, FileText } from "lucide-react";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/utils";
 import { ClientPortalContext } from "./layout";
 
 export default function ClientPortalDashboard({ params }) {
@@ -300,17 +301,17 @@ export default function ClientPortalDashboard({ params }) {
                         {invoice.status === "Paid" || invoice.paidAmount >= invoice.totalAmount ? (
                           <div className="flex flex-col items-end gap-1">
                             <span className="text-muted-foreground line-through text-xs">
-                              {invoice.currency} {invoice.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              {formatCurrency(invoice.totalAmount, invoice.currency)}
                             </span>
                             <Badge variant="success" className="h-5 px-1.5 text-[10px] uppercase shadow-none border-none bg-emerald-500/15">Fully Paid</Badge>
                           </div>
                         ) : (
                           <div className="flex flex-col items-end gap-0.5">
                             <span className="font-semibold text-foreground">
-                              {invoice.currency} {invoice.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              {formatCurrency(invoice.totalAmount, invoice.currency)}
                             </span>
                             <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">
-                              Pending: {invoice.currency} {(invoice.totalAmount - (invoice.paidAmount || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              Pending: {formatCurrency(invoice.totalAmount - (invoice.paidAmount || 0), invoice.currency)}
                             </span>
                           </div>
                         )}

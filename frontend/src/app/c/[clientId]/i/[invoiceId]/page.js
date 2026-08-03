@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { SosekiModernInvoice } from "@/components/invoices/templates/soseki-modern";
 import { TaxInvoice } from "@/components/invoices/templates/tax-invoice";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/utils";
 
 export default function ClientPortalInvoice({ params }) {
   const { clientId, invoiceId } = use(params);
@@ -165,7 +166,7 @@ export default function ClientPortalInvoice({ params }) {
                 <div className="space-y-6">
                   <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
                     <span className="text-blue-900 font-medium">Amount to Pay</span>
-                    <span className="text-xl font-bold text-blue-700">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    <span className="text-xl font-bold text-blue-700">{formatCurrency(amountDue, invoice.currency)}</span>
                   </div>
 
                   <Link href={`/c/${clientId}/i/${invoiceId}/pay`} className="block w-full">
@@ -194,7 +195,7 @@ export default function ClientPortalInvoice({ params }) {
           <>
             <div>
               <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Amount Due</div>
-              <div className="text-lg font-bold text-slate-900">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="text-lg font-bold text-slate-900">{formatCurrency(amountDue, invoice.currency)}</div>
             </div>
             <Link href={`/c/${clientId}/i/${invoiceId}/pay`}>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">

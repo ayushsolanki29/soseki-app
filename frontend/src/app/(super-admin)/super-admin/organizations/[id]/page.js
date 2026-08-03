@@ -203,7 +203,7 @@ export default function OrganizationDetailsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: org.masterCurrency || 'USD' }).format(org.totalEarnings || 0)}
+              {new Intl.NumberFormat('en-US', { style: 'currency', currency: org.masterCurrency || 'USD', currencyDisplay: 'narrowSymbol' }).format(org.totalEarnings || 0)}
             </div>
           </CardContent>
         </Card>

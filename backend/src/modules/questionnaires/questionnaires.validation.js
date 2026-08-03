@@ -58,9 +58,7 @@ const importAiQuestionnaireValidation = Joi.object({
         required: Joi.boolean().optional(),
         options: Joi.array().items(Joi.string().max(100)).max(10).allow(null).optional(),
       })
-    ).min(1).max(6).required().messages({
-      "array.max": "Questionnaire cannot exceed 6 fields",
-    }),
+    ).min(1).required(),
   }).required().messages({
     "object.base": "Invalid JSON payload",
     "any.required": "JSON payload is required",

@@ -60,21 +60,21 @@ export function InvoicesTable({ invoices, isLoading, masterCurrency }) {
                         <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                         <TableCell className="text-right">
                             <div className="font-medium">
-                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(invoice.totalAmount)}
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD', currencyDisplay: 'narrowSymbol' }).format(invoice.totalAmount)}
                             </div>
                             {masterCurrency && invoice.currency !== masterCurrency && (
                                 <div className="text-xs text-muted-foreground mt-0.5">
-                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(invoice.totalAmount * (invoice.exchangeRate || 1.0))}
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency, currencyDisplay: 'narrowSymbol' }).format(invoice.totalAmount * (invoice.exchangeRate || 1.0))}
                                 </div>
                             )}
                         </TableCell>
                         <TableCell className="text-right">
                             <div className="text-muted-foreground">
-                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD' }).format(totalPaid)}
+                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency || 'USD', currencyDisplay: 'narrowSymbol' }).format(totalPaid)}
                             </div>
                             {masterCurrency && invoice.currency !== masterCurrency && (
                                 <div className="text-xs text-muted-foreground/60 mt-0.5">
-                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency }).format(totalPaid * (invoice.exchangeRate || 1.0))}
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: masterCurrency, currencyDisplay: 'narrowSymbol' }).format(totalPaid * (invoice.exchangeRate || 1.0))}
                                 </div>
                             )}
                         </TableCell>

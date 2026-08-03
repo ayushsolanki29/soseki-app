@@ -308,7 +308,7 @@ class QuestionnairesService {
 
     const validateFn = async (parsedJson) => {
       await importAiQuestionnaireValidation.validateAsync({ json: parsedJson });
-      this._validateSpecificRules(parsedJson);
+      this._validateSpecificRules(parsedJson, true);
     };
 
     const result = await aiService.generateJson(SYSTEM_PROMPT, prompt, validateFn);
@@ -345,11 +345,11 @@ class QuestionnairesService {
     return json;
   }
 
-  _validateSpecificRules(json) {
+  _validateSpecificRules(json, enforceFieldLimit = false) {
     const aiConfig = require("../../config/app.config").ai;
     const validTypes = ["TEXT", "TEXTAREA", "SELECT", "RADIO", "CHECKBOX"];
     
-    if (json.fields.length > aiConfig.maxFields) {
+    if (enforceFieldLimit && json.fields.length > aiConfig.maxFields) {
       const error = new Error(`Questionnaire cannot exceed ${aiConfig.maxFields} fields.`);
       error.status = 400;
       throw error;

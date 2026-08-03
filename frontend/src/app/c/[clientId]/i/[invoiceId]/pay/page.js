@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/utils";
 
 export default function ClientPaymentPage({ params }) {
   const { clientId, invoiceId } = use(params);
@@ -163,7 +164,7 @@ export default function ClientPaymentPage({ params }) {
               </div>
               <div className="pt-4 border-t border-blue-100/50">
                 <p className="text-sm text-slate-500 mb-1">Total Due</p>
-                <p className="text-3xl font-bold text-blue-700">{invoice.currency} {amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                <p className="text-3xl font-bold text-blue-700">{formatCurrency(amountDue, invoice.currency)}</p>
                 {isForeignCurrency && (
                   <div className="mt-2 text-sm text-slate-600 bg-blue-100/50 p-2 rounded">
                     <p>Reference INR amount for UPI:</p>
@@ -319,7 +320,7 @@ export default function ClientPaymentPage({ params }) {
                     onClick={handleRecordPayment}
                     disabled={isSubmitting || !reference.trim()}
                   >
-                    {isSubmitting ? "Processing..." : `I have completed transaction of ${paymentMethod === 'UPI' ? '₹ ' + referenceAmount.toLocaleString(undefined, { minimumFractionDigits: 2 }) : invoice.currency + ' ' + amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                    {isSubmitting ? "Processing..." : `I have completed transaction of ${paymentMethod === 'UPI' ? '₹ ' + referenceAmount.toLocaleString(undefined, { minimumFractionDigits: 2 }) : formatCurrency(amountDue, invoice.currency)}`}
                   </Button>
                 </div>
                 <p className="text-xs text-slate-400 w-full text-right">

@@ -41,7 +41,6 @@ SCHEMA:
 
 CONSTRAINTS:
 - ONLY output valid JSON. No markdown (\`\`\`json).
-- Max 6 fields.
 - No DB metadata (IDs, etc).`;
 
 module.exports = {

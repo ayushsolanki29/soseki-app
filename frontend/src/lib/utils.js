@@ -15,6 +15,7 @@ export function formatCurrency(amount, currencyCode = "USD") {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currencyCode,
+    currencyDisplay: 'narrowSymbol',
   }).format(amount || 0);
 }
 
