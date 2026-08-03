@@ -6,5 +6,6 @@ export const CURRENCIES = [
   { code: "CAD", symbol: "CA$", country: "ca", label: "Canadian Dollar" },
   { code: "AUD", symbol: "AU$", country: "au", label: "Australian Dollar" },
   { code: "SGD", symbol: "S$", country: "sg", label: "Singapore Dollar" },
-  { code: "JPY", symbol: "¥", country: "jp", label: "Japanese Yen" }
+  { code: "JPY", symbol: "¥", country: "jp", label: "Japanese Yen" },
+  { code: "NGN", symbol: "₦", country: "ng", label: "Nigerian Naira" }
 ];

@@ -8,6 +8,7 @@ const MOCK_BASE_TO_USD = {
   AUD: 0.65,
   CAD: 0.73,
   SGD: 0.74,
+  NGN: 0.00065,
 };
 
 // API Key provided by user
