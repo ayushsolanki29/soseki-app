@@ -8,6 +8,7 @@ const { renderTemplate } = require("../emails/email.template");
 
 const { auth: authConfig } = require("../../config/app.config");
 const sessionService = require("./session.service");
+const metrics = require("../../utils/metrics");
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -62,6 +63,8 @@ class AuthService {
       console.error("[AuthService] Failed to send verification email:", error);
     });
 
+    metrics.count("user_registration", 1, { method: "email" });
+
     return await sessionService.createSession(user);
   }
   async login(email, password, termsAccepted) {
@@ -85,10 +88,17 @@ class AuthService {
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordMatch) {
+      metrics.count("failed_login", 1, { reason: "invalid_password" });
       const error = new Error("Invalid email or password");
       error.status = 401;
       throw error;
     }
+
+    // Track business metric
+    metrics.count("user_login", 1, { method: "email" });
+
+    // Ensure session limit
+    await sessionService.enforceSessionLimit(user.id);
 
     if (termsAccepted && !user.termsAcceptedAt) {
       user = await prisma.user.update({

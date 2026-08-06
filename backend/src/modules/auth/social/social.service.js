@@ -3,6 +3,7 @@ const prisma = require("../../../database/prisma");
 const sessionService = require("../session.service");
 const accountLinkService = require("./account-link.service");
 const providerFactory = require("../providers"); 
+const metrics = require("../../../utils/metrics");
 
 class SocialService {
   /**
@@ -24,6 +25,7 @@ class SocialService {
     
     if (existingLink) {
       await accountLinkService.updateLastLogin(existingLink.id);
+      metrics.count("user_login", 1, { method: "social", provider: profile.provider });
       return await sessionService.createSession(existingLink.user, metadata);
     }
 
@@ -36,6 +38,7 @@ class SocialService {
       // Create link for existing user
       await accountLinkService.createProviderLink(user.id, profile);
       // We do not overwrite user's existing avatarUrl if they already have one
+      metrics.count("user_login", 1, { method: "social", provider: profile.provider });
       return await sessionService.createSession(user, metadata);
     }
 
@@ -53,6 +56,10 @@ class SocialService {
     });
 
     await accountLinkService.createProviderLink(user.id, profile);
+    
+    metrics.count("user_registration", 1, { method: "social", provider: profile.provider });
+    metrics.count("user_login", 1, { method: "social", provider: profile.provider });
+    
     return await sessionService.createSession(user, metadata);
   }
 }
