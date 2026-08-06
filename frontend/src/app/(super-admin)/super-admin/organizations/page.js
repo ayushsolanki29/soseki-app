@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
+import ct from "countries-and-timezones";
 import { formatDate } from "@/lib/utils";
 
 import { AddUserModal } from "@/components/add-user-modal";
@@ -177,26 +178,44 @@ export default function SuperAdminOrganizationsPage() {
                   </TableCell>
                   <TableCell>{org.masterCurrency}</TableCell>
                   <TableCell>
-                    {org.users[0]?.country || org.users[0]?.timezone ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium">{org.users[0].country || "Unknown"}</span>
-                        {org.users[0].timezone && (
-                          <Badge variant="outline" className="w-fit text-[10px] font-normal bg-muted/30">
-                            {org.users[0].timezone}
-                            {(() => {
-                              try {
-                                const localTime = new Intl.DateTimeFormat('en-US', { timeZone: org.users[0].timezone, timeStyle: 'short' }).format(new Date());
-                                return ` • ${localTime}`;
-                              } catch (e) {
-                                return "";
-                              }
-                            })()}
-                          </Badge>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">-</span>
-                    )}
+                    {(() => {
+                      const firstUser = org.users[0];
+                      if (!firstUser?.country && !firstUser?.timezone) {
+                        return <span className="text-sm text-muted-foreground">-</span>;
+                      }
+                      
+                      let displayCountry = firstUser.country;
+                      if (!displayCountry && firstUser.timezone) {
+                        const tzInfo = ct.getTimezone(firstUser.timezone);
+                        if (tzInfo && tzInfo.countries && tzInfo.countries.length > 0) {
+                          const countryInfo = ct.getCountry(tzInfo.countries[0]);
+                          displayCountry = countryInfo ? countryInfo.name : "Unknown";
+                        } else {
+                          displayCountry = "Unknown";
+                        }
+                      } else if (!displayCountry) {
+                        displayCountry = "Unknown";
+                      }
+
+                      return (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-medium">{displayCountry}</span>
+                          {firstUser.timezone && (
+                            <Badge variant="outline" className="w-fit text-[10px] font-normal bg-muted/30">
+                              {firstUser.timezone}
+                              {(() => {
+                                try {
+                                  const localTime = new Intl.DateTimeFormat('en-US', { timeZone: firstUser.timezone, timeStyle: 'short' }).format(new Date());
+                                  return ` • ${localTime}`;
+                                } catch (e) {
+                                  return "";
+                                }
+                              })()}
+                            </Badge>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-2 py-1">

@@ -109,8 +109,10 @@ export default function LoginPage() {
       try {
         userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const tzInfo = ct.getTimezone(userTimezone);
-        if (tzInfo && tzInfo.country) {
-          userCountry = tzInfo.country;
+        if (tzInfo && tzInfo.countries && tzInfo.countries.length > 0) {
+          const countryCode = tzInfo.countries[0];
+          const countryInfo = ct.getCountry(countryCode);
+          userCountry = countryInfo ? countryInfo.name : countryCode;
         }
       } catch (e) {}
 

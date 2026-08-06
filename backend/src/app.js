@@ -1,3 +1,5 @@
+require("./instrument.js");
+const Sentry = require("@sentry/node");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -74,6 +76,11 @@ if (serverConfig.env === "production") {
 }
 app.use("/api", require("./modules"));
 
+// Test Sentry route
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+
 // 10. Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -94,6 +101,8 @@ app.use((req, res) => {
 });
 
 // 12. Central Error Handler
+Sentry.setupExpressErrorHandler(app);
+
 app.use((error, req, res, next) => {
   const statusCode = error.status || error.statusCode || 500;
 
