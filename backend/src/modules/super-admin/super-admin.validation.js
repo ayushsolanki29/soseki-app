@@ -11,6 +11,8 @@ const createUserValidation = Joi.object({
     "string.empty": "Valid email is required",
     "any.required": "Valid email is required",
   }),
+  country: Joi.string().optional().allow(null, ""),
+  timezone: Joi.string().optional().allow(null, ""),
 });
 
 module.exports = {

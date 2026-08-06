@@ -11,6 +11,8 @@ class UsersService {
         email: true,
         name: true,
         organizationId: true,
+        country: true,
+        timezone: true,
         createdAt: true,
         emailVerified: true,
         passwordHash: true,

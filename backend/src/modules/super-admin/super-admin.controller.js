@@ -250,14 +250,7 @@ class SuperAdminController {
     }
   }
 
-  async getAccessRequests(req, res, next) {
-    try {
-      const requests = await superAdminService.getAccessRequests();
-      return res.status(200).json({ success: true, requests });
-    } catch (error) {
-      next(error);
-    }
-  }
+
 
   async getMailQueueStats(req, res, next) {
     try {

@@ -8,7 +8,7 @@ const usersRoutes = require('./users/users.routes');
 const organizationRoutes = require('./organization/organization.routes');
 const clientsRoutes = require('./clients/clients.routes');
 const projectsRoutes = require('./projects/projects.routes');
-const leadsRoutes = require('./leads/leads.routes');
+
 const trackingRoutes = require('./tracking/tracking.routes');
 const invoicesRoutes = require('./invoices/invoices.routes');
 const expensesRoutes = require('./expenses/expenses.routes');
@@ -29,7 +29,7 @@ router.use('/users', usersRoutes);
 router.use('/organization', organizationRoutes);
 router.use('/clients', clientsRoutes);
 router.use('/projects', projectsRoutes);
-router.use('/leads', leadsRoutes);
+
 router.use('/invoices', invoicesRoutes);
 router.use('/expenses', expensesRoutes);
 router.use('/payments', paymentsRoutes);

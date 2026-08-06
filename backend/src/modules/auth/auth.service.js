@@ -13,7 +13,7 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 class AuthService {
-  async register(name, email, password, termsAccepted) {
+  async register(name, email, password, termsAccepted, country, timezone) {
     const normalizedEmail = email.trim().toLowerCase();
     
     // Check if user already exists
@@ -42,6 +42,8 @@ class AuthService {
         otpCode,
         otpExpiresAt,
         otpLastSentAt: new Date(),
+        country: country || null,
+        timezone: timezone || null,
       },
     });
 
@@ -126,10 +128,7 @@ class AuthService {
         authProviders: user.authProviders.map(p => p.provider)
       };
     } else {
-      const waitlist = await prisma.waitlistLead.findUnique({
-        where: { email: normalizedEmail },
-      });
-      return { exists: false, inWaitlist: !!waitlist };
+      return { exists: false, inWaitlist: false };
     }
   }
 

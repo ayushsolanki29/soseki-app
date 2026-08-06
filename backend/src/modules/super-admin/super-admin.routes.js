@@ -29,7 +29,7 @@ router.patch("/organizations/:id/status", superAdminController.updateOrganizatio
 router.delete("/organizations/:id", superAdminController.deleteOrganization);
 router.put("/organizations/:id/admin-password", superAdminController.changeOrgAdminPassword);
 router.get("/tickets", superAdminController.getAllTickets);
-router.get("/access-requests", superAdminController.getAccessRequests);
+
 router.get("/mail/stats", superAdminController.getMailQueueStats);
 router.get("/mail/logs", superAdminController.getMailLogs);
 router.get("/traffic", superAdminController.getTrafficStats);

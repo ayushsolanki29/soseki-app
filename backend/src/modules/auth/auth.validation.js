@@ -34,6 +34,8 @@ const registerValidation = Joi.object({
     "string.empty": "Password is required",
     "any.required": "Password is required",
   }),
+  country: Joi.string().optional().allow(null, ""),
+  timezone: Joi.string().optional().allow(null, ""),
   termsAccepted: Joi.boolean().optional(),
 });
 

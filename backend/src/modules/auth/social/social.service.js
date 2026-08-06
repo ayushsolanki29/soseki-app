@@ -46,7 +46,9 @@ class SocialService {
         name: profile.displayName,
         avatarUrl: profile.avatarUrl,
         emailVerified: profile.emailVerified,
-        termsAcceptedAt: new Date(), 
+        termsAcceptedAt: new Date(),
+        country: metadata.country || null,
+        timezone: metadata.timezone || null,
       }
     });
 

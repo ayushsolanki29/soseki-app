@@ -95,7 +95,6 @@ export default function SuperAdminDashboardPage() {
         { label: "Active Users", value: dbStats?.activeUsers || 0, isCurrency: false },
         { label: "Total Traffic", value: dbStats?.totalVisits || 0, isCurrency: false },
         { label: "Open Tickets", value: dbStats?.openTickets || 0, isCurrency: false },
-        { label: "New Signups", value: dbStats?.newSignups || 0, isCurrency: false },
         { label: "Template Requests", value: dbStats?.templateRequestsCount || 0, isCurrency: false }
     ];
 
@@ -104,7 +103,6 @@ export default function SuperAdminDashboardPage() {
         let icon = <ActivityIcon className="text-blue-500" />;
         if (act.type === 'ORG_JOINED') icon = <BuildingIcon className="text-emerald-500" />;
         if (act.type === 'TICKET_OPENED') icon = <AlertCircleIcon className="text-rose-500" />;
-        if (act.type === 'LEAD_ADDED') icon = <UserIcon />;
         
         return {
             ...act,

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import API from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { GoogleLogin } from '@react-oauth/google';
+import ct from 'countries-and-timezones';
 
 export default function SetupAccountPage() {
   const router = useRouter();
@@ -55,7 +56,19 @@ export default function SetupAccountPage() {
     setErrors({});
 
     try {
-      const res = await API.post("/auth/register", { name, email: cleanEmail, password, termsAccepted });
+      let userCountry = null;
+      let userTimezone = null;
+      try {
+        userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzInfo = ct.getTimezone(userTimezone);
+        if (tzInfo && tzInfo.country) {
+          userCountry = tzInfo.country;
+        }
+      } catch (e) {
+        // Ignore if not supported
+      }
+
+      const res = await API.post("/auth/register", { name, email: cleanEmail, password, termsAccepted, country: userCountry, timezone: userTimezone });
       if (res.data.user) {
         toast.success("Account created successfully!", {
           description: "Welcome to Soseki.",
@@ -77,8 +90,20 @@ export default function SetupAccountPage() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setIsLoading(true);
+      let userCountry = null;
+      let userTimezone = null;
+      try {
+        userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzInfo = ct.getTimezone(userTimezone);
+        if (tzInfo && tzInfo.country) {
+          userCountry = tzInfo.country;
+        }
+      } catch (e) {}
+
       const res = await API.post("/auth/social/google", {
-        idToken: credentialResponse.credential
+        idToken: credentialResponse.credential,
+        country: userCountry,
+        timezone: userTimezone
       });
       if (res.data.user) {
         toast.success("Account created successfully!", {

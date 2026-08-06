@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import API from "@/lib/api";
 import { PlusIcon } from "lucide-react";
+import ct from 'countries-and-timezones';
 
 export function AddUserModal({ trigger, defaultName = "", defaultEmail = "" }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +34,23 @@ export function AddUserModal({ trigger, defaultName = "", defaultEmail = "" }) {
     setIsSubmitting(true);
     setGeneratedPassword("");
     try {
-      const res = await API.post("/super-admin/users", formData);
+      let userCountry = null;
+      let userTimezone = null;
+      try {
+        userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzInfo = ct.getTimezone(userTimezone);
+        if (tzInfo && tzInfo.country) {
+          userCountry = tzInfo.country;
+        }
+      } catch (e) {}
+
+      const payload = {
+        ...formData,
+        country: userCountry,
+        timezone: userTimezone
+      };
+
+      const res = await API.post("/super-admin/users", payload);
       setGeneratedPassword(res.data.password);
       toast.success("User created successfully!");
       // Reset form but keep dialog open to show password

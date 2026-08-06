@@ -145,6 +145,7 @@ export default function SuperAdminOrganizationsPage() {
             <TableRow>
               <TableHead>Organization</TableHead>
               <TableHead>Master Currency</TableHead>
+              <TableHead>Location</TableHead>
               <TableHead>Users</TableHead>
               <TableHead>Clients</TableHead>
               <TableHead>Projects</TableHead>
@@ -156,7 +157,7 @@ export default function SuperAdminOrganizationsPage() {
           <TableBody>
             {organizations.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center h-24 text-muted-foreground">
                   No organizations found.
                 </TableCell>
               </TableRow>
@@ -176,13 +177,48 @@ export default function SuperAdminOrganizationsPage() {
                   </TableCell>
                   <TableCell>{org.masterCurrency}</TableCell>
                   <TableCell>
+                    {org.users[0]?.country || org.users[0]?.timezone ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-medium">{org.users[0].country || "Unknown"}</span>
+                        {org.users[0].timezone && (
+                          <Badge variant="outline" className="w-fit text-[10px] font-normal bg-muted/30">
+                            {org.users[0].timezone}
+                            {(() => {
+                              try {
+                                const localTime = new Intl.DateTimeFormat('en-US', { timeZone: org.users[0].timezone, timeStyle: 'short' }).format(new Date());
+                                return ` • ${localTime}`;
+                              } catch (e) {
+                                return "";
+                              }
+                            })()}
+                          </Badge>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex flex-col gap-2 py-1">
                       {org.users.map((u) => (
                         <div key={u.id} className="flex items-center gap-2">
                           <DynamicAvatar type="user" seed={u.name || u.email} size={24} />
                           <div className="flex flex-col">
-                            <span className="text-xs font-medium">{u.name || "Unnamed"}</span>
-                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">{u.email}</span>
+                            <span className="text-xs font-medium flex items-center gap-1.5">
+                              {u.name || "Unnamed"}
+                              {u.emailVerified ? (
+                                <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-emerald-50 text-emerald-600 border-emerald-200">Verified</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-amber-50 text-amber-600 border-amber-200">Unverified</Badge>
+                              )}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">{u.email}</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {u.authProviders?.map(p => (
+                                <Badge key={p.provider} variant="outline" className="text-[9px] px-1 py-0 h-4 capitalize">{p.provider}</Badge>
+                              ))}
+                              {u.hasPassword && <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">Password</Badge>}
+                            </div>
                           </div>
                         </div>
                       ))}

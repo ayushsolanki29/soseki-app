@@ -4,8 +4,8 @@ const socialService = require("./social/social.service");
 class AuthController {
   async register(req, res, next) {
     try {
-      const { name, email, password, termsAccepted } = req.body;
-      const result = await authService.register(name, email, password, termsAccepted);
+      const { name, email, password, termsAccepted, country, timezone } = req.body;
+      const result = await authService.register(name, email, password, termsAccepted, country, timezone);
 
       const cookieOptions = {
         httpOnly: true,
@@ -62,11 +62,13 @@ class AuthController {
   async socialLogin(req, res, next) {
     try {
       const { provider } = req.params;
-      const { idToken } = req.body;
+      const { idToken, country, timezone } = req.body;
       
       const metadata = {
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
+        country: country || null,
+        timezone: timezone || null,
       };
 
       const result = await socialService.login(provider, idToken, metadata);

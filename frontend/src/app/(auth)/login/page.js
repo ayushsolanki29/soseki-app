@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import API from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { GoogleLogin } from '@react-oauth/google';
+import ct from 'countries-and-timezones';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -103,8 +104,20 @@ export default function LoginPage() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setIsLoading(true);
+      let userCountry = null;
+      let userTimezone = null;
+      try {
+        userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzInfo = ct.getTimezone(userTimezone);
+        if (tzInfo && tzInfo.country) {
+          userCountry = tzInfo.country;
+        }
+      } catch (e) {}
+
       const res = await API.post("/auth/social/google", {
-        idToken: credentialResponse.credential
+        idToken: credentialResponse.credential,
+        country: userCountry,
+        timezone: userTimezone
       });
       if (res.data.user) {
         toast.success("Successfully logged in!", {

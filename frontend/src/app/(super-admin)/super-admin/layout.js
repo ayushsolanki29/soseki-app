@@ -43,11 +43,6 @@ export default function SuperAdminLayout({ children }) {
           icon: <BrainCircuitIcon />,
         },
         {
-          title: "Requested Access",
-          path: "/super-admin/access-requests",
-          icon: <UsersIcon />,
-        },
-        {
           title: "Contacts",
           path: "/super-admin/contacts",
           icon: <MessageSquareIcon />,

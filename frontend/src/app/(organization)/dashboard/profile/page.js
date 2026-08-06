@@ -18,6 +18,8 @@ export default function ProfilePage() {
   const [hasPassword, setHasPassword] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [country, setCountry] = useState("");
+  const [timezone, setTimezone] = useState("");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -43,6 +45,8 @@ export default function ProfilePage() {
           setOriginalEmail(res.data.user.email || "");
           setIsEmailVerified(res.data.user.emailVerified || false);
           setHasPassword(res.data.user.hasPassword ?? true);
+          setCountry(res.data.user.country || "");
+          setTimezone(res.data.user.timezone || "");
         }
       } catch (error) {
         toast.error("Failed to load profile");
@@ -218,6 +222,22 @@ export default function ProfilePage() {
                     ) : null}
                     {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
                 </div>
+                {(country || timezone) && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {country && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-sm">Country</div>
+                        <Input value={country} disabled className="bg-muted/50" />
+                      </div>
+                    )}
+                    {timezone && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-sm">Timezone</div>
+                        <Input value={timezone} disabled className="bg-muted/50" />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

@@ -313,18 +313,15 @@ class SuperAdminService {
       totalOrgs, 
       activeUsers, 
       openTickets, 
-      recentSignups,
       mrrResult,
       totalVisits,
       recentOrgsData,
       recentTickets,
-      recentLeads,
       templateRequestsCount
     ] = await Promise.all([
       prisma.organization.count({ where: { status: 'Active' } }),
       prisma.user.count(),
       prisma.supportTicket.count({ where: { status: 'Open' } }),
-      prisma.waitlistLead.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
       prisma.invoice.aggregate({
         where: { status: 'Paid', issueDate: { gte: thirtyDaysAgo } },
         _sum: { totalAmount: true }
@@ -339,10 +336,6 @@ class SuperAdminService {
         orderBy: { createdAt: 'desc' },
         take: 5,
         include: { organization: { select: { name: true } } }
-      }),
-      prisma.waitlistLead.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 5
       }),
       prisma.templateRequest.count({ where: { status: 'Pending' } })
     ]);
@@ -443,7 +436,7 @@ class SuperAdminService {
   }
 
   async createUser(data) {
-    const { name, email } = data;
+    const { name, email, country, timezone } = data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -473,6 +466,8 @@ class SuperAdminService {
         name,
         email,
         passwordHash,
+        country: country || null,
+        timezone: timezone || null,
       },
     });
 
@@ -511,6 +506,13 @@ class SuperAdminService {
             id: true,
             name: true,
             email: true,
+            country: true,
+            timezone: true,
+            emailVerified: true,
+            passwordHash: true,
+            authProviders: {
+              select: { provider: true }
+            }
           },
         },
       },
@@ -531,6 +533,13 @@ class SuperAdminService {
         id: true,
         name: true,
         email: true,
+        country: true,
+        timezone: true,
+        emailVerified: true,
+        passwordHash: true,
+        authProviders: {
+          select: { provider: true }
+        },
         createdAt: true,
       }
     });
@@ -551,11 +560,24 @@ class SuperAdminService {
       users: [{
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        country: user.country,
+        timezone: user.timezone,
+        emailVerified: user.emailVerified,
+        authProviders: user.authProviders,
+        hasPassword: !!user.passwordHash
       }]
     }));
 
-    return [...organizations, ...formattedOrphans];
+    const transformedOrganizations = organizations.map(org => {
+      const users = org.users.map(u => {
+        const { passwordHash, ...rest } = u;
+        return { ...rest, hasPassword: !!passwordHash };
+      });
+      return { ...org, users };
+    });
+
+    return [...transformedOrganizations, ...formattedOrphans];
   }
 
   async getOrganizationDetails(id) {
@@ -719,12 +741,7 @@ class SuperAdminService {
     return tickets;
   }
 
-  async getAccessRequests() {
-    const requests = await prisma.waitlistLead.findMany({
-      orderBy: { createdAt: "desc" }
-    });
-    return requests;
-  }
+
 
   async getMailQueueStats() {
     const [pending, processing, sent, failed] = await Promise.all([
