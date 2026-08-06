@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [originalEmail, setOriginalEmail] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [hasPassword, setHasPassword] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,6 +42,7 @@ export default function ProfilePage() {
           setEmail(res.data.user.email || "");
           setOriginalEmail(res.data.user.email || "");
           setIsEmailVerified(res.data.user.emailVerified || false);
+          setHasPassword(res.data.user.hasPassword ?? true);
         }
       } catch (error) {
         toast.error("Failed to load profile");
@@ -88,7 +90,7 @@ export default function ProfilePage() {
     e.preventDefault();
     setErrors({});
     let newErrors = {};
-    if (!currentPassword) newErrors.currentPassword = "Current password is required";
+    if (hasPassword && !currentPassword) newErrors.currentPassword = "Current password is required";
     if (!newPassword) newErrors.newPassword = "New password is required";
     if (!confirmPassword) newErrors.confirmPassword = "Confirm password is required";
     
@@ -107,13 +109,14 @@ export default function ProfilePage() {
     setIsChangingPassword(true);
     try {
       await API.patch("/users/profile/password", {
-        currentPassword,
+        currentPassword: hasPassword ? currentPassword : "",
         newPassword
       });
-      toast.success("Password changed successfully!");
+      toast.success(hasPassword ? "Password changed successfully!" : "Password set successfully!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setHasPassword(true);
     } catch (error) {
       const errorMsg = error.response?.data?.error || "Failed to change password";
       if (errorMsg.toLowerCase().includes("current password")) {
@@ -229,15 +232,16 @@ export default function ProfilePage() {
       <Card>
         <form onSubmit={handlePasswordChange}>
           <CardHeader>
-            <CardTitle>Change Password</CardTitle>
+            <CardTitle>{hasPassword ? "Change Password" : "Set Password"}</CardTitle>
             <CardDescription>
-              Ensure your account is using a long, random password to stay secure.
+              {hasPassword ? "Ensure your account is using a long, random password to stay secure." : "Since you created your account using a social provider (like Google), you don't have a password yet. Create a password here if you'd also like to sign in with your email."}
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-8 pt-2">
             <div className="flex flex-col gap-6 w-full max-w-md">
-              <div className="space-y-2">
-                  <div className="font-semibold text-sm">Current Password</div>
+              {hasPassword && (
+                <div className="space-y-2">
+                    <div className="font-semibold text-sm">Current Password</div>
                   <div className="relative">
                     <Input 
                       type={showCurrentPassword ? "text" : "password"}
@@ -256,7 +260,8 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   {errors.currentPassword && <p className="text-xs text-destructive font-medium">{errors.currentPassword}</p>}
-              </div>
+                </div>
+              )}
               <div className="space-y-2">
                   <div className="font-semibold text-sm">New Password</div>
                   <div className="relative">
@@ -303,7 +308,7 @@ export default function ProfilePage() {
           </CardContent>
           <CardFooter className="border-t px-6 py-4 bg-muted/20">
             <Button type="submit" disabled={isChangingPassword}>
-              {isChangingPassword ? "Updating..." : "Update Password"}
+              {isChangingPassword ? "Saving..." : (hasPassword ? "Update Password" : "Set Password")}
             </Button>
           </CardFooter>
         </form>

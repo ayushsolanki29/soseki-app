@@ -13,6 +13,7 @@ class UsersService {
         organizationId: true,
         createdAt: true,
         emailVerified: true,
+        passwordHash: true,
       }
     });
 
@@ -22,7 +23,10 @@ class UsersService {
       throw error;
     }
 
-    return user;
+    const hasPassword = !!user.passwordHash;
+    delete user.passwordHash;
+
+    return { ...user, hasPassword };
   }
 
   async updateProfile(userId, data) {
@@ -75,11 +79,13 @@ class UsersService {
       throw error;
     }
 
-    const passwordMatch = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!passwordMatch) {
-      const error = new Error("Invalid current password");
-      error.status = 400;
-      throw error;
+    if (user.passwordHash) {
+      const passwordMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!passwordMatch) {
+        const error = new Error("Invalid current password");
+        error.status = 400;
+        throw error;
+      }
     }
 
     const salt = await bcrypt.genSalt(authConfig.bcryptSaltRounds);

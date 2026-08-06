@@ -13,11 +13,15 @@ const publicPaths = [
   '/signup',
   '/setup-account',
   '/status',
+  '/forgot-password',
+  '/reset-password',
 
   // Authentication
   '/api/auth/login',
   '/api/auth/refresh',
   '/api/auth/check-email',
+  '/api/auth/forgot-password',
+  '/api/auth/reset-password',
 
   // Public APIs
   '/api/leads',

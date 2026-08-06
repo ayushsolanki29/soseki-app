@@ -7,6 +7,7 @@ const mailer = require("../../utils/mailer");
 const { renderTemplate } = require("../emails/email.template");
 
 const { auth: authConfig } = require("../../config/app.config");
+const sessionService = require("./session.service");
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -59,42 +60,7 @@ class AuthService {
       console.error("[AuthService] Failed to send verification email:", error);
     });
 
-    // Generate accessToken
-    const payload = {
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      hasOrg: false,
-      organizationId: null,
-      emailVerified: false,
-    };
-    
-    const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
-
-    // Generate refreshToken
-    const refreshToken = crypto.randomBytes(40).toString("hex");
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    // Save session
-    await prisma.session.create({
-      data: {
-        userId: user.id,
-        refreshToken,
-        expiresAt,
-      },
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        emailVerified: false,
-      },
-    };
+    return await sessionService.createSession(user);
   }
   async login(email, password, termsAccepted) {
     const normalizedEmail = email.trim().toLowerCase();
@@ -102,8 +68,14 @@ class AuthService {
       where: { email: normalizedEmail },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
       const error = new Error("Invalid email or password");
+      error.status = 401;
+      throw error;
+    }
+
+    if (!user.passwordHash) {
+      const error = new Error("This account uses social login. Please sign in with Google.");
       error.status = 401;
       throw error;
     }
@@ -123,42 +95,7 @@ class AuthService {
       });
     }
 
-    // Generate accessToken
-    const payload = {
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      hasOrg: !!user.organizationId,
-      organizationId: user.organizationId || null,
-      emailVerified: user.emailVerified,
-    };
-    
-    const accessToken = jwt.sign(payload, authConfig.jwtSecret, { expiresIn: authConfig.jwtExpiresIn });
-
-    // Generate refreshToken
-    const refreshToken = crypto.randomBytes(40).toString("hex");
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    // Save session
-    await prisma.session.create({
-      data: {
-        userId: user.id,
-        refreshToken,
-        expiresAt,
-      },
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        emailVerified: user.emailVerified,
-      },
-    };
+    return await sessionService.createSession(user);
   }
 
   async logout(refreshToken) {
@@ -178,10 +115,16 @@ class AuthService {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
+      include: { authProviders: true }
     });
 
     if (user) {
-      return { exists: true, termsAcceptedAt: user.termsAcceptedAt };
+      return { 
+        exists: true, 
+        termsAcceptedAt: user.termsAcceptedAt,
+        hasPassword: !!user.passwordHash,
+        authProviders: user.authProviders.map(p => p.provider)
+      };
     } else {
       const waitlist = await prisma.waitlistLead.findUnique({
         where: { email: normalizedEmail },
@@ -286,6 +229,99 @@ class AuthService {
       console.error("[AuthService] Failed to send verification email:", error);
     });
     
+    return true;
+  }
+
+  async forgotPassword(email) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) {
+      // For security, don't reveal if user exists
+      return true;
+    }
+
+    const resetPasswordOtp = generateOTP();
+    const resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordOtp,
+        resetPasswordExpiresAt,
+      },
+    });
+
+    const htmlBody = renderTemplate("email_reset_password", { 
+      subject: "Reset your Soseki password",
+      name: user.name || user.email,
+      otpCode: resetPasswordOtp 
+    });
+
+    mailer.sendMail({
+      to: user.email,
+      subject: "Reset your Soseki password",
+      html: htmlBody
+    }).catch(error => {
+      console.error("[AuthService] Failed to send password reset email:", error);
+    });
+
+    return true;
+  }
+
+  async verifyResetOtp(email, otp) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) throw Object.assign(new Error("Invalid request"), { status: 400 });
+
+    if (!user.resetPasswordOtp || !user.resetPasswordExpiresAt) {
+      throw Object.assign(new Error("No reset code requested"), { status: 400 });
+    }
+
+    if (user.resetPasswordExpiresAt < new Date()) {
+      throw Object.assign(new Error("Reset code has expired"), { status: 400 });
+    }
+
+    if (user.resetPasswordOtp !== otp) {
+      throw Object.assign(new Error("Invalid reset code"), { status: 400 });
+    }
+
+    return true;
+  }
+
+  async resetPassword(email, otp, newPassword) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) throw Object.assign(new Error("Invalid request"), { status: 400 });
+
+    if (!user.resetPasswordOtp || !user.resetPasswordExpiresAt || user.resetPasswordOtp !== otp) {
+      throw Object.assign(new Error("Invalid reset code"), { status: 400 });
+    }
+
+    if (new Date() > user.resetPasswordExpiresAt) {
+      throw Object.assign(new Error("Reset code expired"), { status: 400 });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        resetPasswordOtp: null,
+        resetPasswordExpiresAt: null,
+      },
+    });
+
     return true;
   }
 }

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SetupAccountPage() {
   const router = useRouter();
@@ -68,6 +69,27 @@ export default function SetupAccountPage() {
       if (error.response?.data?.message?.toLowerCase().includes("email")) {
         setErrors({ email: error.response.data.message });
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setIsLoading(true);
+      const res = await API.post("/auth/social/google", {
+        idToken: credentialResponse.credential
+      });
+      if (res.data.user) {
+        toast.success("Account created successfully!", {
+          description: "Welcome to Soseki.",
+        });
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      toast.error("Login failed", {
+        description: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -215,6 +237,28 @@ export default function SetupAccountPage() {
               {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
+
+            <div className="relative mt-6 mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  toast.error("Google Login Failed", { description: "Something went wrong. Please try again." });
+                }}
+                useOneTap
+                theme="outline"
+                size="large"
+                shape="rectangular"
+              />
+            </div>
           </form>
 
           <div className="text-[14px] text-muted-foreground pt-4">

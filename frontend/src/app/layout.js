@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { BackgroundTracker } from "@/components/background-tracker";
 import { CookieConsent } from "@/components/cookie-consent";
 import Script from 'next/script';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -139,7 +140,9 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-X1600G8S2W');
           `}
         </Script>
-        <TooltipProvider>{children}</TooltipProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "placeholder"}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </GoogleOAuthProvider>
         <Toaster richColors position="bottom-right" />
         <Suspense fallback={null}>
           <BackgroundTracker />

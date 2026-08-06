@@ -1,4 +1,5 @@
 const authService = require("./auth.service");
+const socialService = require("./social/social.service");
 
 class AuthController {
   async register(req, res, next) {
@@ -53,6 +54,80 @@ class AuthController {
     } catch (error) {
       if (error.status === 401) {
         return res.status(401).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async socialLogin(req, res, next) {
+    try {
+      const { provider } = req.params;
+      const { idToken } = req.body;
+      
+      const metadata = {
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      };
+
+      const result = await socialService.login(provider, idToken, metadata);
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".soseki.app" : undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("accessToken", result.accessToken, cookieOptions);
+      res.cookie("refreshToken", result.refreshToken, cookieOptions);
+
+      return res.status(200).json({
+        success: true,
+        user: result.user,
+      });
+    } catch (error) {
+      if (error.status === 400 || error.status === 401) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async forgotPassword(req, res, next) {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+      await authService.forgotPassword(email);
+      res.status(200).json({ success: true, message: "If that email exists, we have sent a reset code." });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyResetOtp(req, res, next) {
+    try {
+      const { email, otp } = req.body;
+      if (!email || !otp) return res.status(400).json({ success: false, message: "Email and OTP are required" });
+      await authService.verifyResetOtp(email, otp);
+      res.status(200).json({ success: true, message: "OTP verified successfully." });
+    } catch (error) {
+      if (error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      const { email, otp, newPassword } = req.body;
+      if (!email || !otp || !newPassword) return res.status(400).json({ success: false, message: "Email, OTP, and new password are required" });
+      await authService.resetPassword(email, otp, newPassword);
+      res.status(200).json({ success: true, message: "Password reset successfully. You can now log in." });
+    } catch (error) {
+      if (error.status === 400) {
+        return res.status(error.status).json({ success: false, message: error.message });
       }
       next(error);
     }

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import API from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,9 +38,16 @@ export default function LoginPage() {
       try {
         const res = await API.post("/auth/check-email", { email: cleanEmail });
         if (res.data.exists) {
-          setStep("password");
-          if (res.data.termsAcceptedAt) {
-            setTermsAccepted(true);
+          if (!res.data.hasPassword && res.data.authProviders && res.data.authProviders.length > 0) {
+            const providerName = res.data.authProviders[0];
+            const msg = `This account uses social login. Please click 'Continue with ${providerName}' below.`;
+            setErrors({ email: msg });
+            toast.warning("Social Login Required", { description: msg });
+          } else {
+            setStep("password");
+            if (res.data.termsAcceptedAt) {
+              setTermsAccepted(true);
+            }
           }
         } else {
           if (res.data.inWaitlist) {
@@ -89,6 +97,27 @@ export default function LoginPage() {
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setIsLoading(true);
+      const res = await API.post("/auth/social/google", {
+        idToken: credentialResponse.credential
+      });
+      if (res.data.user) {
+        toast.success("Successfully logged in!", {
+          description: "Welcome back to your dashboard.",
+        });
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      toast.error("Login failed", {
+        description: error.response?.data?.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -166,7 +195,7 @@ export default function LoginPage() {
                     <label className="text-sm font-medium text-foreground" htmlFor="password">
                       Password
                     </label>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    <Link href="/forgot-password" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                       Forgot password?
                     </Link>
                   </div>
@@ -218,6 +247,28 @@ export default function LoginPage() {
               {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
               {step === "email" ? (isLoading ? "Verifying..." : "Continue") : (isLoading ? "Signing in..." : "Sign in")}
             </Button>
+
+            <div className="relative mt-6 mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  toast.error("Google Login Failed", { description: "Something went wrong. Please try again." });
+                }}
+                useOneTap
+                theme="outline"
+                size="large"
+                shape="rectangular"
+              />
+            </div>
           </form>
 
           <div className="text-[14px] text-muted-foreground pt-4">
