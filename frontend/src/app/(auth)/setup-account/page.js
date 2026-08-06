@@ -102,7 +102,7 @@ export default function SetupAccountPage() {
           const countryInfo = ct.getCountry(countryCode);
           userCountry = countryInfo ? countryInfo.name : countryCode;
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const res = await API.post("/auth/social/google", {
         idToken: credentialResponse.credential,
@@ -144,12 +144,12 @@ export default function SetupAccountPage() {
         </div>
 
         <div className="relative z-20 p-10 mt-auto text-white">
-          <h2 className="text-4xl font-bold leading-tight mb-4 tracking-tight">
-            The next generation of business management.
-          </h2>
-          <p className="text-lg text-white/70 leading-relaxed max-w-md">
-            Create an account to experience the most powerful, intuitive operating system for your freelance or agency business.
-          </p>
+          <blockquote className="space-y-4 backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/10 max-w-md">
+            <p className="text-lg font-medium leading-relaxed">
+              "I built Soseki because I was tired of seeing talented people waste hours on messy admin work. Your time is too valuable for that let's automate the boring stuff together."
+            </p>
+            <footer className="text-sm font-medium text-white/70">Ayush Solanki, Founder</footer>
+          </blockquote>
         </div>
       </div>
 
@@ -290,11 +290,19 @@ export default function SetupAccountPage() {
             </div>
           </form>
 
-          <div className="text-[14px] text-muted-foreground pt-4">
+          <div className="text-[14px] text-muted-foreground pt-4 pb-2">
             Already have an account?{" "}
             <Link href="/login" className="text-foreground font-medium hover:underline transition-colors">
               Sign in
             </Link>
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[12px] text-muted-foreground">
+            <Link href="/contact" className="hover:text-foreground transition-colors">Need Help?</Link>
+            <span>&bull;</span>
+            <Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <span>&bull;</span>
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

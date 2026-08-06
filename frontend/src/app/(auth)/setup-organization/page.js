@@ -75,27 +75,12 @@ export default function SetupOrganizationPage() {
         </div>
         
         <div className="relative z-10 space-y-6 max-w-lg mb-20">
-          <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-primary-foreground leading-tight">
-            Streamline your agency's finances
-          </h1>
-          <p className="text-lg text-primary-foreground/80 leading-relaxed">
-            Manage clients, track projects, and generate professional invoices in seconds. Join thousands of freelancers running their businesses effortlessly.
-          </p>
-          
-          <div className="pt-8 space-y-4">
-            <div className="flex items-center gap-3">
-              <CheckCircle2Icon className="size-6 text-primary-foreground/90" />
-              <span className="text-primary-foreground/90 font-medium text-lg">Unlimited Projects & Clients</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2Icon className="size-6 text-primary-foreground/90" />
-              <span className="text-primary-foreground/90 font-medium text-lg">Automated Invoicing workflows</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2Icon className="size-6 text-primary-foreground/90" />
-              <span className="text-primary-foreground/90 font-medium text-lg">Comprehensive Financial Reports</span>
-            </div>
-          </div>
+          <blockquote className="space-y-4 backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/10">
+            <p className="text-lg font-medium leading-relaxed text-primary-foreground">
+              "Your business deserves a workspace that works as hard as you do. Stop fighting with scattered documents and spreadsheets. we've got everything organized for you right here."
+            </p>
+            <footer className="text-sm font-medium text-primary-foreground/70">Ayush Solanki, Founder</footer>
+          </blockquote>
         </div>
         
         <div className="relative z-10 text-primary-foreground/60 text-sm font-medium">

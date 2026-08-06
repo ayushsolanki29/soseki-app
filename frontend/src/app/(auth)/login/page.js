@@ -158,9 +158,9 @@ export default function LoginPage() {
         <div className="relative z-20 p-10 mt-auto text-white">
           <blockquote className="space-y-4 backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/10">
             <p className="text-lg font-medium leading-relaxed">
-              "The all-in-one business operating platform that transformed how we manage clients, projects, and invoices. It's incredibly intuitive."
+              "Why should freelancers struggle with the basics? You should be spending your valuable time delivering great services. We'll handle the paperwork and documentation smoothly so you don't have to."
             </p>
-            <footer className="text-sm font-medium text-white/70">Sofia Davis, Designer</footer>
+            <footer className="text-sm font-medium text-white/70">Ayush Solanki, Founder</footer>
           </blockquote>
         </div>
       </div>
@@ -286,11 +286,19 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="text-[14px] text-muted-foreground pt-4">
+          <div className="text-[14px] text-muted-foreground pt-4 pb-2">
             New to Soseki?{" "}
             <Link href="/setup-account" className="text-foreground font-medium hover:underline transition-colors">
               Get started
             </Link>
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[12px] text-muted-foreground">
+            <Link href="/contact" className="hover:text-foreground transition-colors">Need Help?</Link>
+            <span>&bull;</span>
+            <Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <span>&bull;</span>
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
