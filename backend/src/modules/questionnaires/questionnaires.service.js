@@ -105,7 +105,7 @@ class QuestionnairesService {
       throw error;
     }
 
-    const questionnaire = await prisma.questionnaire.findUnique({
+    const questionnaire = await prisma.questionnaire.findFirst({
       where: {
         id,
         organizationId,
@@ -143,7 +143,7 @@ class QuestionnairesService {
 
     const { title, description, status, maxResponses, clientId, projectId, fields } = data;
 
-    const existing = await prisma.questionnaire.findUnique({
+    const existing = await prisma.questionnaire.findFirst({
       where: { id, organizationId },
     });
 
@@ -205,7 +205,7 @@ class QuestionnairesService {
       throw error;
     }
 
-    const existing = await prisma.questionnaire.findUnique({
+    const existing = await prisma.questionnaire.findFirst({
       where: { id, organizationId },
     });
 
@@ -233,7 +233,7 @@ class QuestionnairesService {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 25));
     const skip = (pageNum - 1) * limitNum;
 
-    const questionnaire = await prisma.questionnaire.findUnique({
+    const questionnaire = await prisma.questionnaire.findFirst({
       where: {
         id,
         organizationId,

@@ -209,7 +209,7 @@ export default function QuestionnairesPage() {
                           Copy Public Link
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={(e) => handleDelete(q.id, e)} className="text-destructive focus:text-destructive">
+                        <DropdownMenuItem onClick={(e) => handleDelete(q.id, e)} className="text-destructive focus:text-destructive">
                           {deletingId === q.id ? <Loader2Icon className="size-4 mr-2 animate-spin" /> : <TrashIcon className="size-4 mr-2" />}
                           {deletingId === q.id ? "Deleting..." : "Delete"}
                         </DropdownMenuItem>

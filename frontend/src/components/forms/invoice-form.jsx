@@ -58,7 +58,7 @@ export function InvoiceForm({ initialData = null }) {
   const [formData, setFormData] = useState({
     clientId: initialData?.clientId || "",
     projectId: initialData?.projectId || "",
-    invoiceNumber: initialData?.invoiceNumber || `INV-${Math.floor(Math.random() * 10000)}`,
+    invoiceNumber: initialData?.invoiceNumber || "",
     status: initialData?.status || "Draft",
     issueDate: initialData?.issueDate ? new Date(initialData.issueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     dueDate: initialData?.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : "",
@@ -77,17 +77,41 @@ export function InvoiceForm({ initialData = null }) {
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
-        const [clientsRes, projectsRes, quickRes] = await Promise.all([
+        const [clientsRes, projectsRes, quickRes, invoicesRes] = await Promise.all([
           API.get("/clients?limit=1000&status=All"),
           API.get("/projects?limit=1000&status=All"),
-          API.get("/quick-items")
+          API.get("/quick-items"),
+          API.get("/invoices?limit=1")
         ]);
         setClients(clientsRes.data.clients || []);
         setProjects(projectsRes.data.projects || []);
         setQuickItems(quickRes.data.quickItems || []);
         
+        let updates = {};
         if (organization?.masterCurrency && !initialData?.id && !initialData?.currency) {
-            setFormData(prev => ({ ...prev, currency: organization.masterCurrency }));
+            updates.currency = organization.masterCurrency;
+        }
+
+        // Auto-increment invoice number if it's a new invoice
+        if (!initialData?.id) {
+          const latestInvoice = invoicesRes.data.invoices?.[0];
+          if (latestInvoice?.invoiceNumber) {
+            const match = latestInvoice.invoiceNumber.match(/^(.*?)(\d+)$/);
+            if (match) {
+              const prefix = match[1];
+              const numStr = match[2];
+              const nextNum = parseInt(numStr, 10) + 1;
+              updates.invoiceNumber = `${prefix}${String(nextNum).padStart(numStr.length, '0')}`;
+            } else {
+              updates.invoiceNumber = `${latestInvoice.invoiceNumber}-1`;
+            }
+          } else {
+            updates.invoiceNumber = "INV-001";
+          }
+        }
+
+        if (Object.keys(updates).length > 0) {
+          setFormData(prev => ({ ...prev, ...updates }));
         }
       } catch (error) {
         toast.error("Failed to load clients and projects");
@@ -119,6 +143,19 @@ export function InvoiceForm({ initialData = null }) {
       };
       fetchRate();
   }, [formData.currency, masterCurrency, initialData]);
+
+  // Auto-fill due date when a project is selected
+  useEffect(() => {
+    if (formData.projectId && projects.length > 0) {
+      const selectedProject = projects.find(p => p.id === formData.projectId);
+      if (selectedProject && selectedProject.endDate) {
+        setFormData(prev => ({
+          ...prev,
+          dueDate: new Date(selectedProject.endDate).toISOString().split('T')[0]
+        }));
+      }
+    }
+  }, [formData.projectId, projects]);
 
   // Recalculate totals
   const recalculateItem = (index, field, value) => {

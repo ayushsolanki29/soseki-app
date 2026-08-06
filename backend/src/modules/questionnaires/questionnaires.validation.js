@@ -43,9 +43,9 @@ const submitQuestionnaireResponseValidation = Joi.object({
 });
 
 const generateQuestionnaireFromAiValidation = Joi.object({
-  prompt: Joi.string().trim().min(1).max(2000).required().messages({
+  prompt: Joi.string().trim().min(1).max(4000).required().messages({
     "string.empty": "Prompt is required",
-    "string.max": "Prompt is too long (max 2000 characters)",
+    "string.max": "Prompt is too long (max 4000 characters)",
     "any.required": "Prompt is required",
   }),
 });

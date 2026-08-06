@@ -1,5 +1,4 @@
 const SYSTEM_PROMPT = `Output ONLY valid JSON representing a form. No markdown, no filler.
-
 SCHEMA:
 {
   "title": "Short title",
@@ -16,7 +15,8 @@ SCHEMA:
 }
 
 CONSTRAINTS:
-- max 6 fields.
+- max 15 fields.
+- Write highly polite, professional, and conversational questions for clients. Instead of blunt 1-2 word labels, phrase them as complete, engaging sentences (e.g., "What is your primary phone number?" or "Could you please share a little bit about your project goals?"). Ensure the tone is welcoming and appropriate for a business interaction.
 - Use TEXTAREA for long answers, TEXT for short.
 - Never output IDs, timestamps, or metadata.`;
 
