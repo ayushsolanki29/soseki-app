@@ -15,7 +15,10 @@ const API = axios.create({
 // Request Interceptor
 API.interceptors.request.use(
   (config) => {
-    // You can add headers here if needed, but cookies are handled automatically
+    // Let browser set the correct Content-Type with boundary for FormData
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => {

@@ -148,10 +148,10 @@ export function InvoiceForm({ initialData = null }) {
   useEffect(() => {
     if (formData.projectId && projects.length > 0) {
       const selectedProject = projects.find(p => p.id === formData.projectId);
-      if (selectedProject && selectedProject.endDate) {
+      if (selectedProject && selectedProject.estimatedEndDate) {
         setFormData(prev => ({
           ...prev,
-          dueDate: new Date(selectedProject.endDate).toISOString().split('T')[0]
+          dueDate: new Date(selectedProject.estimatedEndDate).toISOString().split('T')[0]
         }));
       }
     }

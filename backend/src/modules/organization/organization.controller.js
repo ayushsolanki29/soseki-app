@@ -62,6 +62,11 @@ class OrganizationController {
 
   async createTemplateRequest(req, res, next) {
     try {
+      console.log("createTemplateRequest req.body:", req.body);
+      console.log("createTemplateRequest req.file:", req.file);
+      if (req.file) {
+        req.body.attachmentUrl = req.file.path;
+      }
       const request = await organizationService.createTemplateRequest(req.user.organizationId, req.body);
       return res.status(201).json({ success: true, request });
     } catch (error) {

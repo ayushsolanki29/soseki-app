@@ -29,7 +29,8 @@ const createTemplateRequestValidation = Joi.object({
   type: Joi.string().valid("Invoice", "Expense").required(),
   description: Joi.string().required(),
   attachmentUrl: Joi.string().allow(null, "").optional(),
-});
+  file: Joi.any().optional(),
+}).unknown(true);
 
 const setupOrganizationValidation = Joi.object({
   name: Joi.string().required().messages({

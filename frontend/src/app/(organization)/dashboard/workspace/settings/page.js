@@ -133,23 +133,22 @@ export default function WorkspaceSettingsPage() {
 
     setIsSubmittingRequest(true);
     try {
-      let attachmentUrl = null;
+      let payload;
       if (requestFile) {
-        const formData = new FormData();
-        formData.append("file", requestFile);
-        const uploadRes = await API.post("/upload/image", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        attachmentUrl = uploadRes.data.url;
+        payload = new FormData();
+        payload.append('type', requestType);
+        payload.append('description', requestDescription.trim());
+        payload.append('file', requestFile);
+      } else {
+        payload = {
+          type: requestType,
+          description: requestDescription.trim()
+        };
       }
 
-      await API.post("/organization/template-requests", {
-        type: requestType,
-        description: requestDescription.trim(),
-        attachmentUrl
-      });
+      await API.post("/organization/template-requests", payload);
 
-      toast.success("Template request submitted! We will contact you soon.");
+      toast.success("Request sent successfully! Our team will contact you soon.");
       setIsRequestDialogOpen(false);
       setRequestDescription("");
       setRequestFile(null);
