@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,9 @@ import API from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import ct from "countries-and-timezones";
 
 export function ClientForm({ onSuccess, onCancel, initialData = null }) {
@@ -28,6 +31,26 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
   
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [openCountry, setOpenCountry] = useState(false);
+
+  useEffect(() => {
+    if (!initialData?.country && !formData.country) {
+      try {
+        const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzInfo = ct.getTimezone(userTz);
+        if (tzInfo && tzInfo.countries && tzInfo.countries.length > 0) {
+          const matchedCountry = tzInfo.countries[0];
+          setFormData(prev => ({
+            ...prev,
+            country: matchedCountry,
+            timezone: tzInfo.aliasOf || userTz
+          }));
+        }
+      } catch (e) {
+        // Ignore if Intl is not supported
+      }
+    }
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -116,20 +139,50 @@ export function ClientForm({ onSuccess, onCancel, initialData = null }) {
 
         <div className="flex flex-col gap-3">
           <label className="text-sm font-semibold text-foreground">Country (Optional)</label>
-          <Select 
-            value={formData.country} 
-            onValueChange={(val) => setFormData({ ...formData, country: val, timezone: "" })}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="w-full h-11">
-              <SelectValue placeholder="Select a country" />
-            </SelectTrigger>
-            <SelectContent>
-              {allCountries.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={openCountry} onOpenChange={setOpenCountry}>
+            <PopoverTrigger render={
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openCountry}
+                className={cn("w-full justify-between h-11 font-normal", !formData.country && "text-muted-foreground")}
+                disabled={isLoading}
+              />
+            }>
+              {formData.country
+                ? allCountries.find((c) => c.id === formData.country)?.name
+                : "Select a country..."}
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search country..." />
+                <CommandList>
+                  <CommandEmpty>No country found.</CommandEmpty>
+                  <CommandGroup>
+                    {allCountries.map((c) => (
+                      <CommandItem
+                        key={c.id}
+                        value={c.name}
+                        onSelect={(currentValue) => {
+                          setFormData({ ...formData, country: c.id, timezone: "" });
+                          setOpenCountry(false);
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            formData.country === c.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {c.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex flex-col gap-3">
