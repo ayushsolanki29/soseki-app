@@ -273,7 +273,7 @@ class DashboardService {
       prisma.invoice.count({ where: { organizationId } })
     ]);
 
-    const showOnboarding = (totalClientCount + totalProjectCount + totalInvoiceCount) === 0;
+
 
     return {
       recentProjects,
@@ -289,8 +289,7 @@ class DashboardService {
         activeProjects: activeProjectCount,
         pendingInvoices: pendingInvoiceCount,
         activeQuestionnaires: activeQuestionnaireCount
-      },
-      showOnboarding
+      }
     };
   }
 
