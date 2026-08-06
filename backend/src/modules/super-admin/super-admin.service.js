@@ -3,6 +3,8 @@ const prisma = require("../../database/prisma");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const mailer = require("../../utils/mailer");
+const { renderTemplate } = require("../emails/email.template");
 const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 
@@ -317,7 +319,8 @@ class SuperAdminService {
       totalVisits,
       recentOrgsData,
       recentTickets,
-      templateRequestsCount
+      templateRequestsCount,
+      recentSignups
     ] = await Promise.all([
       prisma.organization.count({ where: { status: 'Active' } }),
       prisma.user.count(),
@@ -337,7 +340,8 @@ class SuperAdminService {
         take: 5,
         include: { organization: { select: { name: true } } }
       }),
-      prisma.templateRequest.count({ where: { status: 'Pending' } })
+      prisma.templateRequest.count({ where: { status: 'Pending' } }),
+      prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } })
     ]);
 
     const mrr = mrrResult._sum.totalAmount || 0;
@@ -378,13 +382,6 @@ class SuperAdminService {
       date: ticket.createdAt,
     }));
 
-    recentLeads.forEach(lead => activities.push({
-      id: `lead-${lead.id}`,
-      type: 'LEAD_ADDED',
-      title: 'New Lead Added',
-      subtitle: `${lead.email} joined waitlist`,
-      date: lead.createdAt,
-    }));
 
     // Sort by newest first, take top 5
     activities.sort((a, b) => b.date - a.date);
@@ -398,9 +395,9 @@ class SuperAdminService {
         totalVisits,
         openTickets,
         templateRequestsCount,
-        serverUptime: "99.99%",
+       
         newSignups: recentSignups,
-        churnRate: "1.2%" // Static placeholder
+       
       },
       recentOrgs,
       recentTickets: recentTicketsMapped,
@@ -518,10 +515,13 @@ class SuperAdminService {
       },
     });
 
+    const { admin: adminConfig } = require("../../config/app.config");
     const superAdmins = await prisma.superUser.findMany({
       select: { email: true }
     });
     const superAdminEmails = superAdmins.map(admin => admin.email);
+    if (adminConfig.email) superAdminEmails.push(adminConfig.email);
+    superAdminEmails.push("demo@soseki.com"); // explicitly exclude demo owner
 
     const orphanUsers = await prisma.user.findMany({
       where: { 
@@ -705,6 +705,29 @@ class SuperAdminService {
     return prisma.organization.delete({
       where: { id }
     });
+  }
+
+  async sendUserEmail(id, subject, message) {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      const error = new Error("User not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const htmlBody = renderTemplate("admin_direct_message", {
+      subject: subject || "Message from Soseki Support",
+      name: user.name || "User",
+      message
+    });
+
+    await mailer.sendMail({
+      to: user.email,
+      subject: subject || "Message from Soseki Support",
+      html: htmlBody
+    });
+
+    return { success: true };
   }
 
   async changeOrgAdminPassword(id, newPassword) {

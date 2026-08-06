@@ -1,7 +1,6 @@
 // src/modules/auth/auth.service.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const prisma = require("../../database/prisma");
 const mailer = require("../../utils/mailer");
 const { renderTemplate } = require("../emails/email.template");

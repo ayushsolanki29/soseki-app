@@ -13,6 +13,7 @@ import {
 import { DynamicAvatar } from "@/components/ui/dynamic-avatar";
 import ct from "countries-and-timezones";
 import { formatDate } from "@/lib/utils";
+import { SendMailModal } from "@/components/send-mail-modal";
 
 import { AddUserModal } from "@/components/add-user-modal";
 import Link from "next/link";
@@ -104,6 +105,7 @@ function UserAction({ user, onUpdate }) {
 export default function SuperAdminOrganizationsPage() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mailUser, setMailUser] = useState(null);
 
   const fetchOrganizations = async () => {
     try {
@@ -251,15 +253,22 @@ export default function SuperAdminOrganizationsPage() {
                   <TableCell className="text-right">
                     {org.isOrphanUser ? (
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" disabled>
-                          View Details
+                        <Button variant="outline" size="sm" onClick={() => setMailUser(org.users[0])}>
+                          Send Email
                         </Button>
                         <UserAction user={org.users[0]} onUpdate={fetchOrganizations} />
                       </div>
                     ) : (
-                      <Button variant="outline" size="sm" render={<Link href={`/super-admin/organizations/${org.id}`} />}>
-                        View Details
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        {org.users?.length > 0 && (
+                          <Button variant="outline" size="sm" onClick={() => setMailUser(org.users[0])}>
+                            Send Email
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm" render={<Link href={`/super-admin/organizations/${org.id}`} />}>
+                          View Details
+                        </Button>
+                      </div>
                     )}
                   </TableCell>
                 </TableRow>
@@ -268,6 +277,14 @@ export default function SuperAdminOrganizationsPage() {
           </TableBody>
         </Table>
       </div>
+      
+      {mailUser && (
+        <SendMailModal 
+          isOpen={!!mailUser} 
+          onClose={() => setMailUser(null)} 
+          user={mailUser} 
+        />
+      )}
     </div>
   );
 }

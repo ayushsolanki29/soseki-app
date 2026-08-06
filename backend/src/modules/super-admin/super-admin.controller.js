@@ -230,6 +230,20 @@ class SuperAdminController {
     }
   }
 
+  async sendUserEmail(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { subject, message } = req.body;
+      if (!message) {
+        return res.status(400).json({ success: false, message: "Message is required" });
+      }
+      await superAdminService.sendUserEmail(id, subject, message);
+      return res.status(200).json({ success: true, message: "Email sent successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async changeOrgAdminPassword(req, res, next) {
     try {
       const { id } = req.params;

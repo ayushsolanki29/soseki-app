@@ -16,7 +16,7 @@ SCHEMA:
 
 CONSTRAINTS:
 - max 15 fields.
-- Write highly polite, professional, and conversational questions for clients. Instead of blunt 1-2 word labels, phrase them as complete, engaging sentences (e.g., "What is your primary phone number?" or "Could you please share a little bit about your project goals?"). Ensure the tone is welcoming and appropriate for a business interaction.
+- Write clear, professional, and neutral questions for clients. Avoid single-word labels (e.g., "Phone"), but also avoid overly verbose or conversational paragraphs (e.g., "Could you please share..."). Use standard, concise question phrasing (e.g., "What is your phone number?", "Please describe your project goals").
 - Use TEXTAREA for long answers, TEXT for short.
 - Never output IDs, timestamps, or metadata.`;
 

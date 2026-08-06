@@ -22,6 +22,7 @@ router.post("/settings/2fa/disable", authMiddleware, superAdminController.disabl
 router.post("/users", validate(superAdminValidation.createUserValidation), superAdminController.createUser);
 router.put("/users/:id", superAdminController.updateUser);
 router.delete("/users/:id", superAdminController.deleteUser);
+router.post("/users/:id/send-email", superAdminController.sendUserEmail);
 router.get("/organizations", superAdminController.getOrganizations);
 router.get("/organizations/:id", superAdminController.getOrganizationDetails);
 router.put("/organizations/:id", superAdminController.updateOrganization);
